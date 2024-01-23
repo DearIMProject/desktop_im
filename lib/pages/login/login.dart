@@ -1,6 +1,7 @@
 import 'package:desktop_im/components/common/colors.dart';
-import 'package:desktop_im/components/login/LoginButton.dart';
-import 'package:desktop_im/components/login/LoginTextField.dart';
+import 'package:desktop_im/components/login/login_button.dart';
+import 'package:desktop_im/components/login/login_textfield.dart';
+import 'package:desktop_im/network/request.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -13,10 +14,19 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  String username = "";
+  String password = "";
   void handleLogin() {
     if (kDebugMode) {
       print("handleLogin");
     }
+    Request().postRequest(
+        "/user/login",
+        {"email": username, "password": password},
+        Callback(
+          successCallback: (data) {},
+          failureCallback: (code, errorStr, data) {},
+        ));
   }
 
   @override
@@ -27,36 +37,44 @@ class _LoginPageState extends State<LoginPage> {
         // title: const Text("title"),
         backgroundColor: kThemeColor,
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(16),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 100,
             ),
-            Text(
+            const Text(
                 style: TextStyle(
                   color: kWhiteBackColor,
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
                 "登录"),
-            SizedBox(
+            const SizedBox(
               height: 50,
             ),
             LoginTextField(
+              defaultText: "305662816@qq.com",
+              onChanged: (value) {
+                username = value;
+              },
               textInputAction: TextInputAction.next,
               hintText: "请输入登录账号或邮箱",
             ),
-            SizedBox(
+            const SizedBox(
               height: 2,
             ),
             LoginTextField(
+              defaultText: "apple",
+              onChanged: (value) {
+                password = value;
+              },
               textInputAction: TextInputAction.done,
               hintText: "请输入密码",
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             SizedBox(

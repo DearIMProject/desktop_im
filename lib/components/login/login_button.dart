@@ -31,6 +31,8 @@ class _LoginButtonState extends State<LoginButton> {
         ),
         side: const BorderSide(width: 0, color: Colors.transparent),
       ),
+      // style: const ButtonStyle(
+      // backgroundColor: MaterialStatePropertyAll(kTitleColor)),
       child: subTitleFontText(kWhiteBackColor, title),
     );
   }
