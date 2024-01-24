@@ -16,7 +16,7 @@ class RequestManager {
     // _instance.networkenv = NetworkEnvironment.daily;
     // _instance._hostName = "http://192.168.31.230:9090/"; // mac
     // _instance._hostName = "http://192.168.31.37:9090/"; // windows
-    _instance._hostName = "http://$HOST:8080/";
+    _instance._hostName = "http://$HOST:8888/";
     // _instance._hostName = "http://101.34.247.16:9090/";//online
 
     return _instance;

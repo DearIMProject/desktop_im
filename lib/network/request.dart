@@ -1,18 +1,20 @@
 // ignore_for_file: file_names, depend_on_referenced_packages
 
 import 'package:desktop_im/network/request_manager.dart';
+import 'package:desktop_im/user/user_manager.dart';
+import 'package:flutter/foundation.dart';
 // import 'package:desktop_im/user/user_manager.dart';
 import 'package:logger/logger.dart';
 import 'package:dio/dio.dart';
 
-typedef SuccessCallback = void Function(dynamic data);
-typedef FailureCallback = void Function(
+typedef RequestSuccessCallback = void Function(dynamic data);
+typedef RequestFailureCallback = void Function(
     int code, String errorStr, dynamic data);
 
-class Callback {
-  SuccessCallback? successCallback;
-  FailureCallback? failureCallback;
-  Callback({this.successCallback, this.failureCallback});
+class RequestCallback {
+  RequestSuccessCallback? successCallback;
+  RequestFailureCallback? failureCallback;
+  RequestCallback({this.successCallback, this.failureCallback});
 }
 
 class Request {
@@ -60,21 +62,15 @@ class Request {
   //   }
   // }
 
-  void postRequest(
-      String apiName, Map<String, dynamic> map, Callback callback) async {
+  void postRequest(String apiName, Map<String, dynamic> map,
+      RequestCallback callback) async {
     Response response;
     Map<String, dynamic> param = <String, dynamic>{};
     param.addAll(map);
-    // String? token = UserManager.getInstance()!.user!.token;
-
-    // if (token.isNotEmpty) {
-    //   log(UserManager.getInstance()!.user!.token);
-    //   param["token"] = UserManager.getInstance()!.user!.token;
-    // }
     try {
       FormData formData = FormData.fromMap(param);
       String address = host + apiName;
-      Logger().d("address = " + address);
+      Logger().d("address = $address");
       Logger().i(map);
       Dio dio = Dio();
       dio.options.headers.addAll(systemParam());
@@ -86,18 +82,21 @@ class Request {
       if (code != 200) {
         // 返回失败内容 给出回调
         if (callback.failureCallback != null) {
+          Map<String, dynamic> errorMap = responseMap["data"];
           callback.failureCallback!(
-              responseMap["code"], responseMap["msg"], responseMap["data"]);
+              responseMap["code"], errorMap["errorMsg"], responseMap["data"]);
         }
       } else {
         if (callback.successCallback != null) {
           var data = responseMap["data"];
           callback.successCallback!(data);
-          print(data);
+          if (kDebugMode) {
+            print(data);
+          }
         }
       }
     } catch (e) {
-      Logger().d("catch e" + e.toString());
+      Logger().d("catch e = $e");
       if (callback.failureCallback != null) {
         callback.failureCallback!(500, "server failure", {});
       }
@@ -107,8 +106,7 @@ class Request {
 
   Map<String, dynamic> systemParam() {
     Map<String, dynamic> systemParam = <String, dynamic>{};
-    //TODO: wmy 添加token
-    // systemParam["token"] = UserManager.getInstance()!.user!.token;
+    systemParam["token"] = UserManager.getInstance()?._user?.token;
     return systemParam;
   }
 }

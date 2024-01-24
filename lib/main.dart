@@ -1,6 +1,10 @@
 // Material 风格的UI组件
 import 'package:desktop_im/components/common/colors.dart';
+import 'package:desktop_im/pages/home/home_page.dart';
 import 'package:desktop_im/pages/login/login.dart';
+import 'package:desktop_im/router/routers.dart';
+import 'package:desktop_im/user/user_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,9 +17,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Routers().addPageRouter("/home", (p0) => const HomePage(), context);
+    Routers().addPageRouter("/login", (p0) => const LoginPage(), context);
     return MaterialApp(
-        debugShowCheckedModeBanner:
-            !const bool.fromEnvironment("dart.vm.product"),
+        debugShowCheckedModeBanner: !kDebugMode,
         title: 'IM Demo',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
@@ -23,7 +28,10 @@ class MyApp extends StatelessWidget {
           ),
           useMaterial3: true,
         ),
-        home: const LoginPage());
+        routes: Routers().routers(),
+        home: UserManager.getInstance()?.uid() != 0
+            ? const HomePage()
+            : const LoginPage());
   }
 }
 

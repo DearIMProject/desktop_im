@@ -1,31 +1,46 @@
 import 'package:desktop_im/components/common/colors.dart';
 import 'package:desktop_im/components/login/login_button.dart';
 import 'package:desktop_im/components/login/login_textfield.dart';
-import 'package:desktop_im/network/request.dart';
+import 'package:desktop_im/components/uikits/toast_show_utils.dart';
+import 'package:desktop_im/pages/base_page.dart';
+import 'package:desktop_im/router/routers.dart';
+import 'package:desktop_im/user/login_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 // 登录页面
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class LoginPage extends BasePage {
+  const LoginPage({super.key, super.params});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String username = "";
-  String password = "";
+  late String username;
+  late String password;
+  @override
+  void initState() {
+    super.initState();
+    username = "305662816@qq.com";
+    password = "apple";
+  }
+
   void handleLogin() {
     if (kDebugMode) {
       print("handleLogin");
     }
-    Request().postRequest(
-        "/user/login",
-        {"email": username, "password": password},
+    LoginService.login(
+        username,
+        password,
         Callback(
-          successCallback: (data) {},
-          failureCallback: (code, errorStr, data) {},
+          successCallback: () {
+            ToastShowUtils.show("成功！", context);
+            Routers().openRouter("/home", {}, context);
+          },
+          failureCallback: (code, errorStr, data) {
+            ToastShowUtils.show(errorStr, context);
+          },
         ));
   }
 
@@ -56,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
               height: 50,
             ),
             LoginTextField(
-              defaultText: "305662816@qq.com",
+              defaultText: username,
               onChanged: (value) {
                 username = value;
               },
@@ -67,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
               height: 2,
             ),
             LoginTextField(
-              defaultText: "apple",
+              defaultText: password,
               onChanged: (value) {
                 password = value;
               },
