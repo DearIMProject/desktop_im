@@ -19,38 +19,41 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Routers().addPageRouter("/home", (p0) => const HomePage(), context);
+    Routers().addPageRouter("/home_tab", (p0) => const HomePage(), context);
     Routers().addPageRouter("/login", (p0) => const LoginPage(), context);
+    Routers().registerRouter("/home", (params, context) {
+      Navigator.pushReplacementNamed(context, "/home_tab");
+    });
+
+    String token = UserManager.getInstance().userToken();
+    if (kDebugMode) {
+      print("token = $token");
+    }
+
     return MaterialApp(
         localizationsDelegates: const [
-          // 本地化代理类
           S.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: [
-          const Locale('en', ''), // 美国英语
-          ...S.delegate.supportedLocales
-          //其他Locales
-        ],
+        supportedLocales: S.delegate.supportedLocales,
         // 插件目前不完善手动处理简繁体
-        localeResolutionCallback: (locale, supportLocales) {
-          // 中文 简繁体处理
-          if (locale?.languageCode == 'zh') {
-            // zh-CN：地区限制匹配规范，表示用在中国大陆区域的中文。
-            // 包括各种大方言、小方言、繁体、简体等等都可以被匹配到。
-            if (locale?.scriptCode == 'Hant') {
-              // zh-Hant和zh-CHT相同相对应;
-              return const Locale('zh', 'HK'); //繁体
-            } else {
-              // zh-Hans：语言限制匹配规范，表示简体中文
-              return const Locale('zh', 'CN'); //简体
-            }
-          }
-          return null;
-        },
-        locale: Localizations.localeOf(context),
+        // localeResolutionCallback: (locale, supportLocales) {
+        //   // 中文 简繁体处理
+        //   if (locale?.languageCode == 'zh') {
+        //     // zh-CN：地区限制匹配规范，表示用在中国大陆区域的中文。
+        //     // 包括各种大方言、小方言、繁体、简体等等都可以被匹配到。
+        //     if (locale?.scriptCode == 'Hant') {
+        //       // zh-Hant和zh-CHT相同相对应;
+        //       return const Locale('zh', 'HK'); //繁体
+        //     } else {
+        //       // zh-Hans：语言限制匹配规范，表示简体中文
+        //       return const Locale('zh', 'CN'); //简体
+        //     }
+        //   }
+        //   return null;
+        // },
         debugShowCheckedModeBanner: !kDebugMode,
         title: 'IM Demo',
         theme: ThemeData(
@@ -60,9 +63,11 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         routes: Routers().routers(),
-        home: UserManager.getInstance()?.uid() != 0
-            ? const HomePage()
-            : const LoginPage());
+        home:
+            // UserManager.getInstance().userToken().isNotEmpty?
+            const HomePage()
+        // : const LoginPage(),
+        );
   }
 }
 

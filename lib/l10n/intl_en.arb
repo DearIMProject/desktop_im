@@ -1,7 +1,12 @@
 {
+    "title":"IM",
     "login": "login",
     "success":"success",
     "failure":"failure",
     "username_tip":"please input account or email address",
-    "password_tip":"please input password"
+    "password_tip":"please input password",
+    "chat":"chat",
+    "addressbook":"addressbook",
+    "account":"account"
+
 }

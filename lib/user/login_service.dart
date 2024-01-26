@@ -19,7 +19,8 @@ class LoginService {
         RequestCallback(
           successCallback: (data) {
             User user = User.fromJson(data["user"]);
-            UserManager.getInstance()!.setUser(user);
+
+            UserManager.getInstance().setUser(user);
             if (callback.successCallback != null) {
               callback.successCallback!();
             }
@@ -28,6 +29,20 @@ class LoginService {
             if (callback.failureCallback != null) {
               callback.failureCallback!(code, errorStr, data);
             }
+          },
+        ));
+  }
+
+  LoginService.autoLogin(String token) {
+    Request().postRequest(
+        "user/autologin",
+        {"token": UserManager.getInstance().userToken()},
+        RequestCallback(
+          successCallback: (data) {
+            ;
+          },
+          failureCallback: (code, errorStr, data) {
+            ;
           },
         ));
   }

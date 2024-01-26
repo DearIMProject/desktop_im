@@ -50,6 +50,16 @@ class S {
     return Localizations.of<S>(context, S);
   }
 
+  /// `IM`
+  String get title {
+    return Intl.message(
+      'IM',
+      name: 'title',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `login`
   String get login {
     return Intl.message(
@@ -95,6 +105,36 @@ class S {
     return Intl.message(
       'please input password',
       name: 'password_tip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `chat`
+  String get chat {
+    return Intl.message(
+      'chat',
+      name: 'chat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `addressbook`
+  String get addressbook {
+    return Intl.message(
+      'addressbook',
+      name: 'addressbook',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `account`
+  String get account {
+    return Intl.message(
+      'account',
+      name: 'account',
       desc: '',
       args: [],
     );
