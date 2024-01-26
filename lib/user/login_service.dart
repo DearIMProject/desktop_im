@@ -19,7 +19,7 @@ class LoginService {
         RequestCallback(
           successCallback: (data) {
             User user = User.fromJson(data["user"]);
-            UserManager.getInstance()!._user = user;
+            UserManager.getInstance()!.setUser(user);
             if (callback.successCallback != null) {
               callback.successCallback!();
             }

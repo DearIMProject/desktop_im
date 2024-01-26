@@ -1,0 +1,7 @@
+{
+    "login": "你好",
+    "success":"成功",
+    "failure":"失败",
+    "username_tip":"请输入登录账号或邮箱",
+    "password_tip":"请输入密码"
+}

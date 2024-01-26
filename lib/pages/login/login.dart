@@ -2,6 +2,7 @@ import 'package:desktop_im/components/common/colors.dart';
 import 'package:desktop_im/components/login/login_button.dart';
 import 'package:desktop_im/components/login/login_textfield.dart';
 import 'package:desktop_im/components/uikits/toast_show_utils.dart';
+import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/pages/base_page.dart';
 import 'package:desktop_im/router/routers.dart';
 import 'package:desktop_im/user/login_service.dart';
@@ -35,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
         password,
         Callback(
           successCallback: () {
-            ToastShowUtils.show("成功！", context);
+            ToastShowUtils.show(S.of(context).success, context);
             Routers().openRouter("/home", {}, context);
           },
           failureCallback: (code, errorStr, data) {
@@ -60,13 +61,13 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(
               height: 100,
             ),
-            const Text(
-                style: TextStyle(
+            Text(
+                style: const TextStyle(
                   color: kWhiteBackColor,
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
-                "登录"),
+                S.of(context).login),
             const SizedBox(
               height: 50,
             ),
@@ -76,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                 username = value;
               },
               textInputAction: TextInputAction.next,
-              hintText: "请输入登录账号或邮箱",
+              hintText: S.of(context).username_tip,
             ),
             const SizedBox(
               height: 2,
@@ -87,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                 password = value;
               },
               textInputAction: TextInputAction.done,
-              hintText: "请输入密码",
+              hintText: S.of(context).password_tip,
             ),
             const SizedBox(
               height: 20,
@@ -96,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
               height: 50,
               width: double.infinity,
               child: LoginButton(
-                title: "登录",
+                title: S.of(context).login,
                 onPressed: handleLogin,
               ),
             ),

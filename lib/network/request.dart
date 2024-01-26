@@ -106,7 +106,7 @@ class Request {
 
   Map<String, dynamic> systemParam() {
     Map<String, dynamic> systemParam = <String, dynamic>{};
-    systemParam["token"] = UserManager.getInstance()?._user?.token;
+    systemParam["token"] = UserManager.getInstance()?.userToken();
     return systemParam;
   }
 }
