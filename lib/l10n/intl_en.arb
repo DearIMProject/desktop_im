@@ -3,6 +3,7 @@
     "login": "login",
     "welcome":"Welcome!",
     "send_log":"send log",
+    "address_book":"Address Book",
     "logout":"logout",
     "success":"success",
     "failure":"failure",

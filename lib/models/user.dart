@@ -24,7 +24,7 @@ class User {
   User();
 
   User fromJson(Map<String, dynamic> json) {
-    token = json["token"];
+    token = json["token"] ?? "";
     expireTime = json["expireTime"];
     username = json["username"];
     userId = json["userId"];
@@ -40,7 +40,7 @@ class User {
     return this;
   }
 
-  Future<int> save(Map<String, dynamic> json) async {
+  Future<int> save() async {
     if (userId <= 0 || token.isEmpty) {
       return Future.value(-1);
     }

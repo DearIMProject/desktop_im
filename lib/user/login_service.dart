@@ -1,5 +1,5 @@
 import 'package:desktop_im/network/request.dart';
-import 'package:desktop_im/user/user.dart';
+import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/user/user_manager.dart';
 
 typedef SuccessCallback = void Function();

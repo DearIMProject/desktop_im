@@ -23,11 +23,17 @@ class ProfilePage extends StatefulWidget {
 }
 
 void logout(BuildContext context) {
-  LoginService.logout(UserManager.getInstance().userToken(), Callback(
-    successCallback: () {
-      Routers().openRouter("/login", {}, context);
-    },
-  ));
+  LoginService.logout(
+    UserManager.getInstance().userToken(),
+    Callback(
+      successCallback: () {
+        Routers().openRouter("/login", {}, context);
+      },
+      failureCallback: (code, errorStr, data) {
+        Routers().openRouter("/login", {}, context);
+      },
+    ),
+  );
 }
 
 void sendLog(BuildContext context) {
@@ -45,17 +51,17 @@ class _ProfilePageState extends State<ProfilePage> {
     List<Widget> tests = [];
     List<ProfileItem> profileItems = [
       ProfileItem(
+        title: S.current.send_log,
+        jumpFunction: () {
+          sendLog(context);
+        },
+      ),
+      ProfileItem(
         title: S.current.logout,
         jumpFunction: () {
           logout(context);
         },
       ),
-      ProfileItem(
-        title: S.current.send_log,
-        jumpFunction: () {
-          sendLog(context);
-        },
-      )
     ];
     for (var i = 0; i < profileItems.length; i++) {
       ProfileItem item = profileItems[i];

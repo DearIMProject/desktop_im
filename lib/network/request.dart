@@ -67,11 +67,12 @@ class Request {
     Response response;
     Map<String, dynamic> param = <String, dynamic>{};
     param.addAll(map);
+    param.addAll(systemParam());
     try {
       FormData formData = FormData.fromMap(param);
       String address = host + apiName;
       Logger().d("address = $address");
-      Logger().i(map);
+      Logger().i(param);
       Dio dio = Dio();
       dio.options.headers.addAll(systemParam());
       response = await dio.post(address, data: formData);

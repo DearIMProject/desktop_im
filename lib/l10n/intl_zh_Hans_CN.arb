@@ -7,6 +7,7 @@
     "success":"成功",
     "failure":"失败",
     "username_tip":"请输入登录账号或邮箱",
+    "address_book":"通讯录",
     "password_tip":"请输入密码",
     "chat":"聊天",
     "addressbook":"通讯录",

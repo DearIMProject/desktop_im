@@ -5,8 +5,8 @@ Image networkImage(String imageSrc, double width, double height) {
   return Image.network(
     imageSrc,
     fit: BoxFit.cover,
-    width: 100,
-    height: 100,
+    width: width,
+    height: height,
     errorBuilder: (context, error, stackTrace) {
       return Text(
         S.current.fail_to_load_image,

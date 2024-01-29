@@ -3,10 +3,11 @@ import 'package:desktop_im/components/common/colors.dart';
 import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/pages/home/home_page.dart';
 import 'package:desktop_im/pages/login/login.dart';
+import 'package:desktop_im/pages/message/message_list_page.dart';
 import 'package:desktop_im/pages/welcome/welcome_page.dart';
 import 'package:desktop_im/router/routers.dart';
 import 'package:desktop_im/user/login_service.dart';
-import 'package:desktop_im/user/user.dart';
+import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/user/user_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -44,8 +45,17 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    Routers().addPageRouter("/home_tab", (p0) => const HomePage(), context);
-    Routers().addPageRouter("/login_page", (p0) => const LoginPage(), context);
+    Routers()
+        .addPageRouter("/home_tab", (context) => const HomePage(), context);
+    Routers()
+        .addPageRouter("/login_page", (context) => const LoginPage(), context);
+    Routers().addPageParamRouter(
+        "/message",
+        (context) => const MessageListPage(),
+        (aparams) => MessageListPage(
+              params: aparams,
+            ),
+        context);
     Routers().registerRouter("/home", (params, context) {
       Navigator.pushReplacementNamed(context, "/home_tab");
     });

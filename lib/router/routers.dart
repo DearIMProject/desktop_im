@@ -1,3 +1,4 @@
+import 'package:desktop_im/pages/base_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -31,6 +32,28 @@ class Routers {
       routerModel.callback =
           (Map<String, dynamic> params, BuildContext buildcontext) {
         Navigator.push(buildcontext, MaterialPageRoute(builder: widget));
+      };
+      _routers[host] = routerModel;
+    }
+    if (kDebugMode) {
+      print("map = $_map");
+    }
+  }
+
+  void addPageParamRouter<T extends BasePage>(
+      String host,
+      Widget Function(BuildContext) widget,
+      T Function(Map<String, dynamic> params) function,
+      BuildContext context) {
+    if (!_map.containsKey(host)) {
+      _map[host] = widget;
+
+      var routerModel = _RouterModel();
+      routerModel.router = host;
+      routerModel.callback =
+          (Map<String, dynamic> params, BuildContext buildcontext) {
+        Navigator.push(buildcontext,
+            MaterialPageRoute(builder: (context) => function(params)));
       };
       _routers[host] = routerModel;
     }

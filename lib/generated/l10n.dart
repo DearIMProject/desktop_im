@@ -90,6 +90,16 @@ class S {
     );
   }
 
+  /// `Address Book`
+  String get address_book {
+    return Intl.message(
+      'Address Book',
+      name: 'address_book',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `logout`
   String get logout {
     return Intl.message(
