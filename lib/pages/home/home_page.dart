@@ -1,4 +1,5 @@
-import 'package:desktop_im/components/ui/bottom_menu_tabbar_view.dart';
+import 'package:desktop_im/components/common/colors.dart';
+import 'package:desktop_im/components/common/fonts.dart';
 import 'package:desktop_im/components/ui/bottom_tabbar_item.dart';
 import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/pages/addressbook/address_book_page.dart';
@@ -18,6 +19,8 @@ class HomePage extends BasePage {
 
 class _HomePageState extends State<HomePage> {
   PageController? pageController;
+
+  int _currentIndex = 0;
   @override
   void initState() {
     super.initState();
@@ -30,10 +33,14 @@ class _HomePageState extends State<HomePage> {
       pageController = PageController(initialPage: 0, keepPage: true);
       pageController!.addListener(() {
         //PageView滑动的距离
-        double offset = pageController!.offset;
+        // double offset = pageController!.offset;
         //当前显示的页面的索引
         double? page = pageController!.page;
-        print("pageView 滑动的距离 $offset  索引 $page");
+        if (page != null) {
+          setState(() {
+            _currentIndex = page.round();
+          });
+        }
       });
     }
   }
@@ -50,32 +57,40 @@ class _HomePageState extends State<HomePage> {
       BottomTabbarItem(S.current.addressbook, Icons.menu_book, false),
       BottomTabbarItem(S.current.account, Icons.account_circle, false),
     ];
+    List<BottomNavigationBarItem> tabs = [];
+    for (var i = 0; i < tabbarItems.length; i++) {
+      BottomTabbarItem bottomTabbarItem = tabbarItems[i];
+      var tab = BottomNavigationBarItem(
+        // text: bottomTabbarItem.title,
+        label: bottomTabbarItem.title,
+        icon: Icon(bottomTabbarItem.icon),
+      );
+      tabs.add(tab);
+    }
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(S.current.title),
+        title: titleFontText(kThemeColor, S.current.title),
       ),
-      bottomNavigationBar: BottomMenuTabbarView(
-        tabbarItems: tabbarItems,
-        selectedIndex: 0,
-        bottomDelegate: (index) {
-          pageController?.animateToPage(index,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.linear);
+      bottomNavigationBar: BottomNavigationBar(
+        items: tabs,
+        currentIndex: _currentIndex,
+        onTap: (value) {
+          _currentIndex = value;
+          pageController?.animateToPage(value,
+              duration: const Duration(microseconds: 250),
+              curve: Curves.bounceInOut);
         },
       ),
-      body: SizedBox(
-        child: PageView(
+      body: PageView(
           controller: pageController,
-          scrollDirection: Axis.horizontal,
-          onPageChanged: (value) {},
+          onPageChanged: (value) {
+            _currentIndex = value;
+          },
           children: const [
             ChatPage(),
             AddressBookPage(),
             ProfilePage(),
-          ],
-        ),
-      ),
+          ]),
     );
   }
 }
