@@ -6,8 +6,6 @@ import 'package:desktop_im/pages/addressbook/address_book_page.dart';
 import 'package:desktop_im/pages/base_page.dart';
 import 'package:desktop_im/pages/chat/chat_page.dart';
 import 'package:desktop_im/pages/profile/profile_page.dart';
-import 'package:desktop_im/user/login_service.dart';
-import 'package:desktop_im/user/user_manager.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends BasePage {
@@ -20,7 +18,7 @@ class HomePage extends BasePage {
 class _HomePageState extends State<HomePage> {
   PageController? pageController;
 
-  int _currentIndex = 0;
+  int _currentIndex = 2;
   @override
   void initState() {
     super.initState();
@@ -30,7 +28,8 @@ class _HomePageState extends State<HomePage> {
 
   void initPageController() {
     if (pageController == null) {
-      pageController = PageController(initialPage: 0, keepPage: true);
+      pageController =
+          PageController(initialPage: _currentIndex, keepPage: true);
       pageController!.addListener(() {
         //PageView滑动的距离
         // double offset = pageController!.offset;
@@ -43,11 +42,6 @@ class _HomePageState extends State<HomePage> {
         }
       });
     }
-  }
-
-  /// 自动登录
-  void autoLogin() {
-    LoginService.autoLogin(UserManager.getInstance().userToken());
   }
 
   @override
@@ -69,7 +63,7 @@ class _HomePageState extends State<HomePage> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: titleFontText(kThemeColor, S.current.title),
+        title: titleFontText(kTitleColor, S.current.title),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: tabs,

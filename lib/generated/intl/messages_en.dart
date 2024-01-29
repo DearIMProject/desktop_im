@@ -25,13 +25,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "account": MessageLookupByLibrary.simpleMessage("account"),
         "addressbook": MessageLookupByLibrary.simpleMessage("addressbook"),
         "chat": MessageLookupByLibrary.simpleMessage("chat"),
+        "fail_to_load_image":
+            MessageLookupByLibrary.simpleMessage("failed to load image"),
         "failure": MessageLookupByLibrary.simpleMessage("failure"),
         "login": MessageLookupByLibrary.simpleMessage("login"),
+        "logout": MessageLookupByLibrary.simpleMessage("logout"),
         "password_tip":
             MessageLookupByLibrary.simpleMessage("please input password"),
+        "send_log": MessageLookupByLibrary.simpleMessage("send log"),
         "success": MessageLookupByLibrary.simpleMessage("success"),
-        "title": MessageLookupByLibrary.simpleMessage("IM"),
+        "title": MessageLookupByLibrary.simpleMessage("IM App"),
         "username_tip": MessageLookupByLibrary.simpleMessage(
-            "please input account or email address")
+            "please input account or email address"),
+        "welcome": MessageLookupByLibrary.simpleMessage("Welcome!")
       };
 }

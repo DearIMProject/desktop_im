@@ -50,10 +50,10 @@ class S {
     return Localizations.of<S>(context, S);
   }
 
-  /// `IM`
+  /// `IM App`
   String get title {
     return Intl.message(
-      'IM',
+      'IM App',
       name: 'title',
       desc: '',
       args: [],
@@ -65,6 +65,36 @@ class S {
     return Intl.message(
       'login',
       name: 'login',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Welcome!`
+  String get welcome {
+    return Intl.message(
+      'Welcome!',
+      name: 'welcome',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `send log`
+  String get send_log {
+    return Intl.message(
+      'send log',
+      name: 'send_log',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `logout`
+  String get logout {
+    return Intl.message(
+      'logout',
+      name: 'logout',
       desc: '',
       args: [],
     );
@@ -135,6 +165,16 @@ class S {
     return Intl.message(
       'account',
       name: 'account',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `failed to load image`
+  String get fail_to_load_image {
+    return Intl.message(
+      'failed to load image',
+      name: 'fail_to_load_image',
       desc: '',
       args: [],
     );

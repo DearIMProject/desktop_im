@@ -1,12 +1,18 @@
 import 'package:desktop_im/user/user.dart';
+
 // ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';
+
+// ignore: constant_identifier_names
+const String _TOKEN = "token";
 
 class UserManager {
   static UserManager? _instance;
   User? _user;
+  User? get user => _user;
+
   String _token = "";
-  static String TOKEN = "token";
+
   static UserManager getInstance() {
     if (_instance == null) {
       _instance = UserManager();
@@ -17,7 +23,7 @@ class UserManager {
 
   static void _initToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? atoken = prefs.getString(TOKEN);
+    String? atoken = prefs.getString(_TOKEN);
     if (atoken != null) {
       _instance!._token = atoken;
     } else {
@@ -32,7 +38,7 @@ class UserManager {
 
   Future<void> _setUser(User user) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(TOKEN, user.token);
+    prefs.setString(_TOKEN, user.token);
   }
 
   String userToken() {

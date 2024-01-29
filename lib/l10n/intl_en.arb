@@ -1,12 +1,16 @@
 {
-    "title":"IM",
+    "title":"IM App",
     "login": "login",
+    "welcome":"Welcome!",
+    "send_log":"send log",
+    "logout":"logout",
     "success":"success",
     "failure":"failure",
     "username_tip":"please input account or email address",
     "password_tip":"please input password",
     "chat":"chat",
     "addressbook":"addressbook",
-    "account":"account"
+    "account":"account",
+    "fail_to_load_image":"failed to load image"
 
 }

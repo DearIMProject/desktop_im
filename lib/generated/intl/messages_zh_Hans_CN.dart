@@ -25,11 +25,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "account": MessageLookupByLibrary.simpleMessage("账户"),
         "addressbook": MessageLookupByLibrary.simpleMessage("通讯录"),
         "chat": MessageLookupByLibrary.simpleMessage("聊天"),
+        "fail_to_load_image": MessageLookupByLibrary.simpleMessage("图片加载失败"),
         "failure": MessageLookupByLibrary.simpleMessage("失败"),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
+        "logout": MessageLookupByLibrary.simpleMessage("退出登录"),
         "password_tip": MessageLookupByLibrary.simpleMessage("请输入密码"),
+        "send_log": MessageLookupByLibrary.simpleMessage("发送日志"),
         "success": MessageLookupByLibrary.simpleMessage("成功"),
-        "title": MessageLookupByLibrary.simpleMessage("聊天"),
-        "username_tip": MessageLookupByLibrary.simpleMessage("请输入登录账号或邮箱")
+        "title": MessageLookupByLibrary.simpleMessage("IM App"),
+        "username_tip": MessageLookupByLibrary.simpleMessage("请输入登录账号或邮箱"),
+        "welcome": MessageLookupByLibrary.simpleMessage("欢迎！")
       };
 }

@@ -4,6 +4,9 @@ import 'package:desktop_im/user/user_manager.dart';
 
 typedef SuccessCallback = void Function();
 
+const String kLogoutNotification = "LogoutNotification";
+const String kLoginNotification = "LoginNotification";
+
 class Callback {
   SuccessCallback? successCallback;
   RequestFailureCallback? failureCallback;
@@ -18,8 +21,7 @@ class LoginService {
         {"email": username, "password": password},
         RequestCallback(
           successCallback: (data) {
-            User user = User.fromJson(data["user"]);
-
+            User user = User().fromJson(data["user"]);
             UserManager.getInstance().setUser(user);
             if (callback.successCallback != null) {
               callback.successCallback!();
@@ -33,17 +35,43 @@ class LoginService {
         ));
   }
 
-  LoginService.autoLogin(String token) {
+  LoginService.autoLogin(String token, Callback callback) {
     Request().postRequest(
         "user/autologin",
         {"token": UserManager.getInstance().userToken()},
         RequestCallback(
           successCallback: (data) {
-            ;
+            User user = User().fromJson(data["user"]);
+            UserManager.getInstance().setUser(user);
+            if (callback.successCallback != null) {
+              callback.successCallback!();
+            }
           },
           failureCallback: (code, errorStr, data) {
-            ;
+            if (callback.failureCallback != null) {
+              callback.failureCallback!(code, errorStr, data);
+            }
           },
         ));
+  }
+
+  LoginService.logout(String token, Callback callback) {
+    Request().postRequest(
+      "user/logoutToken",
+      {"token": token},
+      RequestCallback(
+        successCallback: (data) {
+          UserManager.getInstance().setUser(User());
+          if (callback.successCallback != null) {
+            callback.successCallback!();
+          }
+        },
+        failureCallback: (code, errorStr, data) {
+          if (callback.failureCallback != null) {
+            callback.failureCallback!(code, errorStr, data);
+          }
+        },
+      ),
+    );
   }
 }

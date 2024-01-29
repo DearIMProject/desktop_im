@@ -1,12 +1,16 @@
 {
-    "title":"聊天",
+    "title":"IM App",
+    "welcome":"欢迎！",
     "login": "登录",
+    "send_log":"发送日志",
+    "logout":"退出登录",
     "success":"成功",
     "failure":"失败",
     "username_tip":"请输入登录账号或邮箱",
     "password_tip":"请输入密码",
     "chat":"聊天",
     "addressbook":"通讯录",
-    "account":"账户"
+    "account":"账户",
+    "fail_to_load_image":"图片加载失败"
 
 }
