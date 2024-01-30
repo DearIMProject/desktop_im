@@ -18,12 +18,13 @@ class HomePage extends BasePage {
 class _HomePageState extends State<HomePage> {
   PageController? pageController;
 
-  int _currentIndex = 2;
-  @override
-  void initState() {
-    super.initState();
+  int _currentIndex = 1;
+
+  _HomePageState() {
+    init();
+  }
+  void init() {
     initPageController();
-    // autoLogin();
   }
 
   void initPageController() {

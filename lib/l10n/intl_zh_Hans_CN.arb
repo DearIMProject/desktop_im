@@ -12,6 +12,7 @@
     "chat":"聊天",
     "addressbook":"通讯录",
     "account":"账户",
+    "test":"测试",
     "fail_to_load_image":"图片加载失败"
 
 }

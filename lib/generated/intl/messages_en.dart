@@ -35,6 +35,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("please input password"),
         "send_log": MessageLookupByLibrary.simpleMessage("send log"),
         "success": MessageLookupByLibrary.simpleMessage("success"),
+        "test": MessageLookupByLibrary.simpleMessage("test"),
         "title": MessageLookupByLibrary.simpleMessage("IM App"),
         "username_tip": MessageLookupByLibrary.simpleMessage(
             "please input account or email address"),

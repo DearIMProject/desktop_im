@@ -33,6 +33,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "password_tip": MessageLookupByLibrary.simpleMessage("请输入密码"),
         "send_log": MessageLookupByLibrary.simpleMessage("发送日志"),
         "success": MessageLookupByLibrary.simpleMessage("成功"),
+        "test": MessageLookupByLibrary.simpleMessage("测试"),
         "title": MessageLookupByLibrary.simpleMessage("IM App"),
         "username_tip": MessageLookupByLibrary.simpleMessage("请输入登录账号或邮箱"),
         "welcome": MessageLookupByLibrary.simpleMessage("欢迎！")

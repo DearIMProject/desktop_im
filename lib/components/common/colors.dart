@@ -35,3 +35,5 @@ const Color kAssistColor = Color(0xFFA3A6AA);
 
 /// 失效
 const Color kDisableColor = Color(0xFFD6D8D9);
+
+const Color kMessageColor = Color(0xFFFFFFFF);

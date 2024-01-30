@@ -14,10 +14,18 @@ enum MessageType {
   TRANSPARENT_MESSAGE, //(10, "透传消息");
 }
 
+MessageType intToMessageType(int index) {
+  return MessageType.values[index];
+}
+
 enum MessageStatus {
   STATUS_SUCCESS_UNREADED, //(0, "发送成功且未读"),
   STATUS_SUCCESS_READED, //(1, "发送成功且已读"),
   STATUS_NOT_SEND_UNREAD, //(2, "未发送");
+}
+
+MessageStatus intToMessageStatus(int index) {
+  return MessageStatus.values[index];
 }
 
 enum MessageEntityType {
@@ -25,4 +33,8 @@ enum MessageEntityType {
   /*消息群*/
   GROUP, //(1, "群"),
   SERVER, //(2, "服务");
+}
+
+MessageEntityType intToMessageEntityType(int index) {
+  return MessageEntityType.values[index];
 }

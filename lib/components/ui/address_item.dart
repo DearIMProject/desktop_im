@@ -18,7 +18,7 @@ class _AddressUserItemState extends State<AddressUserItem> {
       child: Row(
         children: [
           radiusBorder(networkImage(widget.user!.icon, 40, 40)),
-          itemSpaceSizeBox,
+          itemSpaceWidthSizeBox,
           subTitleFontText(kTitleColor, widget.user!.username),
         ],
       ),

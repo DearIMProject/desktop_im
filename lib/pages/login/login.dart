@@ -6,7 +6,7 @@ import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/pages/base_page.dart';
 import 'package:desktop_im/router/routers.dart';
 import 'package:desktop_im/user/login_service.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 
 // 登录页面
@@ -28,10 +28,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void handleLogin() {
-    if (kDebugMode) {
-      print("handleLogin");
-    }
-
     LoginService.login(
         username,
         password,

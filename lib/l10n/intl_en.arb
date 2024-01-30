@@ -12,6 +12,7 @@
     "chat":"chat",
     "addressbook":"addressbook",
     "account":"account",
+    "test":"test",
     "fail_to_load_image":"failed to load image"
 
 }

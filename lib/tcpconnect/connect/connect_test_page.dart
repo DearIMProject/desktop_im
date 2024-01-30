@@ -1,0 +1,61 @@
+import 'package:desktop_im/components/common/common_theme.dart';
+import 'package:desktop_im/models/message/message.dart';
+import 'package:desktop_im/models/message/message_enum.dart';
+
+import 'package:desktop_im/pages/test/test_page.dart';
+import 'package:desktop_im/tcpconnect/connect/connect_manager.dart';
+import 'package:desktop_im/tcpconnect/connect/message_factory.dart';
+import 'package:flutter/material.dart';
+
+// 长连接测试页面
+class ConnectTestPage extends StatefulWidget {
+  const ConnectTestPage({super.key});
+
+  @override
+  State<ConnectTestPage> createState() => _ConnectTestPageState();
+}
+
+class _ConnectTestPageState extends State<ConnectTestPage> {
+  List<TestItemModel> models = [];
+  _ConnectTestPageState() {
+    {
+      TestItemModel model = TestItemModel("连接", () {
+        IMClient.getInstance().connect();
+      });
+      models.add(model);
+    }
+    {
+      TestItemModel model = TestItemModel("发送登录消息", () {
+        Message messageFromType =
+            MessageFactory.messageFromType(MessageType.REQUEST_LOGIN);
+        IMClient.getInstance().sendMessage(messageFromType);
+      });
+      models.add(model);
+    }
+    {
+      TestItemModel model = TestItemModel("断开", () {
+        IMClient.getInstance().close();
+      });
+      models.add(model);
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: titleFontText(kTitleColor, "长连接测试"),
+        ),
+        body: pagePadding(
+          ListView.builder(
+            itemCount: models.length,
+            itemBuilder: (BuildContext context, int index) {
+              TestItemModel model = models[index];
+              return GestureDetector(
+                onTap: model.callback,
+                child: titleFontText(kTitleColor, model.title),
+              );
+            },
+          ),
+        ));
+  }
+}

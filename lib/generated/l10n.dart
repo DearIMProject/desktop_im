@@ -180,6 +180,16 @@ class S {
     );
   }
 
+  /// `test`
+  String get test {
+    return Intl.message(
+      'test',
+      name: 'test',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `failed to load image`
   String get fail_to_load_image {
     return Intl.message(

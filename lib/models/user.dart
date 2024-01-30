@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class User {
   SharedPreferences? prefs;
-  static const String _user_key = "_user";
+  static const String _userKey = "_user";
   String token = "";
   int expireTime = 0;
   String username = "";
@@ -41,9 +41,6 @@ class User {
   }
 
   Future<int> save() async {
-    if (userId <= 0 || token.isEmpty) {
-      return Future.value(-1);
-    }
     prefs ??= await SharedPreferences.getInstance();
     Map<String, dynamic> json = <String, dynamic>{};
     json["token"] = token;
@@ -58,13 +55,13 @@ class User {
     json["os"] = os;
     json["registerTime"] = registerTime;
     json["icon"] = icon;
-    prefs!.setString(_user_key, jsonEncode(json));
+    prefs!.setString(_userKey, jsonEncode(json));
     return Future.value(0);
   }
 
   Future<bool> restore() async {
     prefs ??= await SharedPreferences.getInstance();
-    String? jsonStr = prefs!.getString(_user_key);
+    String? jsonStr = prefs!.getString(_userKey);
     if (jsonStr != null && jsonStr.isNotEmpty) {
       fromJson(jsonDecode(jsonStr));
       UserManager.getInstance().setUser(this);

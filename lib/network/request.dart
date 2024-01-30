@@ -1,10 +1,9 @@
 // ignore_for_file: file_names, depend_on_referenced_packages
 
+import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/network/request_manager.dart';
 import 'package:desktop_im/user/user_manager.dart';
-import 'package:flutter/foundation.dart';
-// import 'package:desktop_im/user/user_manager.dart';
-import 'package:logger/logger.dart';
+
 import 'package:dio/dio.dart';
 
 typedef RequestSuccessCallback = void Function(dynamic data);
@@ -46,7 +45,7 @@ class Request {
   //         callback.failureCallback!(
   //             responseMap["code"], responseMap["msg"], responseMap["data"]);
   //       }
-  //       //TODO: wmy code 的处理
+  //       //TODO: code 的处理
   //     } else {
   //       if (callback.successCallback != null) {
   //         dynamic data = responseMap["data"];
@@ -71,14 +70,14 @@ class Request {
     try {
       FormData formData = FormData.fromMap(param);
       String address = host + apiName;
-      Logger().d("address = $address");
-      Logger().i(param);
+      Log.debug("address = $address");
+      Log.info("param = $param");
       Dio dio = Dio();
       dio.options.headers.addAll(systemParam());
       response = await dio.post(address, data: formData);
 
       Map<String, dynamic> responseMap = response.data;
-      Logger().d(responseMap);
+      Log.debug("responMap = $responseMap");
       int code = responseMap["code"];
       if (code != 200) {
         // 返回失败内容 给出回调
@@ -89,15 +88,13 @@ class Request {
         }
       } else {
         if (callback.successCallback != null) {
-          var data = responseMap["data"];
-          callback.successCallback!(data);
-          if (kDebugMode) {
-            print(data);
-          }
+          Map<String, dynamic> aData = responseMap["data"];
+          callback.successCallback!(aData);
+          Log.info("$aData");
         }
       }
     } catch (e) {
-      Logger().d("catch e = $e");
+      Log.warn("catch e = $e");
       if (callback.failureCallback != null) {
         callback.failureCallback!(500, "server failure", {});
       }

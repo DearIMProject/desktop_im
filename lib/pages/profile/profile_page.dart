@@ -5,6 +5,7 @@ import 'package:desktop_im/pages/profile/icon_item.dart';
 import 'package:desktop_im/router/routers.dart';
 import 'package:desktop_im/user/login_service.dart';
 import 'package:desktop_im/user/user_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 typedef JumpFunction = void Function();
@@ -40,6 +41,10 @@ void sendLog(BuildContext context) {
   //TODO: wmy 发送日志
 }
 
+void jumpToTestPage(BuildContext context) {
+  Routers().openRouter("/test_page", {}, context);
+}
+
 class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
@@ -63,6 +68,14 @@ class _ProfilePageState extends State<ProfilePage> {
         },
       ),
     ];
+
+    if (kDebugMode) {
+      profileItems.add(ProfileItem(
+          title: S.current.test,
+          jumpFunction: () {
+            jumpToTestPage(context);
+          }));
+    }
     for (var i = 0; i < profileItems.length; i++) {
       ProfileItem item = profileItems[i];
       var test = GestureDetector(

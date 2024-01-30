@@ -1,11 +1,10 @@
 import 'package:desktop_im/network/request.dart';
 import 'package:desktop_im/models/user.dart';
+import 'package:desktop_im/notification/notification_stream.dart';
+import 'package:desktop_im/notification/notifications.dart';
 import 'package:desktop_im/user/user_manager.dart';
 
 typedef SuccessCallback = void Function();
-
-const String kLogoutNotification = "LogoutNotification";
-const String kLoginNotification = "LoginNotification";
 
 class Callback {
   SuccessCallback? successCallback;
@@ -23,6 +22,7 @@ class LoginService {
           successCallback: (data) {
             User user = User().fromJson(data["user"]);
             UserManager.getInstance().setUser(user);
+            NotificationStream().publish(kLoginSuccessNotification);
             if (callback.successCallback != null) {
               callback.successCallback!();
             }
@@ -43,11 +43,13 @@ class LoginService {
           successCallback: (data) {
             User user = User().fromJson(data["user"]);
             UserManager.getInstance().setUser(user);
+            NotificationStream().publish(kLoginSuccessNotification);
             if (callback.successCallback != null) {
               callback.successCallback!();
             }
           },
           failureCallback: (code, errorStr, data) {
+            UserManager.getInstance().setUser(User());
             if (callback.failureCallback != null) {
               callback.failureCallback!(code, errorStr, data);
             }
@@ -62,6 +64,7 @@ class LoginService {
       RequestCallback(
         successCallback: (data) {
           UserManager.getInstance().setUser(User());
+          NotificationStream().publish(kLogoutSuccessNotification);
           if (callback.successCallback != null) {
             callback.successCallback!();
           }

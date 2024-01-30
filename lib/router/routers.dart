@@ -1,5 +1,4 @@
 import 'package:desktop_im/pages/base_page.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 typedef RouterCallback = void Function(
@@ -35,9 +34,7 @@ class Routers {
       };
       _routers[host] = routerModel;
     }
-    if (kDebugMode) {
-      print("map = $_map");
-    }
+    // Log.debug("map = $_map");
   }
 
   void addPageParamRouter<T extends BasePage>(
@@ -57,9 +54,7 @@ class Routers {
       };
       _routers[host] = routerModel;
     }
-    if (kDebugMode) {
-      print("map = $_map");
-    }
+    // Log.debug("$_map");
   }
 
   /// 注销router

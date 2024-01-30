@@ -1,11 +1,17 @@
 // Material 风格的UI组件
 import 'package:desktop_im/components/common/colors.dart';
 import 'package:desktop_im/generated/l10n.dart';
+import 'package:desktop_im/log/log.dart';
+import 'package:desktop_im/notification/notification_stream.dart';
+import 'package:desktop_im/notification/notifications.dart';
 import 'package:desktop_im/pages/home/home_page.dart';
 import 'package:desktop_im/pages/login/login.dart';
 import 'package:desktop_im/pages/message/message_list_page.dart';
+import 'package:desktop_im/pages/test/test_page.dart';
 import 'package:desktop_im/pages/welcome/welcome_page.dart';
 import 'package:desktop_im/router/routers.dart';
+import 'package:desktop_im/tcpconnect/connect/connect_manager.dart';
+import 'package:desktop_im/tcpconnect/connect/connect_test_page.dart';
 import 'package:desktop_im/user/login_service.dart';
 import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/user/user_manager.dart';
@@ -26,21 +32,44 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  IMClient connectManager = IMClient.getInstance();
   @override
   void initState() {
     super.initState();
     // 打印token
     String token = UserManager.getInstance().userToken();
     if (kDebugMode) {
-      print("token = $token");
+      Log.debug("token = $token");
     }
     if (token.isNotEmpty) {
-      LoginService.autoLogin(token, Callback(
-        successCallback: () {
-          // setState(() {});
-        },
-      ));
+      LoginService.autoLogin(
+          token,
+          Callback(
+            successCallback: () {
+              setState(() {});
+            },
+            failureCallback: (code, errorStr, data) {
+              setState(() {});
+            },
+          ));
     }
+  }
+
+  _MyAppState() {
+    init();
+  }
+  void init() {
+    connectManager.init();
+    NotificationStream().stream.listen((notification) {
+      Log.debug("收到消息:$notification");
+      if (notification.contains(kLoginSuccessNotification)) {
+        // 开启连接
+        connectManager.connect();
+      }
+      if (notification.contains(kLogoutSuccessNotification)) {
+        connectManager.close();
+      }
+    });
   }
 
   @override
@@ -62,6 +91,12 @@ class _MyAppState extends State<MyApp> {
     Routers().registerRouter("/login", (params, context) {
       Navigator.pushReplacementNamed(context, "/login_page");
     });
+    if (kDebugMode) {
+      Routers()
+          .addPageRouter("/test_page", (context) => const TestPage(), context);
+      Routers().addPageRouter(
+          "/test_connect_page", (context) => const ConnectTestPage(), context);
+    }
     return MaterialApp(
       localizationsDelegates: const [
         S.delegate,
