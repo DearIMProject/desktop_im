@@ -27,6 +27,11 @@ class Message {
     }
     return false;
   }
+
+  @override
+  String toString() {
+    return 'Message{msgId=$msgId, fromId=$fromId, fromEntity=$fromEntity, toId=$toId, toEntity=$toEntity, content=$content, messageType=$messageType, timestamp=$timestamp, status=$status}';
+  }
 }
 
 class TextMessage extends Message {

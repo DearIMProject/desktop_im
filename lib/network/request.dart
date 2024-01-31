@@ -90,7 +90,6 @@ class Request {
         if (callback.successCallback != null) {
           Map<String, dynamic> aData = responseMap["data"];
           callback.successCallback!(aData);
-          Log.info("$aData");
         }
       }
     } catch (e) {

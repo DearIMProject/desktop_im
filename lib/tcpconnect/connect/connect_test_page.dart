@@ -3,7 +3,7 @@ import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
 
 import 'package:desktop_im/pages/test/test_page.dart';
-import 'package:desktop_im/tcpconnect/connect/connect_manager.dart';
+import 'package:desktop_im/tcpconnect/connect/im_client.dart';
 import 'package:desktop_im/tcpconnect/connect/message_factory.dart';
 import 'package:flutter/material.dart';
 

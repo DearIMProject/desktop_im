@@ -12,7 +12,7 @@ class MessageFactory {
         message.fromId = UserManager.getInstance().uid();
         message.fromEntity = MessageEntityType.USER;
         message.content = UserManager.getInstance().userToken();
-        Log.debug(message.content);
+        Log.debug("token=${message.content}");
         break;
       case MessageType.CHAT_MESSAGE:
         message = ChatMessage();

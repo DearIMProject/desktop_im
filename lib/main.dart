@@ -4,13 +4,14 @@ import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/notification/notification_stream.dart';
 import 'package:desktop_im/notification/notifications.dart';
+import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/pages/home/home_page.dart';
 import 'package:desktop_im/pages/login/login.dart';
 import 'package:desktop_im/pages/message/message_list_page.dart';
 import 'package:desktop_im/pages/test/test_page.dart';
 import 'package:desktop_im/pages/welcome/welcome_page.dart';
 import 'package:desktop_im/router/routers.dart';
-import 'package:desktop_im/tcpconnect/connect/connect_manager.dart';
+import 'package:desktop_im/tcpconnect/connect/im_client.dart';
 import 'package:desktop_im/tcpconnect/connect/connect_test_page.dart';
 import 'package:desktop_im/user/login_service.dart';
 import 'package:desktop_im/models/user.dart';
@@ -33,26 +34,11 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   IMClient connectManager = IMClient.getInstance();
+  IMDatabase database = IMDatabase();
   @override
   void initState() {
     super.initState();
     // 打印token
-    String token = UserManager.getInstance().userToken();
-    if (kDebugMode) {
-      Log.debug("token = $token");
-    }
-    if (token.isNotEmpty) {
-      LoginService.autoLogin(
-          token,
-          Callback(
-            successCallback: () {
-              setState(() {});
-            },
-            failureCallback: (code, errorStr, data) {
-              setState(() {});
-            },
-          ));
-    }
   }
 
   _MyAppState() {
@@ -65,6 +51,8 @@ class _MyAppState extends State<MyApp> {
       if (notification.contains(kLoginSuccessNotification)) {
         // 开启连接
         connectManager.connect();
+        // 初始化数据库
+        database.install(UserManager.getInstance().uid().toString());
       }
       if (notification.contains(kLogoutSuccessNotification)) {
         connectManager.close();
@@ -74,29 +62,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    Routers()
-        .addPageRouter("/home_tab", (context) => const HomePage(), context);
-    Routers()
-        .addPageRouter("/login_page", (context) => const LoginPage(), context);
-    Routers().addPageParamRouter(
-        "/message",
-        (context) => const MessageListPage(),
-        (aparams) => MessageListPage(
-              params: aparams,
-            ),
-        context);
-    Routers().registerRouter("/home", (params, context) {
-      Navigator.pushReplacementNamed(context, "/home_tab");
-    });
-    Routers().registerRouter("/login", (params, context) {
-      Navigator.pushReplacementNamed(context, "/login_page");
-    });
-    if (kDebugMode) {
-      Routers()
-          .addPageRouter("/test_page", (context) => const TestPage(), context);
-      Routers().addPageRouter(
-          "/test_connect_page", (context) => const ConnectTestPage(), context);
-    }
+    configRouters(context);
     return MaterialApp(
       localizationsDelegates: const [
         S.delegate,
@@ -131,7 +97,7 @@ class _MyAppState extends State<MyApp> {
       ),
       routes: Routers().routers(),
       home: FutureBuilder(
-        future: getUser(),
+        future: getUser(context),
         builder: (context, snapshot) {
           if (snapshot.data == null) {
             return const WelcomePage();
@@ -144,12 +110,58 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+
+  void configRouters(BuildContext context) {
+    Routers()
+        .addPageRouter("/home_tab", (context) => const HomePage(), context);
+    Routers()
+        .addPageRouter("/login_page", (context) => const LoginPage(), context);
+    Routers().addPageParamRouter(
+        "/message",
+        (context) => const MessageListPage(),
+        (aparams) => MessageListPage(
+              params: aparams,
+            ),
+        context);
+    Routers().registerRouter("/home", (params, context) {
+      Navigator.pushReplacementNamed(context, "/home_tab");
+    });
+    Routers().registerRouter("/login", (params, context) {
+      Navigator.pushReplacementNamed(context, "/login_page");
+    });
+    if (kDebugMode) {
+      Routers()
+          .addPageRouter("/test_page", (context) => const TestPage(), context);
+      Routers().addPageRouter(
+          "/test_connect_page", (context) => const ConnectTestPage(), context);
+    }
+  }
 }
 
-Future<User> getUser() async {
+Future<User> getUser(BuildContext context) async {
   User user = User();
-  await user.restore();
+  await user.restore().then((value) {
+    configAutoLogin(context);
+  });
   return user;
+}
+
+void configAutoLogin(BuildContext context) {
+  String token = UserManager.getInstance().userToken();
+  Log.debug("token = $token");
+  if (token.isNotEmpty) {
+    Log.debug("调用自动登录");
+    LoginService.autoLogin(
+        token,
+        Callback(
+          successCallback: () {
+            Routers().openRouter("/home", {}, context);
+          },
+          failureCallback: (code, errorStr, data) {
+            Routers().openRouter("/login", {}, context);
+          },
+        ));
+  }
 }
 
 class MyHomePage extends StatefulWidget {

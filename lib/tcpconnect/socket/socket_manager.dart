@@ -11,6 +11,7 @@ class SocketManager implements SocketProtocol {
   SocketListener? listener;
   late String host;
   late int port;
+  @override
   bool isConnected = false;
 
   SocketManager(this.host, this.port);

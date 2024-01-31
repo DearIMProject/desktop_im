@@ -50,6 +50,7 @@ class LoginService {
           },
           failureCallback: (code, errorStr, data) {
             UserManager.getInstance().setUser(User());
+            NotificationStream().publish(kLogoutSuccessNotification);
             if (callback.failureCallback != null) {
               callback.failureCallback!(code, errorStr, data);
             }
