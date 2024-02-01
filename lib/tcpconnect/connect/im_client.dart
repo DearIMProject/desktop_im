@@ -110,6 +110,9 @@ class IMClient implements SocketListener {
       case MessageType.REQUEST_LOGIN:
         configReceiveRequestLoginMessage(message);
         break;
+      case MessageType.SEND_SUCCESS_MESSAGE:
+        configReceiveSendSuccessMessage(message);
+        break;
 
       default:
     }
@@ -126,6 +129,7 @@ class IMClient implements SocketListener {
   }
 
   void configReceiveRequestLoginMessage(Message message) {
+    Log.debug("收到登录消息 configReceiveRequestLoginMessage");
     Log.debug(message.content);
     if (message.content.contains("891013")) {
       sendRequestOfflineMessage();
@@ -149,9 +153,14 @@ class IMClient implements SocketListener {
   }
 
   void sendRequestOfflineMessage() {
+    Log.debug("发送获取离线消息 sendRequestOfflineMessage");
     Message messageFromType =
         MessageFactory.messageFromType(MessageType.REQUEST_OFFLINE_MESSAGES);
     sendMessage(messageFromType);
+  }
+
+  void configReceiveSendSuccessMessage(Message message) {
+    Log.debug("收到发送成功消息 configReceiveSendSuccessMessage");
   }
 
   void sendMessage(Message message) {

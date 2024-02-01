@@ -20,9 +20,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-void main() {
-  // 应用入口
-  runApp(const MyApp());
+void main() async {
+  IMDatabase database = IMDatabase();
+  database.init().then((value) {
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatefulWidget {
@@ -45,6 +47,7 @@ class _MyAppState extends State<MyApp> {
     init();
   }
   void init() {
+    database.init();
     connectManager.init();
     NotificationStream().stream.listen((notification) {
       Log.debug("收到消息:$notification");
@@ -80,9 +83,6 @@ class _MyAppState extends State<MyApp> {
           if (locale?.scriptCode == 'Hant') {
             // zh-Hant和zh-CHT相同相对应;
             return const Locale('zh', 'HK'); //繁体
-          } else {
-            // zh-Hans：语言限制匹配规范，表示简体中文
-            return const Locale('zh', 'CN'); //简体
           }
         }
         return null;
@@ -139,9 +139,25 @@ class _MyAppState extends State<MyApp> {
 }
 
 Future<User> getUser(BuildContext context) async {
-  User user = User();
-  await user.restore().then((value) {
-    configAutoLogin(context);
+  User user = User(
+      userId: 0,
+      token: "",
+      username: "",
+      email: "",
+      password: "",
+      expireTime: 0,
+      status: 0,
+      vipStatus: 0,
+      vipExpired: "",
+      os: "os",
+      registerTime: 0,
+      icon: "");
+
+  user.restore().then((hasUser) {
+    if (hasUser) {
+      user = UserManager.getInstance().user!;
+      configAutoLogin(context);
+    }
   });
   return user;
 }

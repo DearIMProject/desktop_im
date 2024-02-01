@@ -1,47 +1,88 @@
-import 'dart:convert';
-
+import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/user/login_service.dart';
 import 'package:desktop_im/user/user_manager.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:json_annotation/json_annotation.dart';
 // ignore: depend_on_referenced_packages
-import 'package:shared_preferences/shared_preferences.dart';
+// part 'User.g.dart'; // 为适配器生成的代码
 
-class User {
-  SharedPreferences? prefs;
-  static const String _userKey = "_user";
-  String token = "";
-  int expireTime = 0;
-  String username = "";
+const String _kMyUser = "kMyUser";
+
+@JsonSerializable()
+@HiveType(typeId: 1)
+class User implements HiveObject {
+  Box<User>? userBox;
+  @HiveField(0)
   int userId = 0;
+  @HiveField(1)
+  String token = "";
+
+  @HiveField(2)
+  String username = "";
+  @HiveField(3)
   String email = "";
+
+  @HiveField(4)
   String password = "";
+  @HiveField(5)
+  int expireTime = 0;
+  @HiveField(6)
   int status = 0;
+  @HiveField(7)
   int vipStatus = 0;
+  @HiveField(8)
   String vipExpired = "";
+  @HiveField(9)
   String os = "";
+  @HiveField(10)
   int registerTime = 0;
+  @HiveField(11)
   String icon = "";
 
-  User();
+  User(
+      {required this.userId,
+      required this.token,
+      required this.username,
+      required this.email,
+      required this.password,
+      required this.expireTime,
+      required this.status,
+      required this.vipStatus,
+      required this.vipExpired,
+      required this.os,
+      required this.registerTime,
+      required this.icon,
+      this.userBox});
 
-  User fromJson(Map<String, dynamic> json) {
-    token = json["token"] ?? "";
-    expireTime = json["expireTime"];
-    username = json["username"];
-    userId = json["userId"];
-    userId = json["userId"];
-    email = json["email"];
-    password = json["password"];
-    status = json["status"];
-    vipStatus = json["vipStatus"];
-    vipExpired = json["vipExpired"] ?? "";
-    os = json["os"] ?? "";
-    registerTime = json["registerTime"];
-    icon = json["icon"];
-    return this;
+  static User fromJson(Map<String, dynamic> json) {
+    String token = json["token"] ?? "";
+    int expireTime = json["expireTime"];
+    String username = json["username"];
+    int userId = json["userId"];
+    String email = json["email"];
+    String password = json["password"];
+    int status = json["status"];
+    int vipStatus = json["vipStatus"];
+    String vipExpired = json["vipExpired"] ?? "";
+    String os = json["os"] ?? "";
+    int registerTime = json["registerTime"];
+    String icon = json["icon"];
+    return User(
+        userId: userId,
+        token: token,
+        username: username,
+        email: email,
+        password: password,
+        expireTime: expireTime,
+        status: status,
+        vipStatus: vipStatus,
+        vipExpired: vipExpired,
+        os: os,
+        registerTime: registerTime,
+        icon: icon);
   }
 
-  Future<int> save() async {
-    prefs ??= await SharedPreferences.getInstance();
+  Future<void> saveUser() async {
     Map<String, dynamic> json = <String, dynamic>{};
     json["token"] = token;
     json["expireTime"] = expireTime;
@@ -55,19 +96,20 @@ class User {
     json["os"] = os;
     json["registerTime"] = registerTime;
     json["icon"] = icon;
-    prefs!.setString(_userKey, jsonEncode(json));
-    return Future.value(0);
+    userBox ??= await Hive.openBox<User>(_kMyUser);
+    userBox!.put(_kMyUser, this);
   }
 
   Future<bool> restore() async {
-    prefs ??= await SharedPreferences.getInstance();
-    String? jsonStr = prefs!.getString(_userKey);
-    if (jsonStr != null && jsonStr.isNotEmpty) {
-      fromJson(jsonDecode(jsonStr));
-      UserManager.getInstance().setUser(this);
-      return Future.value(true);
+    userBox ??= await Hive.openBox<User>(_kMyUser);
+    User? user = userBox!.get(_kMyUser);
+    if (user != null) {
+      Log.debug("user is not null user = $user");
+      UserManager.getInstance().setUser(user);
+      return true;
     }
-    return Future.value(false);
+    Log.debug("user is  null");
+    return false;
   }
 
   /// 登录
@@ -90,8 +132,6 @@ class User {
 
   /// 自动登录
   Future<void> autologin(Callback callback) async {
-    prefs ??= await SharedPreferences.getInstance();
-
     LoginService.autoLogin(
         token,
         Callback(
@@ -115,5 +155,29 @@ class User {
           },
           failureCallback: callback.failureCallback),
     );
+  }
+
+  @override
+  // TODO: implement box
+  BoxBase? get box => throw UnimplementedError();
+
+  @override
+  Future<void> delete() {
+    // TODO: implement delete
+    throw UnimplementedError();
+  }
+
+  @override
+  // TODO: implement isInBox
+  bool get isInBox => throw UnimplementedError();
+
+  @override
+  // TODO: implement key
+  get key => throw UnimplementedError();
+
+  @override
+  Future<void> save() {
+    // TODO: implement save
+    throw UnimplementedError();
   }
 }

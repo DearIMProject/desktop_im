@@ -1,12 +1,20 @@
 import 'package:desktop_im/models/user.dart';
 
-// ignore: depend_on_referenced_packages
-import 'package:shared_preferences/shared_preferences.dart';
-
 class UserManager {
   static UserManager? _instance;
-  static SharedPreferences? prefs;
-  static User _user = User();
+  static User _user = User(
+      userId: 0,
+      token: "",
+      username: "",
+      email: "",
+      password: "",
+      expireTime: 0,
+      status: 0,
+      vipStatus: 0,
+      vipExpired: "",
+      os: "os",
+      registerTime: 0,
+      icon: "");
   User? get user => _user;
 
   static UserManager getInstance() {
@@ -17,14 +25,30 @@ class UserManager {
     return _instance!;
   }
 
-  void setUser(User user) {
-    _user = user;
-    _setUser(user);
+  void setUser(User? user) {
+    if (user != null) {
+      _setUser(user);
+      _user = user;
+    } else {
+      _user = User(
+          userId: 0,
+          token: "",
+          username: "",
+          email: "",
+          password: "",
+          expireTime: 0,
+          status: 0,
+          vipStatus: 0,
+          vipExpired: "",
+          os: "os",
+          registerTime: 0,
+          icon: "");
+    }
   }
 
   void _setUser(User user) async {
     _user = user;
-    _user.save();
+    _user.saveUser();
   }
 
   String userToken() {

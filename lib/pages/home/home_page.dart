@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
     for (var i = 0; i < tabbarItems.length; i++) {
       BottomTabbarItem bottomTabbarItem = tabbarItems[i];
       var tab = BottomNavigationBarItem(
-        // text: bottomTabbarItem.title,
+        tooltip: "123",
         label: bottomTabbarItem.title,
         icon: Icon(bottomTabbarItem.icon),
       );

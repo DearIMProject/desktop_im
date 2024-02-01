@@ -34,6 +34,8 @@ class MessageFactory {
         break;
       case MessageType.REQUEST_OFFLINE_MESSAGES:
         message = RequestOfflineMessage();
+        message.fromId = UserManager.getInstance().uid();
+        message.fromEntity = MessageEntityType.USER;
         break;
       case MessageType.SEND_SUCCESS_MESSAGE:
         message = SendSuccessMessage();

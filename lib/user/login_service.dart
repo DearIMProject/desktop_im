@@ -20,7 +20,7 @@ class LoginService {
         {"email": username, "password": password},
         RequestCallback(
           successCallback: (data) {
-            User user = User().fromJson(data["user"]);
+            User user = User.fromJson(data["user"]);
             UserManager.getInstance().setUser(user);
             NotificationStream().publish(kLoginSuccessNotification);
             if (callback.successCallback != null) {
@@ -41,7 +41,7 @@ class LoginService {
         {"token": UserManager.getInstance().userToken()},
         RequestCallback(
           successCallback: (data) {
-            User user = User().fromJson(data["user"]);
+            User user = User.fromJson(data["user"]);
             UserManager.getInstance().setUser(user);
             NotificationStream().publish(kLoginSuccessNotification);
             if (callback.successCallback != null) {
@@ -49,7 +49,7 @@ class LoginService {
             }
           },
           failureCallback: (code, errorStr, data) {
-            UserManager.getInstance().setUser(User());
+            UserManager.getInstance().setUser(null);
             NotificationStream().publish(kLogoutSuccessNotification);
             if (callback.failureCallback != null) {
               callback.failureCallback!(code, errorStr, data);
@@ -64,7 +64,7 @@ class LoginService {
       {"token": token},
       RequestCallback(
         successCallback: (data) {
-          UserManager.getInstance().setUser(User());
+          UserManager.getInstance().setUser(null);
           NotificationStream().publish(kLogoutSuccessNotification);
           if (callback.successCallback != null) {
             callback.successCallback!();
