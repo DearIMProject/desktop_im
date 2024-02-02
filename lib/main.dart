@@ -1,4 +1,6 @@
 // Material 风格的UI组件
+import 'dart:async';
+
 import 'package:desktop_im/components/common/colors.dart';
 import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/log/log.dart';
@@ -13,7 +15,6 @@ import 'package:desktop_im/pages/welcome/welcome_page.dart';
 import 'package:desktop_im/router/routers.dart';
 import 'package:desktop_im/tcpconnect/connect/im_client.dart';
 import 'package:desktop_im/tcpconnect/connect/connect_test_page.dart';
-import 'package:desktop_im/user/login_service.dart';
 import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/user/user_manager.dart';
 import 'package:flutter/foundation.dart';
@@ -47,7 +48,6 @@ class _MyAppState extends State<MyApp> {
     init();
   }
   void init() {
-    database.init();
     connectManager.init();
     NotificationStream().stream.listen((notification) {
       Log.debug("收到消息:$notification");
@@ -97,7 +97,7 @@ class _MyAppState extends State<MyApp> {
       ),
       routes: Routers().routers(),
       home: FutureBuilder(
-        future: getUser(context),
+        future: getUser(),
         builder: (context, snapshot) {
           if (snapshot.data == null) {
             return const WelcomePage();
@@ -124,10 +124,10 @@ class _MyAppState extends State<MyApp> {
             ),
         context);
     Routers().registerRouter("/home", (params, context) {
-      Navigator.pushReplacementNamed(context, "/home_tab");
+      Navigator.of(context).pushReplacementNamed("/home_tab");
     });
     Routers().registerRouter("/login", (params, context) {
-      Navigator.pushReplacementNamed(context, "/login_page");
+      Navigator.of(context).pushReplacementNamed("/login_page");
     });
     if (kDebugMode) {
       Routers()
@@ -138,7 +138,8 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-Future<User> getUser(BuildContext context) async {
+Future<User> getUser() async {
+  var completer = Completer<User>();
   User user = User(
       userId: 0,
       token: "",
@@ -156,28 +157,10 @@ Future<User> getUser(BuildContext context) async {
   user.restore().then((hasUser) {
     if (hasUser) {
       user = UserManager.getInstance().user!;
-      configAutoLogin(context);
+      completer.complete(user);
     }
   });
-  return user;
-}
-
-void configAutoLogin(BuildContext context) {
-  String token = UserManager.getInstance().userToken();
-  Log.debug("token = $token");
-  if (token.isNotEmpty) {
-    Log.debug("调用自动登录");
-    LoginService.autoLogin(
-        token,
-        Callback(
-          successCallback: () {
-            Routers().openRouter("/home", {}, context);
-          },
-          failureCallback: (code, errorStr, data) {
-            Routers().openRouter("/login", {}, context);
-          },
-        ));
-  }
+  return completer.future;
 }
 
 class MyHomePage extends StatefulWidget {

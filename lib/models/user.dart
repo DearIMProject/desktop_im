@@ -1,17 +1,28 @@
+import 'dart:async';
+
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/user/login_service.dart';
 import 'package:desktop_im/user/user_manager.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:json_annotation/json_annotation.dart';
-// ignore: depend_on_referenced_packages
-// part 'User.g.dart'; // 为适配器生成的代码
+// user.g.dart 将在我们运行生成命令后自动生成 flutter packages pub run build_runner build
+part 'user.g.dart'; // 为适配器生成的代码
 
 const String _kMyUser = "kMyUser";
 
-@JsonSerializable()
+@JsonSerializable() //这个标注是告诉生成器，这个类是需要生成Model类的
 @HiveType(typeId: 1)
-class User implements HiveObject {
-  Box<User>? userBox;
+class User extends HiveObject {
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  Box<User>? _userBox;
+  Future<Box<User>?> get userBox async {
+    if (_userBox == null || !_userBox!.isOpen) {
+      // Hive.registerAdapter(UserAdapter());
+      _userBox = await Hive.openBox(_kMyUser);
+    }
+    return _userBox;
+  }
+
   @HiveField(0)
   int userId = 0;
   @HiveField(1)
@@ -39,77 +50,41 @@ class User implements HiveObject {
   @HiveField(11)
   String icon = "";
 
-  User(
-      {required this.userId,
-      required this.token,
-      required this.username,
-      required this.email,
-      required this.password,
-      required this.expireTime,
-      required this.status,
-      required this.vipStatus,
-      required this.vipExpired,
-      required this.os,
-      required this.registerTime,
-      required this.icon,
-      this.userBox});
+  User({
+    required this.userId,
+    required this.token,
+    required this.username,
+    required this.email,
+    required this.password,
+    required this.expireTime,
+    required this.status,
+    required this.vipStatus,
+    required this.vipExpired,
+    required this.os,
+    required this.registerTime,
+    required this.icon,
+  });
 
-  static User fromJson(Map<String, dynamic> json) {
-    String token = json["token"] ?? "";
-    int expireTime = json["expireTime"];
-    String username = json["username"];
-    int userId = json["userId"];
-    String email = json["email"];
-    String password = json["password"];
-    int status = json["status"];
-    int vipStatus = json["vipStatus"];
-    String vipExpired = json["vipExpired"] ?? "";
-    String os = json["os"] ?? "";
-    int registerTime = json["registerTime"];
-    String icon = json["icon"];
-    return User(
-        userId: userId,
-        token: token,
-        username: username,
-        email: email,
-        password: password,
-        expireTime: expireTime,
-        status: status,
-        vipStatus: vipStatus,
-        vipExpired: vipExpired,
-        os: os,
-        registerTime: registerTime,
-        icon: icon);
-  }
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  Map<String, dynamic> toJson() => _$UserToJson(this);
 
   Future<void> saveUser() async {
-    Map<String, dynamic> json = <String, dynamic>{};
-    json["token"] = token;
-    json["expireTime"] = expireTime;
-    json["username"] = username;
-    json["userId"] = userId;
-    json["email"] = email;
-    json["password"] = password;
-    json["status"] = status;
-    json["vipStatus"] = vipStatus;
-    json["vipExpired"] = vipExpired;
-    json["os"] = os;
-    json["registerTime"] = registerTime;
-    json["icon"] = icon;
-    userBox ??= await Hive.openBox<User>(_kMyUser);
-    userBox!.put(_kMyUser, this);
+    userBox.then((value) => value?.put(_kMyUser, this));
   }
 
   Future<bool> restore() async {
-    userBox ??= await Hive.openBox<User>(_kMyUser);
-    User? user = userBox!.get(_kMyUser);
-    if (user != null) {
-      Log.debug("user is not null user = $user");
-      UserManager.getInstance().setUser(user);
-      return true;
-    }
-    Log.debug("user is  null");
-    return false;
+    var completer = Completer<bool>();
+    userBox.then((value) {
+      User? user = value?.get(_kMyUser);
+      if (user != null) {
+        Log.debug("user is not null user = $user");
+        UserManager.getInstance().setUser(user);
+        return completer.complete(true);
+      }
+      Log.debug("user is  null");
+      return completer.complete(false);
+    });
+    return completer.future;
   }
 
   /// 登录
@@ -158,26 +133,7 @@ class User implements HiveObject {
   }
 
   @override
-  // TODO: implement box
-  BoxBase? get box => throw UnimplementedError();
-
-  @override
-  Future<void> delete() {
-    // TODO: implement delete
-    throw UnimplementedError();
-  }
-
-  @override
-  // TODO: implement isInBox
-  bool get isInBox => throw UnimplementedError();
-
-  @override
-  // TODO: implement key
-  get key => throw UnimplementedError();
-
-  @override
-  Future<void> save() {
-    // TODO: implement save
-    throw UnimplementedError();
+  String toString() {
+    return 'User{_userBox=$_userBox,\tuserId=$userId,\ttoken=$token,\tusername=$username,\temail=$email,\tpassword=$password,\texpireTime=$expireTime,\tstatus=$status,\tvipStatus=$vipStatus,\tvipExpired=$vipExpired,\tos=$os,\tregisterTime=$registerTime,\ticon=$icon}';
   }
 }

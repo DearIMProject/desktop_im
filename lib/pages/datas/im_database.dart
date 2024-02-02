@@ -1,5 +1,6 @@
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/message/message.dart';
+import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/pages/datas/db_message.dart';
 import 'package:desktop_im/pages/datas/db_user.dart';
 import 'package:desktop_im/tcpconnect/connect/im_client.dart';
@@ -30,7 +31,8 @@ class IMDatabase implements IMClientListener {
     WidgetsFlutterBinding.ensureInitialized();
     final appDocumentDir = await getApplicationDocumentsDirectory();
     Hive.init(appDocumentDir.path);
-    return Hive.initFlutter();
+    await Hive.initFlutter();
+    Hive.registerAdapter(UserAdapter());
   }
 
   void uninstall() {
