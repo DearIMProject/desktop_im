@@ -88,7 +88,7 @@ class Request {
         }
       } else {
         if (callback.successCallback != null) {
-          Map<String, dynamic> aData = responseMap["data"];
+          Map<String, dynamic> aData = responseMap["data"] ?? {};
           callback.successCallback!(aData);
         }
       }

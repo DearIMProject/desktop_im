@@ -156,9 +156,12 @@ Future<User> getUser() async {
 
   user.restore().then((hasUser) {
     if (hasUser) {
-      user = UserManager.getInstance().user!;
-      completer.complete(user);
+      User? aUser = UserManager.getInstance().user;
+      if (aUser != null) {
+        user = aUser;
+      }
     }
+    completer.complete(user);
   });
   return completer.future;
 }

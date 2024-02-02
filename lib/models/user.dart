@@ -87,6 +87,12 @@ class User extends HiveObject {
     return completer.future;
   }
 
+  void clear() async {
+    userBox.then((value) {
+      value!.delete(_kMyUser);
+    });
+  }
+
   /// 登录
   void login(
     String username,

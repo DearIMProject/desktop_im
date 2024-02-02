@@ -26,8 +26,11 @@ class UserManager {
   }
 
   void setUser(User? user) {
+    _setUser(user);
+  }
+
+  void _setUser(User? user) async {
     if (user != null) {
-      _setUser(user);
       _user = user;
     } else {
       _user = User(
@@ -44,10 +47,6 @@ class UserManager {
           registerTime: 0,
           icon: "");
     }
-  }
-
-  void _setUser(User user) async {
-    _user = user;
     _user.saveUser();
   }
 
