@@ -6,6 +6,7 @@ import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/pages/addressbook/address_book_page.dart';
 import 'package:desktop_im/pages/base_page.dart';
 import 'package:desktop_im/pages/chat/chat_page.dart';
+import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/pages/profile/profile_page.dart';
 import 'package:desktop_im/router/routers.dart';
 import 'package:desktop_im/user/login_service.dart';
@@ -19,17 +20,32 @@ class HomePage extends BasePage {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  PageController? pageController;
+class _HomePageState extends State<HomePage> implements IMDatabaseListener {
+  @override
+  DatabaseUnreadMessageNumberChange? unreadMessageNumberChange;
+  @override
+  DatabaseCompleteCallback? completeCallback;
 
+  PageController? pageController;
+  BottomTabbarItem chatItem =
+      BottomTabbarItem(S.current.chat, Icons.chat, true, 0);
+  BottomTabbarItem addressItem =
+      BottomTabbarItem(S.current.addressbook, Icons.menu_book, false, 0);
+  BottomTabbarItem profileItem =
+      BottomTabbarItem(S.current.account, Icons.account_circle, false, 0);
   int _currentIndex = 1;
   bool hasAutoLogin = false;
-
+  IMDatabase database = IMDatabase.getInstance();
   _HomePageState() {
     init();
   }
   void init() {
     initPageController();
+    unreadMessageNumberChange = (unreadNumber) {
+      setState(() {
+        chatItem.badgeNumber = unreadNumber;
+      });
+    };
   }
 
   void initPageController() {
@@ -74,18 +90,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<BottomTabbarItem> tabbarItems = [
-      BottomTabbarItem(S.current.chat, Icons.chat, true),
-      BottomTabbarItem(S.current.addressbook, Icons.menu_book, false),
-      BottomTabbarItem(S.current.account, Icons.account_circle, false),
-    ];
+    List<BottomTabbarItem> tabbarItems = [chatItem, addressItem, profileItem];
     List<BottomNavigationBarItem> tabs = [];
     for (var i = 0; i < tabbarItems.length; i++) {
       BottomTabbarItem bottomTabbarItem = tabbarItems[i];
       var tab = BottomNavigationBarItem(
-        tooltip: "123",
         label: bottomTabbarItem.title,
-        icon: Icon(bottomTabbarItem.icon),
+        icon: Badge(
+          isLabelVisible: bottomTabbarItem.badgeNumber != 0,
+          label: Text("${bottomTabbarItem.badgeNumber}"),
+          child: Icon(bottomTabbarItem.icon),
+        ),
       );
       tabs.add(tab);
     }

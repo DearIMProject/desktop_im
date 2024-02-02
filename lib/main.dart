@@ -6,6 +6,7 @@ import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/notification/notification_stream.dart';
 import 'package:desktop_im/notification/notifications.dart';
+import 'package:desktop_im/pages/datas/db_test_page.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/pages/home/home_page.dart';
 import 'package:desktop_im/pages/login/login.dart';
@@ -22,7 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
-  IMDatabase database = IMDatabase();
+  IMDatabase database = IMDatabase.getInstance();
   database.init().then((value) {
     runApp(const MyApp());
   });
@@ -37,7 +38,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   IMClient connectManager = IMClient.getInstance();
-  IMDatabase database = IMDatabase();
+  IMDatabase database = IMDatabase.getInstance();
   @override
   void initState() {
     super.initState();
@@ -52,10 +53,12 @@ class _MyAppState extends State<MyApp> {
     NotificationStream().stream.listen((notification) {
       Log.debug("收到消息:$notification");
       if (notification.contains(kLoginSuccessNotification)) {
-        // 开启连接
-        connectManager.connect();
         // 初始化数据库
-        database.install(UserManager.getInstance().uid().toString());
+        database
+            .install(UserManager.getInstance().uid().toString())
+            .then((value) {
+          connectManager.connect();
+        });
       }
       if (notification.contains(kLogoutSuccessNotification)) {
         connectManager.close();
@@ -134,25 +137,15 @@ class _MyAppState extends State<MyApp> {
           .addPageRouter("/test_page", (context) => const TestPage(), context);
       Routers().addPageRouter(
           "/test_connect_page", (context) => const ConnectTestPage(), context);
+      Routers().addPageRouter(
+          "/test_db_page", (context) => const DatabaseTestPage(), context);
     }
   }
 }
 
 Future<User> getUser() async {
   var completer = Completer<User>();
-  User user = User(
-      userId: 0,
-      token: "",
-      username: "",
-      email: "",
-      password: "",
-      expireTime: 0,
-      status: 0,
-      vipStatus: 0,
-      vipExpired: "",
-      os: "os",
-      registerTime: 0,
-      icon: "");
+  User user = User();
 
   user.restore().then((hasUser) {
     if (hasUser) {

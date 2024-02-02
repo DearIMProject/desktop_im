@@ -59,6 +59,7 @@ class SocketManager implements SocketProtocol {
 
   @override
   void sendData(Uint8List data, int timestamp) {
+    Log.debug("发送一个信息：$data");
     _socket.add(data);
     _socket.flush();
     if (listener != null && listener!.sendMessageSuccess != null) {

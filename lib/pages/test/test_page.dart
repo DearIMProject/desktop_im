@@ -38,6 +38,12 @@ class _TestPageState extends State<TestPage> {
       });
       models.add(itemModel);
     }
+    {
+      TestItemModel itemModel = TestItemModel("数据库", () {
+        Routers().openRouter("/test_db_page", {}, context);
+      });
+      models.add(itemModel);
+    }
   }
 
   @override
@@ -47,7 +53,7 @@ class _TestPageState extends State<TestPage> {
         title: titleFontText(kTitleColor, "test"),
       ),
       body: pagePadding(ListView.builder(
-        itemCount: 1,
+        itemCount: models.length,
         itemBuilder: (BuildContext context, int index) {
           TestItemModel itemModel = models[index];
           return GestureDetector(

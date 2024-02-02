@@ -8,7 +8,7 @@ abstract class SocketListener {
 
 typedef SocketSuccessCallback = void Function();
 typedef SocketSendMessagesCallback = void Function(int timestamp);
-typedef SocketReceiveCallback = void Function(Uint8List data);
+typedef SocketReceiveCallback = void Function(Uint8List? data);
 
 abstract class SocketProtocol {
   bool isConnected = false;

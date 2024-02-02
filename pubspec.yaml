@@ -27,6 +27,8 @@ dependencies:
   flutter_toastr: ^1.0.3
   json_annotation: ^4.8.1
   flutter_gen: ^5.0.0
+
+  badges: ^2.0.2
   
 dev_dependencies:
   flutter_test:

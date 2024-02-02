@@ -2,19 +2,7 @@ import 'package:desktop_im/models/user.dart';
 
 class UserManager {
   static UserManager? _instance;
-  static User _user = User(
-      userId: 0,
-      token: "",
-      username: "",
-      email: "",
-      password: "",
-      expireTime: 0,
-      status: 0,
-      vipStatus: 0,
-      vipExpired: "",
-      os: "os",
-      registerTime: 0,
-      icon: "");
+  static User _user = User();
   User? get user => _user;
 
   static UserManager getInstance() {
@@ -33,19 +21,7 @@ class UserManager {
     if (user != null) {
       _user = user;
     } else {
-      _user = User(
-          userId: 0,
-          token: "",
-          username: "",
-          email: "",
-          password: "",
-          expireTime: 0,
-          status: 0,
-          vipStatus: 0,
-          vipExpired: "",
-          os: "os",
-          registerTime: 0,
-          icon: "");
+      _user = User();
     }
     _user.saveUser();
   }

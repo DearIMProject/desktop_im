@@ -52,10 +52,10 @@ class _MesssageItemViewState extends State<MesssageItemView> {
   Widget build(BuildContext context) {
     return itemPadding(Row(
       mainAxisAlignment: widget.message.isOwner
-          ? MainAxisAlignment.start
-          : MainAxisAlignment.end,
+          ? MainAxisAlignment.end
+          : MainAxisAlignment.start,
       children:
-          widget.message.isOwner ? children() : children().reversed.toList(),
+          !widget.message.isOwner ? children() : children().reversed.toList(),
     ));
   }
 }

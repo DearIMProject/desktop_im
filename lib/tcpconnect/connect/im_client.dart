@@ -3,6 +3,7 @@ import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
 import 'package:desktop_im/notification/notification_stream.dart';
 import 'package:desktop_im/notification/notifications.dart';
+import 'package:desktop_im/pages/datas/im_database.dart';
 
 import 'package:desktop_im/tcpconnect/connect/byte_buffer.dart';
 import 'package:desktop_im/tcpconnect/connect/message_codec.dart';
@@ -14,9 +15,13 @@ import 'package:desktop_im/user/user_manager.dart';
 import 'package:flutter/foundation.dart';
 
 typedef IMClientReceiveMessageCallback = void Function(Message message);
+typedef IMClientUnReadedMessageCallback = void Function(int unreadNumber);
+// ignore: constant_identifier_names
+const String MAGIC_NUMBER = "891013";
 
 abstract class IMClientListener {
   IMClientReceiveMessageCallback? messageCallback;
+  IMClientUnReadedMessageCallback? unreadMessageCallback;
 }
 
 class IMClient implements SocketListener {
@@ -24,6 +29,7 @@ class IMClient implements SocketListener {
   late SocketProtocol _socketManager;
   late MessageCodec _messageCodec;
   late ByteBuf _readByteBuf;
+  IMDatabase database = IMDatabase.getInstance();
   @override
   SocketSuccessCallback? connectSuccess;
   @override
@@ -60,16 +66,18 @@ class IMClient implements SocketListener {
     _socketManager = SocketManager(host, port);
     _socketManager.listener = _instance;
     connectSuccess = () {
-      Log.debug("connect success!");
+      Log.info("成功建立长连接！");
       //发送一个Login消息
       sendRequestLoginMessage();
     };
     sendMessageSuccess = (int timestamp) {
-      Log.debug("send success! timestamp = $timestamp");
+      Log.info("消息发送成功！ timestamp = $timestamp");
     };
     receiveCallback = (data) {
-      _readByteBuf.reset();
-      _readByteBuf.writeUint8List(data);
+      if (data != null) {
+        _readByteBuf.reset();
+        _readByteBuf.writeUint8List(data);
+      }
       if (_readByteBuf.couldReadableSize > 4) {
         // 说明长度至少在内
         int length = _readByteBuf.readInt();
@@ -82,6 +90,7 @@ class IMClient implements SocketListener {
                 .readUint8ListAsByteBuf(_readByteBuf.couldReadableSize);
             _readByteBuf.clear();
             _readByteBuf.writeUint8List(restByteBuf.readAllUint8List());
+            receiveCallback!(null);
           } else {
             _readByteBuf.clear();
           }
@@ -119,6 +128,7 @@ class IMClient implements SocketListener {
   }
 
   void configReceiveTextMessage(Message message) {
+    Log.info("收到一个消息 = $message");
     if (listeners.isNotEmpty) {
       for (IMClientListener listener in listeners) {
         if (listener.messageCallback != null) {
@@ -130,8 +140,8 @@ class IMClient implements SocketListener {
 
   void configReceiveRequestLoginMessage(Message message) {
     Log.debug("收到登录消息 configReceiveRequestLoginMessage");
-    Log.debug(message.content);
-    if (message.content.contains("891013")) {
+
+    if (message.content.contains(MAGIC_NUMBER)) {
       sendRequestOfflineMessage();
     } else {
       // 登录失败
@@ -156,6 +166,7 @@ class IMClient implements SocketListener {
     Log.debug("发送获取离线消息 sendRequestOfflineMessage");
     Message messageFromType =
         MessageFactory.messageFromType(MessageType.REQUEST_OFFLINE_MESSAGES);
+    messageFromType.timestamp = database.getMaxTimestamp();
     sendMessage(messageFromType);
   }
 
@@ -170,6 +181,7 @@ class IMClient implements SocketListener {
 
   void connect() {
     if (!_socketManager.isConnected) {
+      Log.info("开始建立长连接......");
       _socketManager.connect();
     }
   }

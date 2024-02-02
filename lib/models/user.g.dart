@@ -17,18 +17,18 @@ class UserAdapter extends TypeAdapter<User> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return User(
-      userId: fields[0] as int,
-      token: fields[1] as String,
-      username: fields[2] as String,
-      email: fields[3] as String,
-      password: fields[4] as String,
-      expireTime: fields[5] as int,
-      status: fields[6] as int,
-      vipStatus: fields[7] as int,
-      vipExpired: fields[8] as String,
-      os: fields[9] as String,
-      registerTime: fields[10] as int,
-      icon: fields[11] as String,
+      fields[0] as int,
+      fields[1] as String,
+      fields[2] as String,
+      fields[3] as String,
+      fields[4] as String,
+      fields[5] as int,
+      fields[6] as int,
+      fields[7] as int,
+      fields[10] as int,
+      fields[11] as String,
+      fields[8] as String,
+      fields[9] as String,
     );
   }
 
@@ -78,18 +78,18 @@ class UserAdapter extends TypeAdapter<User> {
 // **************************************************************************
 
 User _$UserFromJson(Map<String, dynamic> json) => User(
-      userId: json['userId'] as int,
-      token: json['token'] ?? "",
-      username: json['username'] as String,
-      email: json['email'] as String,
-      password: json['password'] as String,
-      expireTime: json['expireTime'] as int,
-      status: json['status'] as int,
-      vipStatus: json['vipStatus'] as int,
-      vipExpired: json['vipExpired'] ?? "",
-      os: json['os'] ?? "",
-      registerTime: json['registerTime'] as int,
-      icon: json['icon'] as String,
+      json['userId'] as int? ?? 0,
+      json['token'] as String? ?? "",
+      json['username'] as String? ?? "",
+      json['email'] as String? ?? "",
+      json['password'] as String? ?? "",
+      json['expireTime'] as int? ?? 0,
+      json['status'] as int? ?? 0,
+      json['vipStatus'] as int? ?? 0,
+      json['registerTime'] as int? ?? 0,
+      json['icon'] as String? ?? "",
+      json['vipExpired'] as String? ?? "",
+      json['os'] as String? ?? "",
     );
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{

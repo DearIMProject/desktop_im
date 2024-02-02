@@ -15,12 +15,16 @@ const String _kMyUser = "kMyUser";
 class User extends HiveObject {
   @JsonKey(includeFromJson: false, includeToJson: false)
   Box<User>? _userBox;
-  Future<Box<User>?> get userBox async {
+  Future<Box<User>> get userBox async {
+    Completer<Box<User>> completer = Completer<Box<User>>();
     if (_userBox == null || !_userBox!.isOpen) {
       // Hive.registerAdapter(UserAdapter());
-      _userBox = await Hive.openBox(_kMyUser);
+      Hive.openBox<User>(_kMyUser).then((value) {
+        _userBox = value;
+        completer.complete(_userBox);
+      });
     }
-    return _userBox;
+    return completer.future;
   }
 
   @HiveField(0)
@@ -50,34 +54,34 @@ class User extends HiveObject {
   @HiveField(11)
   String icon = "";
 
-  User({
-    required this.userId,
-    required this.token,
-    required this.username,
-    required this.email,
-    required this.password,
-    required this.expireTime,
-    required this.status,
-    required this.vipStatus,
-    required this.vipExpired,
-    required this.os,
-    required this.registerTime,
-    required this.icon,
-  });
+  User([
+    this.userId = 0,
+    this.token = "",
+    this.username = "",
+    this.email = "",
+    this.password = "",
+    this.expireTime = 0,
+    this.status = 0,
+    this.vipStatus = 0,
+    this.registerTime = 0,
+    this.icon = "",
+    this.vipExpired = "",
+    this.os = "",
+  ]);
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   Map<String, dynamic> toJson() => _$UserToJson(this);
 
   Future<void> saveUser() async {
-    userBox.then((value) => value?.put(_kMyUser, this));
+    userBox.then((value) => value.put(_kMyUser, this));
   }
 
   Future<bool> restore() async {
     var completer = Completer<bool>();
     userBox.then((value) {
-      User? user = value?.get(_kMyUser);
+      User? user = value.get(_kMyUser);
       if (user != null) {
-        Log.debug("user is not null user = $user");
+        // Log.debug("user is not null user = $user");
         UserManager.getInstance().setUser(user);
         return completer.complete(true);
       }
@@ -89,7 +93,7 @@ class User extends HiveObject {
 
   void clear() async {
     userBox.then((value) {
-      value!.delete(_kMyUser);
+      value.delete(_kMyUser);
     });
   }
 
@@ -141,5 +145,10 @@ class User extends HiveObject {
   @override
   String toString() {
     return 'User{_userBox=$_userBox,\tuserId=$userId,\ttoken=$token,\tusername=$username,\temail=$email,\tpassword=$password,\texpireTime=$expireTime,\tstatus=$status,\tvipStatus=$vipStatus,\tvipExpired=$vipExpired,\tos=$os,\tregisterTime=$registerTime,\ticon=$icon}';
+  }
+
+  Future<int> removeAll() async {
+    Box<User> box = await userBox;
+    return box.clear();
   }
 }
