@@ -190,6 +190,16 @@ class S {
     );
   }
 
+  /// `last year`
+  String get last_year {
+    return Intl.message(
+      'last year',
+      name: 'last_year',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `failed to load image`
   String get fail_to_load_image {
     return Intl.message(

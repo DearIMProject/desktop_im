@@ -7,7 +7,7 @@ import 'package:desktop_im/user/user_manager.dart';
 import 'package:hive/hive.dart';
 
 class MessageDB implements DbProtocol {
-  MessageDB();
+  // MessageDB();
   late Box<List> box;
 
   @override
@@ -26,7 +26,7 @@ class MessageDB implements DbProtocol {
     box.close();
   }
 
-  int getMUserId(Message message) {
+  int _getMUserId(Message message) {
     int mUserId = message.fromId;
     if (mUserId == UserManager.getInstance().uid()) {
       mUserId = message.toId;
@@ -37,7 +37,7 @@ class MessageDB implements DbProtocol {
   @override
   void addItem(item) {
     if (item is Message) {
-      int mUserId = getMUserId(item);
+      int mUserId = _getMUserId(item);
       List<Message>? messages = _getMessages(item);
       messages.add(item);
       box.put("$mUserId", messages);
@@ -47,7 +47,7 @@ class MessageDB implements DbProtocol {
 
   @override
   void removeItem(item) {
-    int mUserId = getMUserId(item);
+    int mUserId = _getMUserId(item);
     List<Message>? messages = _getMessages(item);
     if (messages.contains(item)) {
       messages.remove(item);
@@ -74,7 +74,7 @@ class MessageDB implements DbProtocol {
 
   List<Message> _getMessages(item) {
     Message message = item;
-    int mUserId = getMUserId(message);
+    int mUserId = _getMUserId(message);
     List<dynamic>? list = box.get("$mUserId");
     if (list == null) {
       return [];
@@ -112,7 +112,35 @@ class MessageDB implements DbProtocol {
     return maxTimestamp.timestamp;
   }
 
+  List<int> getChatUsers() {
+    List<int> chatUserIds = [];
+    for (var e in box.keys) {
+      if (e is String) {
+        chatUserIds.add(int.parse(e));
+      }
+    }
+    return chatUserIds;
+  }
+
   Future<int> deleteAll() {
     return box.clear();
+  }
+
+  Message? getLastMessage(int userId) {
+    List? messages = box.get("$userId");
+    if (messages == null || messages.isEmpty) {
+      return null;
+    }
+    Message? lastMessage;
+    for (var i = 0; i < messages.length; i++) {
+      var message = messages[i];
+      if (message is Message) {
+        lastMessage ??= message;
+        if (lastMessage.timestamp < message.timestamp) {
+          lastMessage = message;
+        }
+      }
+    }
+    return lastMessage;
   }
 }

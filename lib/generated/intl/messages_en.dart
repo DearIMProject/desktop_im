@@ -29,6 +29,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "fail_to_load_image":
             MessageLookupByLibrary.simpleMessage("failed to load image"),
         "failure": MessageLookupByLibrary.simpleMessage("failure"),
+        "last_year": MessageLookupByLibrary.simpleMessage("last year"),
         "login": MessageLookupByLibrary.simpleMessage("login"),
         "logout": MessageLookupByLibrary.simpleMessage("logout"),
         "password_tip":

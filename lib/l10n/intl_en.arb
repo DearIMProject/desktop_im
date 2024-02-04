@@ -13,6 +13,7 @@
     "addressbook":"addressbook",
     "account":"account",
     "test":"test",
+    "last_year":"last year",
     "fail_to_load_image":"failed to load image"
 
 }

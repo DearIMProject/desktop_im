@@ -28,6 +28,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "chat": MessageLookupByLibrary.simpleMessage("聊天"),
         "fail_to_load_image": MessageLookupByLibrary.simpleMessage("图片加载失败"),
         "failure": MessageLookupByLibrary.simpleMessage("失败"),
+        "last_year": MessageLookupByLibrary.simpleMessage("去年"),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
         "logout": MessageLookupByLibrary.simpleMessage("退出登录"),
         "password_tip": MessageLookupByLibrary.simpleMessage("请输入密码"),

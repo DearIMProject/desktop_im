@@ -33,16 +33,16 @@ class IMDatabase implements IMClientListener {
     return _instance!;
   }
 
-  List<IMDatabaseListener> listeners = [];
+  final List<IMDatabaseListener> _listeners = [];
   addListener(IMDatabaseListener listener) {
-    if (!listeners.contains(listener)) {
-      listeners.add(listener);
+    if (!_listeners.contains(listener)) {
+      _listeners.add(listener);
     }
   }
 
   removeListener(IMDatabaseListener listener) {
-    if (listeners.contains(listener)) {
-      listeners.remove(listener);
+    if (_listeners.contains(listener)) {
+      _listeners.remove(listener);
     }
   }
 
@@ -68,6 +68,12 @@ class IMDatabase implements IMClientListener {
         Log.info("初始化数据库完毕！");
         dbHasInstalled = true;
         completer.complete();
+        for (var i = 0; i < _listeners.length; i++) {
+          IMDatabaseListener listener = _listeners[i];
+          if (listener.completeCallback != null) {
+            listener.completeCallback!();
+          }
+        }
       });
     });
 
@@ -85,7 +91,7 @@ class IMDatabase implements IMClientListener {
     // 获取未读信息
     unreadMessageCallback = (unreadNumber) {
       _unreadNumber = unreadNumber;
-      for (IMDatabaseListener listener in listeners) {
+      for (IMDatabaseListener listener in _listeners) {
         if (listener.unreadMessageNumberChange != null) {
           listener.unreadMessageNumberChange!(unreadNumber);
         }
@@ -119,6 +125,22 @@ class IMDatabase implements IMClientListener {
     return _dbMessage.getMessages(userId);
   }
 
+  List<User> chatUsers = [];
+  List<User> getChatUsers() {
+    if (chatUsers.isNotEmpty) {
+      return chatUsers;
+    }
+    List<int> chatUserIds = _dbMessage.getChatUsers();
+    for (var i = 0; i < chatUserIds.length; i++) {
+      int chatUserId = chatUserIds[i];
+      User? chatUser = _dbUser.getUser(chatUserId);
+      if (chatUser != null) {
+        chatUsers.add(chatUser);
+      }
+    }
+    return chatUsers;
+  }
+
 // 获取消息列表最新的时间戳
   int getMaxTimestamp() {
     return _dbMessage.maxTimestamp();
@@ -128,5 +150,19 @@ class IMDatabase implements IMClientListener {
     await _dbMessage.deleteAll();
     await User().removeAll();
     return _dbUser.deleteAll();
+  }
+
+  /// 添加用户
+  void addUser(User user) {
+    _dbUser.addUser(user);
+  }
+
+  List<User> getUsers() {
+    return _dbUser.getUsers();
+  }
+
+  /// 获取用户最新的Message
+  Message? getLastMessage(int userId) {
+    return _dbMessage.getLastMessage(userId);
   }
 }

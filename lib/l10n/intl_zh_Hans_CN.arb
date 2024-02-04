@@ -13,6 +13,7 @@
     "addressbook":"通讯录",
     "account":"账户",
     "test":"测试",
+    "last_year":"去年",
     "fail_to_load_image":"图片加载失败"
 
 }

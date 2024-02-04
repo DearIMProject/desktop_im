@@ -41,4 +41,18 @@ class UserDB implements DbProtocol {
   Future<int> deleteAll() {
     return box.clear();
   }
+
+  /// 根据userId获取user
+  User? getUser(int chatUserId) {
+    return box.get(chatUserId);
+  }
+
+  /// 添加用户
+  void addUser(User user) {
+    box.put(user.userId, user);
+  }
+
+  List<User> getUsers() {
+    return box.values.toList();
+  }
 }
