@@ -70,21 +70,42 @@ class _MessageListPageState extends State<MessageListPage>
     if (user == null) {
       throw Exception("user is null");
     }
-    // Log.info("chatUser = $chatUser");
     if (messages.isEmpty) {
       messages.addAll(database.getMessages(chatUser!.userId));
+      configSendReadMessage();
     }
     dataChangeCallback ??= () {
       messages = [];
       messages.addAll(database.getMessages(chatUser!.userId));
+      configSendReadMessage();
       Log.debug("收到消息发生了变化 $messages");
-      setState(() {});
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) {
+          setState(() {});
+        },
+      );
     };
 
     // 滚动到底部
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
     });
+  }
+
+  bool hasSend = false;
+  void configSendReadMessage() {
+    if (hasSend) {
+      return;
+    }
+    hasSend = true;
+    for (Message message in messages) {
+      if (!message.isOwner) {
+        if (message.status == MessageStatus.STATUS_NOT_SEND_UNREAD) {
+          Log.debug("xiaoxi $message");
+          client.sendReadedMessage(message);
+        }
+      }
+    }
   }
 
   @override

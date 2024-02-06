@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:desktop_im/generated/intl/messages_en.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
@@ -10,7 +11,6 @@ import 'package:hive/hive.dart';
 import 'package:tuple/tuple.dart';
 
 class MessageDB implements DbProtocol {
-  // MessageDB();
   late Box<List> box;
 
   @override
@@ -31,7 +31,7 @@ class MessageDB implements DbProtocol {
 
   int _getMUserId(Message message) {
     int mUserId = message.fromId;
-    if (mUserId == UserManager.getInstance().uid()) {
+    if (mUserId == UserManager.getInstance().uid() && message.toId != 0) {
       mUserId = message.toId;
     }
     return mUserId;
@@ -44,6 +44,14 @@ class MessageDB implements DbProtocol {
       if (message.messageType == MessageType.REQUEST_LOGIN ||
           message.messageType == MessageType.REQUEST_OFFLINE_MESSAGES) {
         return;
+      }
+      if (message.messageType == MessageType.READED_MESSAGE) {
+        //TODO: wmy 将消息转为已读
+        var timestamp = message.timestamp;
+        Tuple2<Message, int>? tuple2 = _getMessageByTimestamp(timestamp);
+        if (tuple2 != null) {
+          setMessageReaded(tuple2.item1);
+        }
       }
       int mUserId = _getMUserId(item);
       List<Message>? messages = _getMessages(item);
@@ -74,11 +82,20 @@ class MessageDB implements DbProtocol {
         resultMessages.insert(0, message);
       }
     }
-    if (tuple != null && resultMessages.isNotEmpty) {
+    // if (tuple != null && resultMessages.isNotEmpty) {
+    //   box.put("${tuple.item2}", resultMessages);
+    //   return tuple;
+    // }
+    if (tuple != null) {
       box.put("${tuple.item2}", resultMessages);
       return tuple;
     }
 
+    return null;
+  }
+
+  Tuple2<Message, int /*userId*/ >? _getMessageByTimestamp(int timestamp) {
+    //TODO: wmy timestamp
     return null;
   }
 
@@ -200,6 +217,10 @@ class MessageDB implements DbProtocol {
   int getUnReadMessageCount() {
     int result = 0;
     for (String element in box.keys) {
+      int parse = int.parse(element);
+      if (UserManager.getInstance().uid() == parse) {
+        continue;
+      }
       List list = box.get(element)!;
       for (Message message in list) {
         if (isUnreadMessage(message)) {
@@ -216,6 +237,9 @@ class MessageDB implements DbProtocol {
   }
 
   int getUserUnReadMessageCount(int userId) {
+    if (userId == UserManager.getInstance().uid()) {
+      return 0;
+    }
     List? list = box.get("$userId");
     if (list == null) {
       return 0;
@@ -227,5 +251,18 @@ class MessageDB implements DbProtocol {
       }
     }
     return unreadNumber;
+  }
+
+  void setMessageReaded(Message aMessage) {
+    int userId = aMessage.fromId;
+    List list = box.get("$userId")!;
+    List<Message> messages = [];
+    for (Message message in list.reversed) {
+      if (message.timestamp == aMessage.timestamp) {
+        message.status = MessageStatus.STATUS_SUCCESS_READED;
+      }
+      messages.insert(0, message);
+    }
+    box.put("$userId", messages);
   }
 }

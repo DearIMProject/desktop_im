@@ -78,7 +78,11 @@ class _HomePageState extends State<HomePage> implements IMDatabaseListener {
     dataChangeCallback = () {
       chatItem.badgeNumber = database.badgeValue;
       Log.debug("获取数量 num = ${chatItem.badgeNumber}");
-      setState(() {});
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) {
+          setState(() {});
+        },
+      );
     };
     if (database.dbHasInstalled) {
       chatItem.badgeNumber = database.badgeValue;

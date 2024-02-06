@@ -15,5 +15,5 @@ abstract class SocketProtocol {
   SocketListener? listener;
   void connect();
   void close();
-  void sendData(Uint8List data, int timestamp);
+  Future<void> sendData(Uint8List data, int timestamp);
 }

@@ -33,7 +33,9 @@ class _ChatPageState extends State<ChatPage> implements IMDatabaseListener {
       setState(() {});
     };
     dataChangeCallback = () {
-      setState(() {});
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        setState(() {});
+      });
     };
   }
 

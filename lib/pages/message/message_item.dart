@@ -1,7 +1,10 @@
 import 'package:desktop_im/components/common/common_theme.dart';
+import 'package:desktop_im/log/log.dart';
 
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
+import 'package:desktop_im/pages/datas/im_database.dart';
+import 'package:desktop_im/tcpconnect/connect/im_client.dart';
 
 import 'package:flutter/material.dart';
 
@@ -18,6 +21,8 @@ class MesssageItemView extends StatefulWidget {
 }
 
 class _MesssageItemViewState extends State<MesssageItemView> {
+  IMDatabase database = IMDatabase.getInstance();
+  IMClient client = IMClient.getInstance();
   bool isSendToSelf() {
     return widget.message.fromId == widget.message.toId;
   }
@@ -44,6 +49,14 @@ class _MesssageItemViewState extends State<MesssageItemView> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget notSendView() {
+    return const Icon(
+      Icons.error,
+      color: kWarningColor,
+      size: 20,
     );
   }
 
@@ -82,13 +95,20 @@ class _MesssageItemViewState extends State<MesssageItemView> {
             (widget.message.sendStatue == MessageSendStatus.STATUS_SEND_ING &&
                 !isSendToSelf()),
         child: circleView(),
+      ),
+      Visibility(
+        visible:
+            widget.message.sendStatue == MessageSendStatus.STATUS_SEND_FAILURE,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 7, 0, 0),
+          child: notSendView(),
+        ),
       )
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    // Log.debug("xiaoxi ${widget.message}");
     return itemPadding(Row(
       mainAxisAlignment: widget.message.isOwner
           ? MainAxisAlignment.end

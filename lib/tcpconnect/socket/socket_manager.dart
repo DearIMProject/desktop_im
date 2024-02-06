@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -58,12 +59,14 @@ class SocketManager implements SocketProtocol {
   }
 
   @override
-  void sendData(Uint8List data, int timestamp) {
+  Future<void> sendData(Uint8List data, int timestamp) async {
+    Completer completer = Completer();
     Log.debug("发送一个信息：$data");
     _socket.add(data);
-    _socket.flush();
+    _socket.flush().then((value) => completer.complete());
     if (listener != null && listener!.sendMessageSuccess != null) {
       listener!.sendMessageSuccess!(timestamp);
     }
+    return completer.future;
   }
 }

@@ -208,4 +208,9 @@ class IMDatabase implements IMClientListener {
   int unreadNumber(int userId) {
     return _dbMessage.getUserUnReadMessageCount(userId);
   }
+
+// 设置消息为已读
+  void setMessageReaded(Message message) {
+    _dbMessage.setMessageReaded(message);
+  }
 }

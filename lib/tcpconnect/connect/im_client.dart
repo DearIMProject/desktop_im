@@ -15,6 +15,7 @@ import 'package:desktop_im/tcpconnect/socket/socket_manager.dart';
 import 'package:desktop_im/tcpconnect/socket/socket_protocol.dart';
 import 'package:desktop_im/user/login_service.dart';
 import 'package:desktop_im/user/user_manager.dart';
+import 'package:desktop_im/utils/message_queue.dart';
 import 'package:flutter/foundation.dart';
 
 typedef IMClientReceiveMessageCallback = void Function(Message message);
@@ -41,6 +42,7 @@ class IMClient implements SocketListener {
   SocketReceiveCallback? receiveCallback;
 
   List<IMClientListener> listeners = [];
+  final MessageQueue _messageQueue = MessageQueue();
 
   void addListener(IMClientListener listener) {
     if (listeners.contains(listener)) {
@@ -61,6 +63,10 @@ class IMClient implements SocketListener {
   static IMClient getInstance() {
     _instance ??= IMClient();
     return _instance!;
+  }
+
+  void dispose() {
+    _messageQueue.dispose();
   }
 
   void init() {
@@ -105,6 +111,18 @@ class IMClient implements SocketListener {
   }
 
   void sendRequestLoginMessage() {
+    if (_messageQueue.hasInitialezed) {
+      _sendRequestLoginMessge();
+    } else {
+      _messageQueue.initialize().then(
+        (value) {
+          _sendRequestLoginMessge();
+        },
+      );
+    }
+  }
+
+  void _sendRequestLoginMessge() {
     Message messageFromType =
         MessageFactory.messageFromType(MessageType.REQUEST_LOGIN);
     sendMessage(messageFromType);
@@ -184,11 +202,22 @@ class IMClient implements SocketListener {
   }
 
   void sendMessage(Message message) {
-    // 添加message
+    Log.debug("发送消息 = $message");
+    //做任务队列？
+    _messageQueue.addTask((replyPort) {
+      _sendMessage(message).then((value) {
+        Log.debug("发送消息成功！${message.messageType}");
+        replyPort.send(null);
+      });
+    });
+  }
+
+  Future<void> _sendMessage(Message message) async {
+// 添加message
     database.addMessage(message);
     ByteBuf encode = _messageCodec.encode(message);
-    _socketManager.sendData(encode.readAllUint8List(), message.timestamp);
-    //TODO: wmy 对某个message
+    return _socketManager.sendData(
+        encode.readAllUint8List(), message.timestamp);
   }
 
   void connect() {
@@ -203,5 +232,15 @@ class IMClient implements SocketListener {
       _readByteBuf.clear();
       _socketManager.close();
     }
+  }
+
+// 告知服务器message已读
+  void sendReadedMessage(Message message) {
+    Message readMessage =
+        MessageFactory.messageFromType(MessageType.READED_MESSAGE);
+    readMessage.content = "${message.timestamp}";
+    readMessage.fromId = UserManager.getInstance().uid();
+    readMessage.fromEntity = MessageEntityType.USER;
+    sendMessage(readMessage);
   }
 }
