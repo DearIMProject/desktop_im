@@ -61,6 +61,26 @@ class Request {
   //   }
   // }
 
+  Future<void> testRequest() async {
+    Log.debug("content");
+    Response response;
+    Map<String, dynamic> param = <String, dynamic>{};
+    try {
+      FormData formData = FormData.fromMap(param);
+      String address = "https://www.baidu.com";
+      // Log.debug("address = $address");
+      // Log.info("param = $param");
+      Dio dio = Dio();
+      dio.options.headers.addAll(systemParam());
+      response = await dio.post(address, data: formData);
+
+      Map<String, dynamic> responseMap = response.data;
+      Log.debug("response = $response");
+    } catch (e) {
+      Log.warn("catch e = $e");
+    }
+  }
+
   void postRequest(String apiName, Map<String, dynamic> map,
       RequestCallback callback) async {
     Response response;

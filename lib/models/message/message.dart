@@ -17,7 +17,8 @@ class Message extends HiveObject {
       this.content = "",
       this.messageType = MessageType.TEXT,
       this.timestamp = 0,
-      this.status = MessageStatus.STATUS_NOT_SEND_UNREAD]);
+      this.status = MessageStatus.STATUS_NOT_SEND_UNREAD,
+      this.sendStatue = MessageSendStatus.STATUS_SEND_ING]);
   @HiveField(0)
   int msgId = 0;
 
@@ -46,6 +47,9 @@ class Message extends HiveObject {
   @HiveField(8)
   MessageStatus status = MessageStatus.STATUS_SUCCESS_UNREADED;
 
+  @HiveField(9)
+  MessageSendStatus sendStatue = MessageSendStatus.STATUS_SEND_ING;
+
 /* 以下变量不为数据库所持有 */
 
   // 是否是本人发出的消息
@@ -62,7 +66,7 @@ class Message extends HiveObject {
 
   @override
   String toString() {
-    return 'Message{msgId=$msgId, fromId=$fromId, fromEntity=$fromEntity, toId=$toId, toEntity=$toEntity, content=$content, messageType=$messageType, timestamp=$timestamp, status=$status}';
+    return 'Message{msgId=$msgId, fromId=$fromId, fromEntity=$fromEntity, toId=$toId, toEntity=$toEntity, content=$content, messageType=$messageType, timestamp=$timestamp, status=$status, sendStatue=$sendStatue}';
   }
 }
 

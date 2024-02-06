@@ -26,13 +26,14 @@ class MessageAdapter extends TypeAdapter<Message> {
       fields[6] as MessageType,
       fields[7] as int,
       fields[8] as MessageStatus,
+      fields[9] as MessageSendStatus,
     );
   }
 
   @override
   void write(BinaryWriter writer, Message obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.msgId)
       ..writeByte(1)
@@ -50,7 +51,9 @@ class MessageAdapter extends TypeAdapter<Message> {
       ..writeByte(7)
       ..write(obj.timestamp)
       ..writeByte(8)
-      ..write(obj.status);
+      ..write(obj.status)
+      ..writeByte(9)
+      ..write(obj.sendStatue);
   }
 
   @override
@@ -82,6 +85,8 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       json['timestamp'] as int? ?? 0,
       $enumDecodeNullable(_$MessageStatusEnumMap, json['status']) ??
           MessageStatus.STATUS_NOT_SEND_UNREAD,
+      $enumDecodeNullable(_$MessageSendStatusEnumMap, json['sendStatue']) ??
+          MessageSendStatus.STATUS_SEND_ING,
     );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
@@ -94,30 +99,37 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'messageType': _$MessageTypeEnumMap[instance.messageType]!,
       'timestamp': instance.timestamp,
       'status': _$MessageStatusEnumMap[instance.status]!,
+      'sendStatue': _$MessageSendStatusEnumMap[instance.sendStatue]!,
     };
 
 const _$MessageEntityTypeEnumMap = {
-  MessageEntityType.USER: 'USER',
-  MessageEntityType.GROUP: 'GROUP',
-  MessageEntityType.SERVER: 'SERVER',
+  MessageEntityType.USER: 0,
+  MessageEntityType.GROUP: 1,
+  MessageEntityType.SERVER: 2,
 };
 
 const _$MessageTypeEnumMap = {
-  MessageType.TEXT: 'TEXT',
-  MessageType.PICTURE: 'PICTURE',
-  MessageType.FILE: 'FILE',
-  MessageType.LINK: 'LINK',
-  MessageType.CHAT_MESSAGE: 'CHAT_MESSAGE',
-  MessageType.REQUEST_LOGIN: 'REQUEST_LOGIN',
-  MessageType.HEART_BEAT: 'HEART_BEAT',
-  MessageType.REQUEST_OFFLINE_MESSAGES: 'REQUEST_OFFLINE_MESSAGES',
-  MessageType.READED_MESSAGE: 'READED_MESSAGE',
-  MessageType.SEND_SUCCESS_MESSAGE: 'SEND_SUCCESS_MESSAGE',
-  MessageType.TRANSPARENT_MESSAGE: 'TRANSPARENT_MESSAGE',
+  MessageType.TEXT: 0,
+  MessageType.PICTURE: 1,
+  MessageType.FILE: 2,
+  MessageType.LINK: 3,
+  MessageType.CHAT_MESSAGE: 4,
+  MessageType.REQUEST_LOGIN: 5,
+  MessageType.HEART_BEAT: 6,
+  MessageType.REQUEST_OFFLINE_MESSAGES: 7,
+  MessageType.READED_MESSAGE: 8,
+  MessageType.SEND_SUCCESS_MESSAGE: 9,
+  MessageType.TRANSPARENT_MESSAGE: 10,
 };
 
 const _$MessageStatusEnumMap = {
-  MessageStatus.STATUS_SUCCESS_UNREADED: 'STATUS_SUCCESS_UNREADED',
-  MessageStatus.STATUS_SUCCESS_READED: 'STATUS_SUCCESS_READED',
-  MessageStatus.STATUS_NOT_SEND_UNREAD: 'STATUS_NOT_SEND_UNREAD',
+  MessageStatus.STATUS_SUCCESS_UNREADED: 0,
+  MessageStatus.STATUS_SUCCESS_READED: 1,
+  MessageStatus.STATUS_NOT_SEND_UNREAD: 2,
+};
+
+const _$MessageSendStatusEnumMap = {
+  MessageSendStatus.STATUS_SEND_ING: 0,
+  MessageSendStatus.STATUS_SEND_SUCCESS: 1,
+  MessageSendStatus.STATUS_SEND_FAILURE: 2,
 };

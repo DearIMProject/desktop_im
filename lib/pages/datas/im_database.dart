@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
+import 'package:desktop_im/models/message/send_success_model.dart';
 import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/pages/datas/db_message.dart';
 import 'package:desktop_im/pages/datas/db_user.dart';
 import 'package:desktop_im/tcpconnect/connect/im_client.dart';
+import 'package:desktop_im/user/user_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,6 +19,7 @@ typedef DatabaseCompleteCallback = void Function();
 abstract class IMDatabaseListener {
   DatabaseUnreadMessageNumberChange? unreadMessageNumberChange;
   DatabaseCompleteCallback? completeCallback;
+  DatabaseCompleteCallback? dataChangeCallback;
 }
 
 class IMDatabase implements IMClientListener {
@@ -36,22 +39,24 @@ class IMDatabase implements IMClientListener {
   final List<IMDatabaseListener> _listeners = [];
   addListener(IMDatabaseListener listener) {
     if (!_listeners.contains(listener)) {
+      Log.debug("添加一个listener = $listener");
       _listeners.add(listener);
     }
   }
 
   removeListener(IMDatabaseListener listener) {
     if (_listeners.contains(listener)) {
+      Log.debug("移除一个listener = $listener");
       _listeners.remove(listener);
     }
   }
 
   // 未读消息
   int _badgeValue = 0;
-  int get badgeValue => _badgeValue;
-
-  int _unreadNumber = 0;
-  int get unreadNumber => _unreadNumber;
+  int get badgeValue {
+    _badgeValue = _dbMessage.getUnReadMessageCount();
+    return _badgeValue;
+  }
 
   final MessageDB _dbMessage = MessageDB();
   final UserDB _dbUser = UserDB();
@@ -63,9 +68,11 @@ class IMDatabase implements IMClientListener {
     Hive.registerAdapter(MessageStatusAdapter());
     Hive.registerAdapter(MessageTypeAdapter());
     Hive.registerAdapter(MessageEntityTypeAdapter());
+    Hive.registerAdapter(MessageSendStatusAdapter());
     _dbMessage.install(boxName).then((value) {
       _dbUser.install(boxName).then((value) {
         Log.info("初始化数据库完毕！");
+        initBadgeValue();
         dbHasInstalled = true;
         completer.complete();
         for (var i = 0; i < _listeners.length; i++) {
@@ -80,6 +87,10 @@ class IMDatabase implements IMClientListener {
     return completer.future;
   }
 
+  void initBadgeValue() {
+    _badgeValue = _dbMessage.getUnReadMessageCount();
+  }
+
   Future<void> install(String boxName) async {
     if (dbHasInstalled) {
       return;
@@ -89,8 +100,8 @@ class IMDatabase implements IMClientListener {
       addMessage(message);
     };
     // 获取未读信息
-    unreadMessageCallback = (unreadNumber) {
-      _unreadNumber = unreadNumber;
+    unreadMessageCallback ??= (unreadNumber) {
+      _badgeValue = unreadNumber;
       for (IMDatabaseListener listener in _listeners) {
         if (listener.unreadMessageNumberChange != null) {
           listener.unreadMessageNumberChange!(unreadNumber);
@@ -118,7 +129,21 @@ class IMDatabase implements IMClientListener {
   // 添加一条消息
   void addMessage(Message message) {
     _dbMessage.addItem(message);
-    _badgeValue++;
+    for (var i = 0; i < _listeners.length; i++) {
+      IMDatabaseListener listener = _listeners[i];
+      if (listener.dataChangeCallback != null) {
+        listener.dataChangeCallback!();
+      }
+    }
+    if (message.status == MessageStatus.STATUS_SUCCESS_UNREADED &&
+        message.toId == UserManager.getInstance().uid()) {
+      _badgeValue = _dbMessage.getUnReadMessageCount();
+      for (IMDatabaseListener listener in _listeners) {
+        if (listener.unreadMessageNumberChange != null) {
+          listener.unreadMessageNumberChange!(_badgeValue);
+        }
+      }
+    }
   }
 
   List<Message> getMessages(int userId) {
@@ -147,7 +172,8 @@ class IMDatabase implements IMClientListener {
   }
 
   Future<int> removeAll() async {
-    await _dbMessage.deleteAll();
+    int removeSuccess = await _dbMessage.deleteAll();
+    Log.debug("remove = $removeSuccess");
     await User().removeAll();
     return _dbUser.deleteAll();
   }
@@ -164,5 +190,22 @@ class IMDatabase implements IMClientListener {
   /// 获取用户最新的Message
   Message? getLastMessage(int userId) {
     return _dbMessage.getLastMessage(userId);
+  }
+
+// 设置消息发送成功
+  void configMessageSendSuccess(
+      SendSuccessModel model, MessageSendStatus status) {
+    _dbMessage.configMessageSendSuccess(model, status);
+    for (var i = 0; i < _listeners.length; i++) {
+      IMDatabaseListener listener = _listeners[i];
+      if (listener.dataChangeCallback != null) {
+        listener.dataChangeCallback!();
+      }
+    }
+  }
+
+//获取userId下未读数量
+  int unreadNumber(int userId) {
+    return _dbMessage.getUserUnReadMessageCount(userId);
   }
 }

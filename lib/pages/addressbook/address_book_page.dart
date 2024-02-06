@@ -21,7 +21,8 @@ class _AddressBookPageState extends State<AddressBookPage>
   final List<User> addressUsers = [];
   @override
   DatabaseCompleteCallback? completeCallback;
-
+  @override
+  DatabaseCompleteCallback? dataChangeCallback;
   @override
   DatabaseUnreadMessageNumberChange? unreadMessageNumberChange;
   void requestDatas(BuildContext context) {

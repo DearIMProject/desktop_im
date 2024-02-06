@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
+import 'package:desktop_im/models/message/send_success_model.dart';
 import 'package:desktop_im/notification/notification_stream.dart';
 import 'package:desktop_im/notification/notifications.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
@@ -128,6 +131,7 @@ class IMClient implements SocketListener {
   }
 
   void configReceiveTextMessage(Message message) {
+    message.sendStatue = MessageSendStatus.STATUS_SEND_SUCCESS;
     Log.info("收到一个消息 = $message");
     if (listeners.isNotEmpty) {
       for (IMClientListener listener in listeners) {
@@ -167,16 +171,24 @@ class IMClient implements SocketListener {
     Message messageFromType =
         MessageFactory.messageFromType(MessageType.REQUEST_OFFLINE_MESSAGES);
     messageFromType.timestamp = database.getMaxTimestamp();
+    Log.debug("timestamp = ${messageFromType.timestamp}");
     sendMessage(messageFromType);
   }
 
   void configReceiveSendSuccessMessage(Message message) {
-    Log.debug("收到发送成功消息 configReceiveSendSuccessMessage");
+    Log.debug("收到发送成功消息 configReceiveSendSuccessMessage $message");
+    Map<String, dynamic> decode = json.decode(message.content);
+    SendSuccessModel model = SendSuccessModel.fromJson(decode);
+    database.configMessageSendSuccess(
+        model, MessageSendStatus.STATUS_SEND_SUCCESS);
   }
 
   void sendMessage(Message message) {
+    // 添加message
+    database.addMessage(message);
     ByteBuf encode = _messageCodec.encode(message);
     _socketManager.sendData(encode.readAllUint8List(), message.timestamp);
+    //TODO: wmy 对某个message
   }
 
   void connect() {

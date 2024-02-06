@@ -13,23 +13,27 @@ class Log {
   // static const _magenta = '${_escape}35m';
   // static const _cyan = '${_escape}36m';
   Log.debug(String content) {
-    if (kDebugMode) {
-      Logger().d('$_green$content$_resetColor');
-    }
+    print(content);
+    // if (kDebugMode) {
+    //   Logger().d('$_green$content$_resetColor');
+    // }
   }
   Log.info(String content) {
-    if (kDebugMode) {
-      Logger().d('$_blue$content$_resetColor');
-    }
+    print(content);
+    // if (kDebugMode) {
+    //   Logger().d('$_blue$content$_resetColor');
+    // }
   }
   Log.warn(String content) {
-    if (kDebugMode) {
-      Logger().d('$_yellow$content$_resetColor');
-    }
+    print(content);
+    // if (kDebugMode) {
+    //   Logger().d('$_yellow$content$_resetColor');
+    // }
   }
   Log.error(String content) {
-    if (kDebugMode) {
-      Logger().d('$_red$content$_resetColor');
-    }
+    print(content);
+    // if (kDebugMode) {
+    //   Logger().d('$_red$content$_resetColor');
+    // }
   }
 }

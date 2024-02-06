@@ -1,9 +1,13 @@
 import 'package:desktop_im/components/common/colors.dart';
 import 'package:desktop_im/components/common/fonts.dart';
 import 'package:desktop_im/components/ui/bottom_tabbar_item.dart';
+import 'package:desktop_im/components/uikits/toast_show_utils.dart';
 import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/log/log.dart';
+import 'package:desktop_im/notification/notification_stream.dart';
+import 'package:desktop_im/notification/notifications.dart';
 import 'package:desktop_im/pages/addressbook/address_book_page.dart';
+import 'package:desktop_im/pages/addressbook/service/addressbook_service.dart';
 import 'package:desktop_im/pages/base_page.dart';
 import 'package:desktop_im/pages/chat/chat_page.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
@@ -25,6 +29,8 @@ class _HomePageState extends State<HomePage> implements IMDatabaseListener {
   DatabaseUnreadMessageNumberChange? unreadMessageNumberChange;
   @override
   DatabaseCompleteCallback? completeCallback;
+  @override
+  DatabaseCompleteCallback? dataChangeCallback;
 
   PageController? pageController;
   BottomTabbarItem chatItem =
@@ -33,12 +39,19 @@ class _HomePageState extends State<HomePage> implements IMDatabaseListener {
       BottomTabbarItem(S.current.addressbook, Icons.menu_book, false, 0);
   BottomTabbarItem profileItem =
       BottomTabbarItem(S.current.account, Icons.account_circle, false, 0);
-  int _currentIndex = 1;
+  int _currentIndex = 0;
   bool hasAutoLogin = false;
   IMDatabase database = IMDatabase.getInstance();
   _HomePageState() {
     init();
   }
+
+  @override
+  void dispose() {
+    database.removeListener(this);
+    super.dispose();
+  }
+
   void init() {
     initPageController();
     unreadMessageNumberChange = (unreadNumber) {
@@ -46,6 +59,31 @@ class _HomePageState extends State<HomePage> implements IMDatabaseListener {
         chatItem.badgeNumber = unreadNumber;
       });
     };
+    database.addListener(this);
+    completeCallback = () {
+      AddressbookService.getAllAddressbook(AddressCallback(
+        successCallback: (users) {
+          NotificationStream().publish(kAddressReadyNotification);
+          Log.debug("获取未读信息 ${database.badgeValue}");
+          setState(() {
+            chatItem.badgeNumber = database.badgeValue;
+            Log.debug("获取数量 num = ${chatItem.badgeNumber}");
+          });
+        },
+        failureCallback: (code, errorStr, data) {
+          ToastShowUtils.show(errorStr, context);
+        },
+      ));
+    };
+    dataChangeCallback = () {
+      chatItem.badgeNumber = database.badgeValue;
+      Log.debug("获取数量 num = ${chatItem.badgeNumber}");
+      setState(() {});
+    };
+    if (database.dbHasInstalled) {
+      chatItem.badgeNumber = database.badgeValue;
+      Log.debug("获取数量 num = ${chatItem.badgeNumber}");
+    }
   }
 
   void initPageController() {

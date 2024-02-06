@@ -29,6 +29,7 @@ dependencies:
   flutter_gen: ^5.0.0
 
   badges: ^2.0.2
+  tuple: ^2.0.2
   
 dev_dependencies:
   flutter_test:

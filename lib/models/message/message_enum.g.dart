@@ -177,3 +177,47 @@ class MessageEntityTypeAdapter extends TypeAdapter<MessageEntityType> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+class MessageSendStatusAdapter extends TypeAdapter<MessageSendStatus> {
+  @override
+  final int typeId = 6;
+
+  @override
+  MessageSendStatus read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return MessageSendStatus.STATUS_SEND_ING;
+      case 1:
+        return MessageSendStatus.STATUS_SEND_SUCCESS;
+      case 2:
+        return MessageSendStatus.STATUS_SEND_FAILURE;
+      default:
+        return MessageSendStatus.STATUS_SEND_ING;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, MessageSendStatus obj) {
+    switch (obj) {
+      case MessageSendStatus.STATUS_SEND_ING:
+        writer.writeByte(0);
+        break;
+      case MessageSendStatus.STATUS_SEND_SUCCESS:
+        writer.writeByte(1);
+        break;
+      case MessageSendStatus.STATUS_SEND_FAILURE:
+        writer.writeByte(2);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MessageSendStatusAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}

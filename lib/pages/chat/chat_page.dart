@@ -13,15 +13,43 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatPageState extends State<ChatPage> implements IMDatabaseListener {
+  @override
+  DatabaseCompleteCallback? completeCallback;
+
+  @override
+  DatabaseCompleteCallback? dataChangeCallback;
+
+  @override
+  DatabaseUnreadMessageNumberChange? unreadMessageNumberChange;
   List<User> chatUsers = [];
   IMDatabase database = IMDatabase.getInstance();
+
+  _ChatPageState() {
+    database.addListener(this);
+    completeCallback = () {
+      chatUsers.addAll(database.getChatUsers());
+      Log.debug("chatUsers = $chatUsers");
+      setState(() {});
+    };
+    dataChangeCallback = () {
+      setState(() {});
+    };
+  }
+
+  @override
+  void dispose() {
+    database.removeListener(this);
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
     Log.debug("chat page init state");
-    if (chatUsers.isEmpty) {
+    if (chatUsers.isEmpty && database.dbHasInstalled) {
       chatUsers.addAll(database.getChatUsers());
+      Log.debug("chatUsers = $chatUsers");
       setState(() {});
     }
   }
@@ -40,6 +68,7 @@ class _ChatPageState extends State<ChatPage> {
             child: ChatUserItem(
               user: user,
               lastMessage: database.getLastMessage(user.userId),
+              unreadNumber: database.unreadNumber(user.userId),
             ),
           );
         },

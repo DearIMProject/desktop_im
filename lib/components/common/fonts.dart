@@ -19,6 +19,14 @@ Text littleTitleFontText(Color color, String text) => Text(
 Text contentFontText(Color color, String text) => Text(
     style: TextStyle(fontWeight: FontWeight.normal, fontSize: 13, color: color),
     text);
+Text contentOverflowFontText(Color color, String text) => Text(
+    maxLines: 1,
+    style: TextStyle(
+        fontWeight: FontWeight.normal,
+        fontSize: 13,
+        color: color,
+        overflow: TextOverflow.ellipsis),
+    text);
 
 /// 辅助文字
 Text assistFontText(Color color, String text) => Text(
