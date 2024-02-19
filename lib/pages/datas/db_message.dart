@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:desktop_im/generated/intl/messages_en.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
@@ -46,9 +45,8 @@ class MessageDB implements DbProtocol {
         return;
       }
       if (message.messageType == MessageType.READED_MESSAGE) {
-        //TODO: wmy 将消息转为已读
         var timestamp = message.timestamp;
-        Tuple2<Message, int>? tuple2 = _getMessageByTimestamp(timestamp);
+        Tuple2<Message, int>? tuple2 = getMessageByTimestamp(timestamp);
         if (tuple2 != null) {
           setMessageReaded(tuple2.item1);
         }
@@ -94,9 +92,59 @@ class MessageDB implements DbProtocol {
     return null;
   }
 
-  Tuple2<Message, int /*userId*/ >? _getMessageByTimestamp(int timestamp) {
-    //TODO: wmy timestamp
+  Tuple2<Message, int /*userId*/ >? _updateMessageStatus(
+      int timestamp, MessageStatus status) {
+    List keys = box.keys.toList();
+    Tuple2<Message, int /*userId*/ >? tuple;
+    List<Message> resultMessages = [];
+    for (var i = 0; i < keys.length; i++) {
+      String uidStr = keys[i];
+      List? messages = box.get(uidStr);
+      if (messages == null || messages.isEmpty) {
+        return null;
+      }
+      resultMessages = [];
+      for (var i = messages.length - 1; i >= 0; i--) {
+        Message message = messages[i];
+        if (message.timestamp == timestamp) {
+          message.status = status;
+          tuple = Tuple2(message, int.parse(uidStr));
+        }
+        resultMessages.insert(0, message);
+      }
+    }
+    // if (tuple != null && resultMessages.isNotEmpty) {
+    //   box.put("${tuple.item2}", resultMessages);
+    //   return tuple;
+    // }
+    if (tuple != null) {
+      box.put("${tuple.item2}", resultMessages);
+      return tuple;
+    }
+
     return null;
+  }
+
+  Tuple2<Message, int /*userId*/ >? getMessageByTimestamp(int timestamp) {
+    List keys = box.keys.toList();
+    Tuple2<Message, int /*userId*/ >? tuple;
+    List<Message> resultMessages = [];
+    for (var i = 0; i < keys.length; i++) {
+      String uidStr = keys[i];
+      List? messages = box.get(uidStr);
+      if (messages == null || messages.isEmpty) {
+        return null;
+      }
+      resultMessages = [];
+      for (var i = messages.length - 1; i >= 0; i--) {
+        Message message = messages[i];
+        if (message.timestamp == timestamp) {
+          tuple = Tuple2(message, int.parse(uidStr));
+        }
+        resultMessages.insert(0, message);
+      }
+    }
+    return tuple;
   }
 
   @override
@@ -232,7 +280,7 @@ class MessageDB implements DbProtocol {
   }
 
   bool isUnreadMessage(Message message) {
-    return (message.status == MessageStatus.STATUS_NOT_SEND_UNREAD &&
+    return (message.status == MessageStatus.STATUS_SUCCESS_UNREADED &&
         message.toId == UserManager.getInstance().uid());
   }
 

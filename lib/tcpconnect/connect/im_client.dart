@@ -57,7 +57,7 @@ class IMClient implements SocketListener {
     }
   }
 
-  String host = "172.16.92.58";
+  String host = "172.16.92.60";
   int port = 9999;
 
   static IMClient getInstance() {
@@ -66,7 +66,7 @@ class IMClient implements SocketListener {
   }
 
   void dispose() {
-    _messageQueue.dispose();
+    // _messageQueue.dispose();
   }
 
   void init() {
@@ -111,18 +111,10 @@ class IMClient implements SocketListener {
   }
 
   void sendRequestLoginMessage() {
-    if (_messageQueue.hasInitialezed) {
-      _sendRequestLoginMessge();
-    } else {
-      _messageQueue.initialize().then(
-        (value) {
-          _sendRequestLoginMessge();
-        },
-      );
-    }
+    _sendRequestLoginMessge();
   }
 
-  void _sendRequestLoginMessge() {
+  Future<void> _sendRequestLoginMessge() async {
     Message messageFromType =
         MessageFactory.messageFromType(MessageType.REQUEST_LOGIN);
     sendMessage(messageFromType);
@@ -190,6 +182,7 @@ class IMClient implements SocketListener {
         MessageFactory.messageFromType(MessageType.REQUEST_OFFLINE_MESSAGES);
     messageFromType.timestamp = database.getMaxTimestamp();
     Log.debug("timestamp = ${messageFromType.timestamp}");
+
     sendMessage(messageFromType);
   }
 
@@ -197,18 +190,18 @@ class IMClient implements SocketListener {
     Log.debug("收到发送成功消息 configReceiveSendSuccessMessage $message");
     Map<String, dynamic> decode = json.decode(message.content);
     SendSuccessModel model = SendSuccessModel.fromJson(decode);
-    database.configMessageSendSuccess(
-        model, MessageSendStatus.STATUS_SEND_SUCCESS);
+    if (model.messageType == MessageType.READED_MESSAGE) {
+      database.configMessageReaded(model);
+    } else {
+      database.configMessageSendSuccess(
+          model, MessageSendStatus.STATUS_SEND_SUCCESS);
+    }
   }
 
   void sendMessage(Message message) {
     Log.debug("发送消息 = $message");
-    //做任务队列？
-    _messageQueue.addTask((replyPort) {
-      _sendMessage(message).then((value) {
-        Log.debug("发送消息成功！${message.messageType}");
-        replyPort.send(null);
-      });
+    _messageQueue.addTask(() {
+      return _sendMessage(message);
     });
   }
 

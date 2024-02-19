@@ -71,12 +71,12 @@ class _MessageListPageState extends State<MessageListPage>
       throw Exception("user is null");
     }
     if (messages.isEmpty) {
-      messages.addAll(database.getMessages(chatUser!.userId));
+      messages.addAll(database.getChatMessages(chatUser!.userId));
       configSendReadMessage();
     }
     dataChangeCallback ??= () {
       messages = [];
-      messages.addAll(database.getMessages(chatUser!.userId));
+      messages.addAll(database.getChatMessages(chatUser!.userId));
       configSendReadMessage();
       Log.debug("收到消息发生了变化 $messages");
       WidgetsBinding.instance.addPostFrameCallback(

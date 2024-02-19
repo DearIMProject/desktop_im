@@ -12,6 +12,7 @@ import 'package:desktop_im/user/user_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tuple/tuple.dart';
 
 typedef DatabaseUnreadMessageNumberChange = void Function(int unreadNumber);
 typedef DatabaseCompleteCallback = void Function();
@@ -150,6 +151,18 @@ class IMDatabase implements IMClientListener {
     return _dbMessage.getMessages(userId);
   }
 
+  List<Message> getChatMessages(int userId) {
+    List<Message> messages = _dbMessage.getMessages(userId);
+    List<Message> result = [];
+    for (var i = 0; i < messages.length; i++) {
+      Message message = messages[i];
+      if (message.messageType == MessageType.TEXT) {
+        result.add(message);
+      }
+    }
+    return result;
+  }
+
   List<User> chatUsers = [];
   List<User> getChatUsers() {
     if (chatUsers.isNotEmpty) {
@@ -212,5 +225,19 @@ class IMDatabase implements IMClientListener {
 // 设置消息为已读
   void setMessageReaded(Message message) {
     _dbMessage.setMessageReaded(message);
+  }
+
+  void configMessageReaded(SendSuccessModel model) {
+    int timestamp = int.parse(model.content);
+    Tuple2<Message, int>? tuple = _dbMessage.getMessageByTimestamp(timestamp);
+    if (tuple != null) {
+      setMessageReaded(tuple.item1);
+      for (var i = 0; i < _listeners.length; i++) {
+        IMDatabaseListener listener = _listeners[i];
+        if (listener.dataChangeCallback != null) {
+          listener.dataChangeCallback!();
+        }
+      }
+    }
   }
 }

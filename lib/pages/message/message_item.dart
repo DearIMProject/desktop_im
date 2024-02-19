@@ -5,6 +5,7 @@ import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/tcpconnect/connect/im_client.dart';
+import 'package:desktop_im/utils/time_utils.dart';
 
 import 'package:flutter/material.dart';
 
@@ -23,10 +24,29 @@ class MesssageItemView extends StatefulWidget {
 class _MesssageItemViewState extends State<MesssageItemView> {
   IMDatabase database = IMDatabase.getInstance();
   IMClient client = IMClient.getInstance();
+  bool hasSend = false;
   bool isSendToSelf() {
     return widget.message.fromId == widget.message.toId;
   }
 
+@override
+  void initState() {
+    super.initState();
+    configSendReadMessage();
+  }
+  void configSendReadMessage() {
+    if (hasSend) {
+      return;
+    }
+    hasSend = true;
+      if (!widget.message.isOwner) {
+        if (widget.message.status == MessageStatus.STATUS_NOT_SEND_UNREAD) {
+          Log.debug("xiaoxi ${widget.message}");
+          client.sendReadedMessage(widget.message);
+        }
+      }
+    }
+  }
   Widget circleView() {
     return const SizedBox(
       height: 30,
@@ -56,6 +76,22 @@ class _MesssageItemViewState extends State<MesssageItemView> {
     return const Icon(
       Icons.error,
       color: kWarningColor,
+      size: 20,
+    );
+  }
+
+  Widget readView() {
+    return const Icon(
+      Icons.check_circle,
+      color: kSuccessColor,
+      size: 20,
+    );
+  }
+
+  Widget unReadView() {
+    return const Icon(
+      Icons.check_circle_outline,
+      color: kDisableColor,
       size: 20,
     );
   }
@@ -103,19 +139,34 @@ class _MesssageItemViewState extends State<MesssageItemView> {
           padding: const EdgeInsets.fromLTRB(0, 7, 0, 0),
           child: notSendView(),
         ),
+      ),
+      Visibility(
+        visible: !widget.message.isOwner,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 7, 0, 0),
+          child: widget.message.status == MessageStatus.STATUS_SUCCESS_READED
+              ? readView()
+              : unReadView(),
+        ),
       )
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    return itemPadding(Row(
-      mainAxisAlignment: widget.message.isOwner
-          ? MainAxisAlignment.end
-          : MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children:
-          !widget.message.isOwner ? children() : children().reversed.toList(),
+    return itemPadding(Column(
+      children: [
+        Text(getTime(widget.message.timestamp)),
+        Row(
+          mainAxisAlignment: widget.message.isOwner
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: !widget.message.isOwner
+              ? children()
+              : children().reversed.toList(),
+        )
+      ],
     ));
   }
 }

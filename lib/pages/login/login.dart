@@ -3,7 +3,6 @@ import 'package:desktop_im/components/login/login_button.dart';
 import 'package:desktop_im/components/login/login_textfield.dart';
 import 'package:desktop_im/components/uikits/toast_show_utils.dart';
 import 'package:desktop_im/generated/l10n.dart';
-import 'package:desktop_im/network/request.dart';
 import 'package:desktop_im/pages/base_page.dart';
 import 'package:desktop_im/router/routers.dart';
 import 'package:desktop_im/user/login_service.dart';
@@ -99,14 +98,14 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: handleLogin,
               ),
             ),
-            SizedBox(
-              child: LoginButton(
-                onPressed: () {
-                  Request().testRequest();
-                },
-                title: "一个请求",
-              ),
-            )
+            // SizedBox(
+            //   child: LoginButton(
+            //     onPressed: () {
+            //       Request().testRequest();
+            //     },
+            //     title: "一个请求",
+            //   ),
+            // )
           ],
         ),
       ),

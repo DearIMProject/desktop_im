@@ -23,6 +23,7 @@ class MessageCodec {
     out.writeInt8(message.fromEntity.index);
     out.writeInt64(message.toId);
     out.writeInt8(message.toEntity.index);
+    out.writeInt8(message.status.index);
     ByteBuf innercontent = ByteBuf.allocator(size: 16);
     innercontent.writeString(message.content);
     out.writeInt(innercontent.couldReadableSize);
@@ -68,6 +69,8 @@ class MessageCodec {
     int toEntityType = byteBuf.readInt8();
     message.toId = toId;
     message.toEntity = intToMessageEntityType(toEntityType);
+
+    message.status = intToMessageStatus(byteBuf.readInt8());
 
     int length = byteBuf.readInt();
     Uint8List data = byteBuf.readUint8List(length);

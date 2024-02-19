@@ -8,7 +8,7 @@ String getTime(int timestamp) {
     return "${dateTime.month}月";
   }
   if (nowDateTime.day != dateTime.day) {
-    return "${dateTime.day}日";
+    return "${dateTime.month}月${dateTime.day}日";
   }
   return "${dateTime.hour}:${dateTime.minute}";
 }
