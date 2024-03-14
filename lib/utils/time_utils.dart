@@ -12,3 +12,12 @@ String getTime(int timestamp) {
   }
   return "${dateTime.hour}:${dateTime.minute}";
 }
+
+/// 是否过期
+bool isExpire(int timestamp) {
+  var currentTimestamp = DateTime.now().millisecondsSinceEpoch;
+  if (currentTimestamp < timestamp) {
+    return false;
+  }
+  return true;
+}

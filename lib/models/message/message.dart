@@ -60,6 +60,17 @@ class Message extends HiveObject {
     return false;
   }
 
+  bool get isChatMessage {
+    if (messageType == MessageType.CHAT_MESSAGE ||
+        messageType == MessageType.FILE ||
+        messageType == MessageType.LINK ||
+        messageType == MessageType.PICTURE ||
+        messageType == MessageType.TEXT) {
+      return true;
+    }
+    return false;
+  }
+
   factory Message.fromJson(Map<String, dynamic> json) =>
       _$MessageFromJson(json);
   Map<String, dynamic> toJson() => _$MessageToJson(this);
@@ -69,80 +80,3 @@ class Message extends HiveObject {
     return 'Message{msgId=$msgId, fromId=$fromId, fromEntity=$fromEntity, toId=$toId, toEntity=$toEntity, content=$content, messageType=$messageType, timestamp=$timestamp, status=$status, sendStatue=$sendStatue}';
   }
 }
-
-// class TextMessage extends Message {
-//   @override
-//   MessageType get messageType {
-//     return MessageType.TEXT;
-//   }
-// }
-
-// class RequestLoginMessage extends Message {
-//   @override
-//   MessageType get messageType {
-//     return MessageType.REQUEST_LOGIN;
-//   }
-// }
-
-// class ChatMessage extends Message {
-//   @override
-//   MessageType get messageType {
-//     return MessageType.CHAT_MESSAGE;
-//   }
-// }
-
-// class FileMessage extends Message {
-//   @override
-//   MessageType get messageType {
-//     return MessageType.FILE;
-//   }
-// }
-
-// class HeartBeatMessage extends Message {
-//   @override
-//   MessageType get messageType {
-//     return MessageType.HEART_BEAT;
-//   }
-// }
-
-// class LinkMessage extends Message {
-//   @override
-//   MessageType get messageType {
-//     return MessageType.LINK;
-//   }
-// }
-
-// class PictureMessage extends Message {
-//   @override
-//   MessageType get messageType {
-//     return MessageType.PICTURE;
-//   }
-// }
-
-// class ReadedMessage extends Message {
-//   @override
-//   MessageType get messageType {
-//     return MessageType.READED_MESSAGE;
-//   }
-// }
-
-// class RequestOfflineMessage extends Message {
-//   @override
-//   MessageType get messageType {
-//     return MessageType.REQUEST_OFFLINE_MESSAGES;
-//   }
-// }
-
-// class SendSuccessMessage extends Message {
-//   @override
-//   MessageType get messageType {
-//     return MessageType.SEND_SUCCESS_MESSAGE;
-//   }
-// }
-
-// class TransparendMessage extends Message {
-//   @override
-//   MessageType get messageType {
-//     return MessageType.TRANSPARENT_MESSAGE;
-//   }
-// }

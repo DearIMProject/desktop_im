@@ -13,6 +13,7 @@ import 'package:desktop_im/pages/chat/chat_page.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/pages/profile/profile_page.dart';
 import 'package:desktop_im/router/routers.dart';
+import 'package:desktop_im/tcpconnect/connect/im_client.dart';
 import 'package:desktop_im/user/login_service.dart';
 import 'package:desktop_im/user/user_manager.dart';
 import 'package:flutter/material.dart';
@@ -24,13 +25,23 @@ class HomePage extends BasePage {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> implements IMDatabaseListener {
+class _HomePageState extends State<HomePage>
+    implements IMDatabaseListener, IMClientListener {
   @override
   DatabaseUnreadMessageNumberChange? unreadMessageNumberChange;
   @override
   DatabaseCompleteCallback? completeCallback;
   @override
   DatabaseCompleteCallback? dataChangeCallback;
+
+  @override
+  IMClientConnectSuccessCallback? connectSuccessCallback;
+
+  @override
+  IMClientReceiveMessageCallback? messageCallback;
+
+  @override
+  IMClientUnReadedMessageCallback? unreadMessageCallback;
 
   PageController? pageController;
   BottomTabbarItem chatItem =
@@ -60,21 +71,30 @@ class _HomePageState extends State<HomePage> implements IMDatabaseListener {
       });
     };
     database.addListener(this);
-    completeCallback = () {
+    IMClient.getInstance().addListener(this);
+    connectSuccessCallback = () {
+      Log.debug("home page listener completeCallback");
       AddressbookService.getAllAddressbook(AddressCallback(
         successCallback: (users) {
+          Log.debug("通讯录信息都获取成功");
           NotificationStream().publish(kAddressReadyNotification);
-          Log.debug("获取未读信息 ${database.badgeValue}");
-          setState(() {
-            chatItem.badgeNumber = database.badgeValue;
-            Log.debug("获取数量 num = ${chatItem.badgeNumber}");
-          });
+          Log.debug("发送Login消息");
+          IMClient.getInstance().sendRequestLoginMessage();
         },
         failureCallback: (code, errorStr, data) {
           ToastShowUtils.show(errorStr, context);
         },
       ));
     };
+
+    completeCallback = () {
+      Log.debug("获取未读信息 ${database.badgeValue}");
+      setState(() {
+        chatItem.badgeNumber = database.badgeValue;
+        Log.debug("获取数量 num = ${chatItem.badgeNumber}");
+      });
+    };
+
     dataChangeCallback = () {
       chatItem.badgeNumber = database.badgeValue;
       Log.debug("获取数量 num = ${chatItem.badgeNumber}");
@@ -112,6 +132,7 @@ class _HomePageState extends State<HomePage> implements IMDatabaseListener {
     if (hasAutoLogin) {
       return;
     }
+    hasAutoLogin = true;
     String token = UserManager.getInstance().userToken();
     Log.debug("token = $token");
     if (token.isNotEmpty) {
@@ -120,10 +141,10 @@ class _HomePageState extends State<HomePage> implements IMDatabaseListener {
           token,
           Callback(
             successCallback: () {
-              hasAutoLogin = true;
+              // hasAutoLogin = true;
             },
             failureCallback: (code, errorStr, data) {
-              hasAutoLogin = false;
+              // hasAutoLogin = false;
               Routers().openRouter("/login", {}, context);
             },
           ));

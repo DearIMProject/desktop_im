@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 // ignore: depend_on_referenced_packages
 import 'package:logger/logger.dart';
@@ -13,27 +15,39 @@ class Log {
   // static const _magenta = '${_escape}35m';
   // static const _cyan = '${_escape}36m';
   Log.debug(String content) {
-    print(content);
-    // if (kDebugMode) {
-    //   Logger().d('$_green$content$_resetColor');
-    // }
+    if (kDebugMode) {
+      if (Platform.isIOS) {
+        Logger().d(content);
+      } else {
+        Logger().d('$_blue$content$_resetColor');
+      }
+    }
   }
   Log.info(String content) {
-    print(content);
-    // if (kDebugMode) {
-    //   Logger().d('$_blue$content$_resetColor');
-    // }
+    if (kDebugMode) {
+      if (Platform.isIOS) {
+        Logger().i(content);
+      } else {
+        Logger().i('$_green$content$_resetColor');
+      }
+    }
   }
   Log.warn(String content) {
-    print(content);
-    // if (kDebugMode) {
-    //   Logger().d('$_yellow$content$_resetColor');
-    // }
+    if (kDebugMode) {
+      if (Platform.isIOS) {
+        Logger().w(content);
+      } else {
+        Logger().w('$_yellow$content$_resetColor');
+      }
+    }
   }
   Log.error(String content) {
-    print(content);
-    // if (kDebugMode) {
-    //   Logger().d('$_red$content$_resetColor');
-    // }
+    if (kDebugMode) {
+      if (Platform.isIOS) {
+        Logger().e(content);
+      } else {
+        Logger().e('$_red$content$_resetColor');
+      }
+    }
   }
 }

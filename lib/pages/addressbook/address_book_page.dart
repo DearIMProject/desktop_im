@@ -1,12 +1,12 @@
 import 'package:desktop_im/components/common/common_theme.dart';
 import 'package:desktop_im/components/ui/address_item.dart';
 import 'package:desktop_im/components/uikits/toast_show_utils.dart';
-import 'package:desktop_im/log/log.dart';
 
 import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/pages/addressbook/service/addressbook_service.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/router/routers.dart';
+
 import 'package:flutter/material.dart';
 
 class AddressBookPage extends StatefulWidget {
@@ -16,15 +16,9 @@ class AddressBookPage extends StatefulWidget {
   State<AddressBookPage> createState() => _AddressBookPageState();
 }
 
-class _AddressBookPageState extends State<AddressBookPage>
-    implements IMDatabaseListener {
+class _AddressBookPageState extends State<AddressBookPage> {
   final List<User> addressUsers = [];
-  @override
-  DatabaseCompleteCallback? completeCallback;
-  @override
-  DatabaseCompleteCallback? dataChangeCallback;
-  @override
-  DatabaseUnreadMessageNumberChange? unreadMessageNumberChange;
+
   void requestDatas(BuildContext context) {
     AddressbookService.getAllAddressbook(
       AddressCallback(
@@ -40,22 +34,19 @@ class _AddressBookPageState extends State<AddressBookPage>
   }
 
   void click(User addressUser) {
+    // Message message = MessageFactory.messageFromType(MessageType.EMPTY_MESSAGE);
+    // message.fromId = UserManager.getInstance().uid();
+    // message.toId = addressUser.userId;
+    // database.addMessage(message);
     Routers().openRouter("/message", {"user": addressUser}, context);
   }
 
   IMDatabase database = IMDatabase.getInstance();
-  _AddressBookPageState() {
-    database.addListener(this);
-  }
 
   @override
   void initState() {
     super.initState();
-    Log.debug("addresspage initState");
-    completeCallback = () {
-      Log.debug("address book page 收到数据库初始化成功");
-      requestDatas(context);
-    };
+
     if (database.dbHasInstalled) {
       if (addressUsers.isEmpty) {
         addressUsers.addAll(database.getUsers());

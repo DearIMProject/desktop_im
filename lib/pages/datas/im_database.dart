@@ -28,6 +28,9 @@ class IMDatabase implements IMClientListener {
   IMClientReceiveMessageCallback? messageCallback;
   @override
   IMClientUnReadedMessageCallback? unreadMessageCallback;
+  @override
+  IMClientConnectSuccessCallback? connectSuccessCallback;
+
   bool dbHasInstalled = false;
 
   // 初始化
@@ -38,6 +41,8 @@ class IMDatabase implements IMClientListener {
   }
 
   final List<IMDatabaseListener> _listeners = [];
+
+  /// 添加一个监听
   addListener(IMDatabaseListener listener) {
     if (!_listeners.contains(listener)) {
       Log.debug("添加一个listener = $listener");
@@ -45,6 +50,7 @@ class IMDatabase implements IMClientListener {
     }
   }
 
+  /// 删除一个监听
   removeListener(IMDatabaseListener listener) {
     if (_listeners.contains(listener)) {
       Log.debug("移除一个listener = $listener");
@@ -62,7 +68,7 @@ class IMDatabase implements IMClientListener {
   final MessageDB _dbMessage = MessageDB();
   final UserDB _dbUser = UserDB();
 
-  Future<void> initialDatabase(String boxName) {
+  Future<void> _initialDatabase(String boxName) {
     Completer<void> completer = Completer<void>();
 
     Hive.registerAdapter(MessageAdapter());
@@ -76,6 +82,7 @@ class IMDatabase implements IMClientListener {
         initBadgeValue();
         dbHasInstalled = true;
         completer.complete();
+        Log.debug("Listeners = $_listeners");
         for (var i = 0; i < _listeners.length; i++) {
           IMDatabaseListener listener = _listeners[i];
           if (listener.completeCallback != null) {
@@ -96,6 +103,9 @@ class IMDatabase implements IMClientListener {
     if (dbHasInstalled) {
       return;
     }
+    if (boxName.isEmpty) {
+      return;
+    }
     Log.info("开始初始化数据库...");
     messageCallback = (message) {
       addMessage(message);
@@ -109,7 +119,7 @@ class IMDatabase implements IMClientListener {
         }
       }
     };
-    await initialDatabase(boxName);
+    await _initialDatabase(boxName);
   }
 
   Future<void> init() async {
@@ -127,9 +137,16 @@ class IMDatabase implements IMClientListener {
     _dbUser.uninstall();
   }
 
-  // 添加一条消息
+  /// 添加一条消息
   void addMessage(Message message) {
     _dbMessage.addItem(message);
+    int userId = _dbMessage.getMUserId(message);
+    User? user = _dbUser.getItem(userId);
+    if (user != null) {
+      user.isChat = true;
+      _dbUser.updateItem(user);
+    }
+    // 告诉监听消息添加
     for (var i = 0; i < _listeners.length; i++) {
       IMDatabaseListener listener = _listeners[i];
       if (listener.dataChangeCallback != null) {
@@ -171,7 +188,7 @@ class IMDatabase implements IMClientListener {
     List<int> chatUserIds = _dbMessage.getChatUsers();
     for (var i = 0; i < chatUserIds.length; i++) {
       int chatUserId = chatUserIds[i];
-      User? chatUser = _dbUser.getUser(chatUserId);
+      User? chatUser = _dbUser.getItem(chatUserId);
       if (chatUser != null) {
         chatUsers.add(chatUser);
       }
@@ -185,19 +202,19 @@ class IMDatabase implements IMClientListener {
   }
 
   Future<int> removeAll() async {
-    int removeSuccess = await _dbMessage.deleteAll();
+    int removeSuccess = await _dbMessage.deleteAllDatas();
     Log.debug("remove = $removeSuccess");
     await User().removeAll();
-    return _dbUser.deleteAll();
+    return _dbUser.deleteAllDatas();
   }
 
   /// 添加用户
   void addUser(User user) {
-    _dbUser.addUser(user);
+    _dbUser.addItem(user);
   }
 
   List<User> getUsers() {
-    return _dbUser.getUsers();
+    return _dbUser.getItems();
   }
 
   /// 获取用户最新的Message

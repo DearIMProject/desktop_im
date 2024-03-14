@@ -33,7 +33,7 @@ class SocketManager implements SocketProtocol {
       (event) {
         if (listener != null && listener!.receiveCallback != null) {
           listener!.receiveCallback!(event);
-          Log.debug('Received: $event');
+          // Log.debug('Received: $event');
         }
       },
       onError: (error) {

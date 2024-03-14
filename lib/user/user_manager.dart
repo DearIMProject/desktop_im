@@ -1,4 +1,5 @@
 import 'package:desktop_im/models/user.dart';
+import 'package:desktop_im/utils/time_utils.dart';
 
 class UserManager {
   static UserManager? _instance;
@@ -31,6 +32,10 @@ class UserManager {
       return _user.token;
     }
     return "";
+  }
+
+  bool isNotExpire() {
+    return isExpire(_user.expireTime);
   }
 
   int uid() {

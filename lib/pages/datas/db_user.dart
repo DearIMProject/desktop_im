@@ -5,7 +5,8 @@ import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/pages/datas/db_protocol.dart';
 import 'package:hive/hive.dart';
 
-class UserDB implements DbProtocol {
+/// 用于存放通讯录的信息
+class UserDB implements DbProtocol<User> {
   late Box<User> box;
   @override
   Future<void> install(String boxName) async {
@@ -25,34 +26,31 @@ class UserDB implements DbProtocol {
 
   @override
   void addItem(item) {
-    // TODO: implement addItem
+    box.put(item.userId, item);
   }
 
   @override
   void removeItem(item) {
-    // TODO: implement removeItem
+    box.delete(item.userId);
   }
 
   @override
   void updateItem(item) {
-    // TODO: implement updateItem
+    box.put(item.userId, item);
   }
 
-  Future<int> deleteAll() {
-    return box.clear();
+  @override
+  getItem(int id) {
+    return box.get(id);
   }
 
-  /// 根据userId获取user
-  User? getUser(int chatUserId) {
-    return box.get(chatUserId);
-  }
-
-  /// 添加用户
-  void addUser(User user) {
-    box.put(user.userId, user);
-  }
-
-  List<User> getUsers() {
+  @override
+  List<User> getItems() {
     return box.values.toList();
+  }
+
+  @override
+  Future<int> deleteAllDatas() {
+    return box.clear();
   }
 }

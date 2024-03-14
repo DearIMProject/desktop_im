@@ -1,4 +1,6 @@
 import 'package:desktop_im/components/common/common_theme.dart';
+import 'package:desktop_im/components/ui/add_keyboard.dart';
+import 'package:desktop_im/components/ui/emj_keyboard.dart';
 import 'package:desktop_im/components/ui/message_input.dart';
 
 import 'package:desktop_im/log/log.dart';
@@ -14,6 +16,9 @@ import 'package:desktop_im/tcpconnect/connect/message_factory.dart';
 import 'package:desktop_im/user/user_manager.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 class MessageListPage extends BasePage {
   const MessageListPage({super.key, super.params});
@@ -25,6 +30,7 @@ class MessageListPage extends BasePage {
 class _MessageListPageState extends State<MessageListPage>
     implements IMDatabaseListener {
   User? chatUser;
+
   User? user = UserManager.getInstance().user;
   List<Message> messages = [];
   IMDatabase database = IMDatabase.getInstance();
@@ -38,7 +44,9 @@ class _MessageListPageState extends State<MessageListPage>
   @override
   DatabaseUnreadMessageNumberChange? unreadMessageNumberChange;
   final ScrollController _scrollController = ScrollController();
-
+  late final VoidCallback _keyboardOpenedListener;
+  final KeyboardVisibilityController _keyboardVisibilityController =
+      KeyboardVisibilityController();
   @override
   void dispose() {
     database.removeListener(this);
@@ -48,6 +56,12 @@ class _MessageListPageState extends State<MessageListPage>
 
   _MessageListPageState() {
     database.addListener(this);
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection !=
+          ScrollDirection.idle) {
+        FocusManager.instance.primaryFocus?.unfocus();
+      }
+    });
   }
 // 滚动到底部
   void _scrollToBottom() {
@@ -72,16 +86,16 @@ class _MessageListPageState extends State<MessageListPage>
     }
     if (messages.isEmpty) {
       messages.addAll(database.getChatMessages(chatUser!.userId));
-      configSendReadMessage();
     }
     dataChangeCallback ??= () {
       messages = [];
       messages.addAll(database.getChatMessages(chatUser!.userId));
-      configSendReadMessage();
+      // configSendReadMessage();
       Log.debug("收到消息发生了变化 $messages");
       WidgetsBinding.instance.addPostFrameCallback(
         (_) {
           setState(() {});
+          _scrollToBottom();
         },
       );
     };
@@ -90,24 +104,27 @@ class _MessageListPageState extends State<MessageListPage>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
     });
+
+    _keyboardOpenedListener = () {
+      _scrollToBottom();
+    };
+    _keyboardVisibilityController.onChange.listen((bool visible) {
+      if (visible) {
+        setState(() {
+          addVisiable = false;
+          emjVisiable = false;
+        });
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          Future.delayed(const Duration(milliseconds: 300))
+              .then((value) => _keyboardOpenedListener());
+        });
+      }
+    });
   }
 
   bool hasSend = false;
-  void configSendReadMessage() {
-    if (hasSend) {
-      return;
-    }
-    hasSend = true;
-    for (Message message in messages) {
-      if (!message.isOwner) {
-        if (message.status == MessageStatus.STATUS_NOT_SEND_UNREAD) {
-          Log.debug("xiaoxi $message");
-          client.sendReadedMessage(message);
-        }
-      }
-    }
-  }
-
+  bool addVisiable = false;
+  bool emjVisiable = false;
   @override
   Widget build(BuildContext context) {
     // Log.debug("chatUser = $chatUser");
@@ -120,19 +137,20 @@ class _MessageListPageState extends State<MessageListPage>
       body: Column(
         children: [
           Expanded(
-            child: pagePadding(
-              ListView.builder(
-                controller: _scrollController,
-                itemCount: messages.length,
-                itemBuilder: (BuildContext context, int index) {
-                  Message message = messages[index];
-                  return MesssageItemView(
-                      message: message,
-                      icon: message.isOwner ? user!.icon : chatUser!.icon);
-                },
-              ),
+              child: pagePadding(
+            ListView.builder(
+              controller: _scrollController,
+              itemCount: messages.length,
+              itemBuilder: (BuildContext context, int index) {
+                Message message = messages[index];
+                return (message.isChatMessage)
+                    ? MesssageItemView(
+                        message: message,
+                        icon: message.isOwner ? user!.icon : chatUser!.icon)
+                    : null;
+              },
             ),
-          ),
+          )),
           MessageInputView(
             sendCallback: (text) {
               if (text.isNotEmpty) {
@@ -146,11 +164,39 @@ class _MessageListPageState extends State<MessageListPage>
                 client.sendMessage(message);
                 messages.add(message);
                 Log.debug("发送了一个消息：$message");
+
                 setState(() {});
-                _scrollToBottom();
               }
             },
+            addClickCallback: () {
+              setState(() {
+                FocusScope.of(context).unfocus();
+                addVisiable = !addVisiable;
+                emjVisiable = false;
+                _scrollToBottom();
+              });
+            },
+            emjClickCallback: () {
+              setState(() {
+                FocusScope.of(context).unfocus();
+                emjVisiable = !emjVisiable;
+                addVisiable = false;
+                _scrollToBottom();
+              });
+            },
           ),
+          Visibility(
+            visible: addVisiable,
+            child: const AddKeyboard(),
+          ),
+          Visibility(
+            visible: emjVisiable,
+            child: const EmjKeyboard(),
+          ),
+          const SafeArea(
+              child: SizedBox(
+            height: 0,
+          )),
         ],
       ),
     );

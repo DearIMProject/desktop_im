@@ -17,7 +17,7 @@ enum MessageType {
   FILE, //(2, "文件"),
   @HiveField(3)
   @JsonValue(3)
-  LINK, //(3, "连接"),
+  LINK, //(3, "链接"),
   @JsonValue(4)
   @HiveField(4)
   CHAT_MESSAGE, //(4, "聊天消息列表"),
@@ -39,6 +39,9 @@ enum MessageType {
   @HiveField(10)
   @JsonValue(10)
   TRANSPARENT_MESSAGE, //(10, "透传消息");
+  // @HiveField(11)
+  // @JsonValue(11)
+  // EMPTY_MESSAGE, // 空消息，用来占位
 }
 
 MessageType intToMessageType(int index) {

@@ -30,7 +30,9 @@ dependencies:
 
   badges: ^2.0.2
   tuple: ^2.0.2
-  
+  flutter_keyboard_visibility: ^5.0.2
+  image_picker: ^1.0.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

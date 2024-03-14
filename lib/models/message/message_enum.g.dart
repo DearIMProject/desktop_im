@@ -35,6 +35,8 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
         return MessageType.SEND_SUCCESS_MESSAGE;
       case 10:
         return MessageType.TRANSPARENT_MESSAGE;
+      // case 11:
+      //   return MessageType.EMPTY_MESSAGE;
       default:
         return MessageType.TEXT;
     }
@@ -76,6 +78,9 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
       case MessageType.TRANSPARENT_MESSAGE:
         writer.writeByte(10);
         break;
+      // case MessageType.EMPTY_MESSAGE:
+      //   writer.writeByte(11);
+      // break;
     }
   }
 

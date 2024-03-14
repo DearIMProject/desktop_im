@@ -5,7 +5,7 @@ import XCTest
 class RunnerTests: XCTestCase {
 
   func testExample() {
-      if let url = URL(string: "https://172.16.92.60:8888/user/login") {
+      if let url = URL(string: "https://172.16.92.73:8888/user/login") {
           // 创建URLSession配置
           let config = URLSessionConfiguration.default
           let session = URLSession(configuration: config)

@@ -29,24 +29,26 @@ class _MesssageItemViewState extends State<MesssageItemView> {
     return widget.message.fromId == widget.message.toId;
   }
 
-@override
+  @override
   void initState() {
     super.initState();
     configSendReadMessage();
   }
+
   void configSendReadMessage() {
     if (hasSend) {
       return;
     }
     hasSend = true;
-      if (!widget.message.isOwner) {
-        if (widget.message.status == MessageStatus.STATUS_NOT_SEND_UNREAD) {
-          Log.debug("xiaoxi ${widget.message}");
-          client.sendReadedMessage(widget.message);
-        }
+    if (!widget.message.isOwner) {
+      Log.debug("${widget.message.status}");
+      if (widget.message.status == MessageStatus.STATUS_SUCCESS_UNREADED) {
+        Log.debug("消息 ${widget.message}");
+        client.sendReadedMessage(widget.message);
       }
     }
   }
+
   Widget circleView() {
     return const SizedBox(
       height: 30,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:desktop_im/config.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
@@ -20,12 +21,20 @@ import 'package:flutter/foundation.dart';
 
 typedef IMClientReceiveMessageCallback = void Function(Message message);
 typedef IMClientUnReadedMessageCallback = void Function(int unreadNumber);
+typedef IMClientConnectSuccessCallback = void Function();
+
 // ignore: constant_identifier_names
 const String MAGIC_NUMBER = "891013";
 
 abstract class IMClientListener {
+  /// 收到消息回调
   IMClientReceiveMessageCallback? messageCallback;
+
+  /// 未读消息回调
   IMClientUnReadedMessageCallback? unreadMessageCallback;
+
+  /// 连接成功
+  IMClientConnectSuccessCallback? connectSuccessCallback;
 }
 
 class IMClient implements SocketListener {
@@ -57,7 +66,7 @@ class IMClient implements SocketListener {
     }
   }
 
-  String host = "172.16.92.60";
+  String host = HOST;
   int port = 9999;
 
   static IMClient getInstance() {
@@ -76,8 +85,13 @@ class IMClient implements SocketListener {
     _socketManager.listener = _instance;
     connectSuccess = () {
       Log.info("成功建立长连接！");
-      //发送一个Login消息
-      sendRequestLoginMessage();
+      if (listeners.isNotEmpty) {
+        for (IMClientListener listener in listeners) {
+          if (listener.connectSuccessCallback != null) {
+            listener.connectSuccessCallback!();
+          }
+        }
+      }
     };
     sendMessageSuccess = (int timestamp) {
       Log.info("消息发送成功！ timestamp = $timestamp");

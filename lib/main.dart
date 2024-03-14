@@ -37,7 +37,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  /// 长连接
   IMClient connectManager = IMClient.getInstance();
+
+  /// 数据库
   IMDatabase database = IMDatabase.getInstance();
   @override
   void initState() {

@@ -29,12 +29,17 @@ class _ChatPageState extends State<ChatPage> implements IMDatabaseListener {
     database.addListener(this);
     completeCallback = () {
       chatUsers.addAll(database.getChatUsers());
-      Log.debug("chatUsers = $chatUsers");
+      // Log.debug("chatUsers = $chatUsers");
       setState(() {});
     };
     dataChangeCallback = () {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        setState(() {});
+        setState(() {
+          chatUsers = [];
+          chatUsers.addAll(database.getChatUsers());
+          Log.debug("chatUsers = $chatUsers");
+          setState(() {});
+        });
       });
     };
   }

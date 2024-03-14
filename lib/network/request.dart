@@ -26,60 +26,40 @@ class Request {
     return _instance;
   }
 
-  // void uploadRequest(String apiName, String filePath, Map<String, dynamic> map,
-  //     Callback callback) async {
-  //   Response response;
-  //   Map<String, dynamic> param = <String, dynamic>{};
-  //   param.addAll(map);
-  //   param["file"] = await MultipartFile.fromFile(filePath, filename: filePath);
-  //   FormData formData = FormData.fromMap(
-  //       {"file": await MultipartFile.fromFile(filePath, filename: filePath)});
-  //   try {
-  //     response = await Dio().post(apiName, data: formData);
-  //     Map<String, dynamic> responseMap = response.data;
-  //     Logger().d(responseMap);
-  //     int code = responseMap["code"];
-  //     if (code != 200) {
-  //       // 返回失败内容 给出回调
-  //       if (callback.failureCallback != null) {
-  //         callback.failureCallback!(
-  //             responseMap["code"], responseMap["msg"], responseMap["data"]);
-  //       }
-  //       //TODO: code 的处理
-  //     } else {
-  //       if (callback.successCallback != null) {
-  //         dynamic data = responseMap["data"];
-  //         callback.successCallback!(data);
-  //         Logger().d(data);
-  //       }
-  //     }
-  //   } catch (e) {
-  //     Logger().d("catch e" + e.toString());
-  //     if (callback.failureCallback != null) {
-  //       callback.failureCallback!(500, "server failure", {});
-  //     }
-  //   }
-  // }
-
-  // Future<void> testRequest() async {
-  //   Log.debug("content");
-  //   Response response;
-  //   Map<String, dynamic> param = <String, dynamic>{};
-  //   try {
-  //     FormData formData = FormData.fromMap(param);
-  //     String address = "https://www.baidu.com";
-  //     // Log.debug("address = $address");
-  //     // Log.info("param = $param");
-  //     Dio dio = Dio();
-  //     dio.options.headers.addAll(systemParam());
-  //     response = await dio.post(address, data: formData);
-
-  //     Map<String, dynamic> responseMap = response.data;
-  //     Log.debug("response = $response");
-  //   } catch (e) {
-  //     Log.warn("catch e = $e");
-  //   }
-  // }
+  void uploadRequest(String apiName, String filePath, Map<String, dynamic> map,
+      RequestCallback callback) async {
+    Response response;
+    Map<String, dynamic> param = <String, dynamic>{};
+    param.addAll(map);
+    param["file"] = await MultipartFile.fromFile(filePath, filename: filePath);
+    FormData formData = FormData.fromMap(
+        {"file": await MultipartFile.fromFile(filePath, filename: filePath)});
+    try {
+      response = await Dio().post(apiName, data: formData);
+      Map<String, dynamic> responseMap = response.data;
+      Log.debug("$responseMap");
+      int code = responseMap["code"];
+      if (code != 200) {
+        // 返回失败内容 给出回调
+        if (callback.failureCallback != null) {
+          callback.failureCallback!(
+              responseMap["code"], responseMap["msg"], responseMap["data"]);
+        }
+        //TODO: code 的处理
+      } else {
+        if (callback.successCallback != null) {
+          dynamic data = responseMap["data"];
+          callback.successCallback!(data);
+          Log.debug("$data");
+        }
+      }
+    } catch (e) {
+      Log.debug("$e");
+      if (callback.failureCallback != null) {
+        callback.failureCallback!(500, "server failure", {});
+      }
+    }
+  }
 
   void postRequest(String apiName, Map<String, dynamic> map,
       RequestCallback callback) async {
