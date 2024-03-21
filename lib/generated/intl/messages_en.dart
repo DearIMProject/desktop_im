@@ -26,6 +26,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "address_book": MessageLookupByLibrary.simpleMessage("Address Book"),
         "addressbook": MessageLookupByLibrary.simpleMessage("addressbook"),
         "chat": MessageLookupByLibrary.simpleMessage("chat"),
+        "chat_user_image": MessageLookupByLibrary.simpleMessage("[image]"),
         "fail_to_load_image":
             MessageLookupByLibrary.simpleMessage("failed to load image"),
         "failure": MessageLookupByLibrary.simpleMessage("failure"),

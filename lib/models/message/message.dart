@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:desktop_im/models/fileBean.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
 import 'package:desktop_im/user/user_manager.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -74,6 +77,14 @@ class Message extends HiveObject {
   factory Message.fromJson(Map<String, dynamic> json) =>
       _$MessageFromJson(json);
   Map<String, dynamic> toJson() => _$MessageToJson(this);
+
+  FileBean? get imageFileBean {
+    if (messageType == MessageType.PICTURE) {
+      Map<String, dynamic> json = jsonDecode(content);
+      return FileBean.fromJson(json);
+    }
+    return null;
+  }
 
   @override
   String toString() {

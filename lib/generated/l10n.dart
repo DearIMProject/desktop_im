@@ -209,6 +209,16 @@ class S {
       args: [],
     );
   }
+
+  /// `[image]`
+  String get chat_user_image {
+    return Intl.message(
+      '[image]',
+      name: 'chat_user_image',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

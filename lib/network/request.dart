@@ -3,8 +3,10 @@
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/network/request_manager.dart';
 import 'package:desktop_im/user/user_manager.dart';
+import 'package:desktop_im/utils/file_utils.dart';
 
 import 'package:dio/dio.dart';
+import 'package:tuple/tuple.dart';
 
 typedef RequestSuccessCallback = void Function(dynamic data);
 typedef RequestFailureCallback = void Function(
@@ -30,12 +32,21 @@ class Request {
       RequestCallback callback) async {
     Response response;
     Map<String, dynamic> param = <String, dynamic>{};
+    param.addAll(systemParam());
     param.addAll(map);
-    param["file"] = await MultipartFile.fromFile(filePath, filename: filePath);
-    FormData formData = FormData.fromMap(
-        {"file": await MultipartFile.fromFile(filePath, filename: filePath)});
+
+    MultipartFile file =
+        await MultipartFile.fromFile(filePath, filename: filePath);
+    // Tuple2<int, int> fileWidth = await FileUtils.imageWidth(file);
+    FormData formData = FormData.fromMap({"file": file});
+    // param["width"] = fileWidth.item1;
+    // param["height"] = fileWidth.item2;
     try {
-      response = await Dio().post(apiName, data: formData);
+      String address = host + apiName;
+      Log.debug("address = $address");
+      Log.debug("param = $param");
+      response =
+          await Dio().post(address, data: formData, queryParameters: param);
       Map<String, dynamic> responseMap = response.data;
       Log.debug("$responseMap");
       int code = responseMap["code"];
@@ -54,7 +65,6 @@ class Request {
         }
       }
     } catch (e) {
-      Log.debug("$e");
       if (callback.failureCallback != null) {
         callback.failureCallback!(500, "server failure", {});
       }

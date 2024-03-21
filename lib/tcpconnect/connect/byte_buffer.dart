@@ -155,14 +155,14 @@ class ByteBuf {
 
     var strBytes = Uint8ListUtils.convertStringToUint8List(str);
     final int strLen = strBytes.length;
-    writeInt32(strLen);
+    writeInt(strLen);
 
     writeUint8List(strBytes);
   }
 
   //读取字符串
   String? readString() {
-    final int strLen = readInt32();
+    final int strLen = readInt();
     if (strLen < 0) {
       return null;
     } else if (strLen == 0) {

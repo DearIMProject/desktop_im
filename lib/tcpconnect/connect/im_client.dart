@@ -141,6 +141,7 @@ class IMClient implements SocketListener {
     }
     switch (message.messageType) {
       case MessageType.TEXT:
+      case MessageType.PICTURE:
         configReceiveTextMessage(message);
         break;
       case MessageType.REQUEST_LOGIN:

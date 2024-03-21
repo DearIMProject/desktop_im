@@ -1,5 +1,7 @@
 import 'package:desktop_im/components/common/common_theme.dart';
+import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/models/message/message.dart';
+import 'package:desktop_im/models/message/message_enum.dart';
 import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/utils/time_utils.dart';
@@ -31,8 +33,11 @@ class _ChatUserItemState extends State<ChatUserItem> {
     columnChildren.add(littleTitleFontText(kTitleColor, widget.user!.username));
 
     if (widget.lastMessage != null) {
-      columnChildren.add(
-          contentOverflowFontText(kDisableColor, widget.lastMessage!.content));
+      String content = widget.lastMessage!.content;
+      if (widget.lastMessage!.messageType == MessageType.PICTURE) {
+        content = S.current.chat_user_image;
+      }
+      columnChildren.add(contentOverflowFontText(kDisableColor, content));
     }
     children.add(Expanded(
         flex: 10,

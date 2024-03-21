@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/tcpconnect/socket/socket_protocol.dart';
+import 'package:desktop_im/utils/uint8list_utils.dart';
 
 class SocketManager implements SocketProtocol {
   // static SocketManager? _instance;
@@ -61,7 +62,8 @@ class SocketManager implements SocketProtocol {
   @override
   Future<void> sendData(Uint8List data, int timestamp) async {
     Completer completer = Completer();
-    Log.debug("发送一个信息：$data");
+    String dataStr = Uint8ListUtils.uint8ListToHex(data);
+    Log.debug("发送一个信息：$dataStr");
     _socket.add(data);
     _socket.flush().then((value) => completer.complete());
     if (listener != null && listener!.sendMessageSuccess != null) {

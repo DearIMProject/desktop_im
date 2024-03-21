@@ -53,8 +53,6 @@ class User extends HiveObject {
   int registerTime = 0;
   @HiveField(11)
   String icon = "";
-  @HiveField(12)
-  bool isChat = false;
 
   User([
     this.userId = 0,
@@ -69,7 +67,6 @@ class User extends HiveObject {
     this.icon = "",
     this.vipExpired = "",
     this.os = "",
-    this.isChat = false,
   ]);
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
@@ -152,6 +149,6 @@ class User extends HiveObject {
 
   @override
   String toString() {
-    return 'User{_userBox=$_userBox, userId=$userId, token=$token, username=$username, email=$email, password=$password, expireTime=$expireTime, status=$status, vipStatus=$vipStatus, vipExpired=$vipExpired, os=$os, registerTime=$registerTime, icon=$icon, isChat=$isChat}';
+    return 'User{_userBox=$_userBox, userId=$userId, token=$token, username=$username, email=$email, password=$password, expireTime=$expireTime, status=$status, vipStatus=$vipStatus, vipExpired=$vipExpired, os=$os, registerTime=$registerTime, icon=$icon}';
   }
 }

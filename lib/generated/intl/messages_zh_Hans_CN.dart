@@ -26,6 +26,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "address_book": MessageLookupByLibrary.simpleMessage("通讯录"),
         "addressbook": MessageLookupByLibrary.simpleMessage("通讯录"),
         "chat": MessageLookupByLibrary.simpleMessage("聊天"),
+        "chat_user_image": MessageLookupByLibrary.simpleMessage("[图片]"),
         "fail_to_load_image": MessageLookupByLibrary.simpleMessage("图片加载失败"),
         "failure": MessageLookupByLibrary.simpleMessage("失败"),
         "last_year": MessageLookupByLibrary.simpleMessage("去年"),

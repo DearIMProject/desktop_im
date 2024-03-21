@@ -45,7 +45,7 @@ class IMDatabase implements IMClientListener {
   /// 添加一个监听
   addListener(IMDatabaseListener listener) {
     if (!_listeners.contains(listener)) {
-      Log.debug("添加一个listener = $listener");
+      // Log.debug("添加一个listener = $listener");
       _listeners.add(listener);
     }
   }
@@ -53,7 +53,7 @@ class IMDatabase implements IMClientListener {
   /// 删除一个监听
   removeListener(IMDatabaseListener listener) {
     if (_listeners.contains(listener)) {
-      Log.debug("移除一个listener = $listener");
+      // Log.debug("移除一个listener = $listener");
       _listeners.remove(listener);
     }
   }
@@ -143,7 +143,6 @@ class IMDatabase implements IMClientListener {
     int userId = _dbMessage.getMUserId(message);
     User? user = _dbUser.getItem(userId);
     if (user != null) {
-      user.isChat = true;
       _dbUser.updateItem(user);
     }
     // 告诉监听消息添加
@@ -173,18 +172,13 @@ class IMDatabase implements IMClientListener {
     List<Message> result = [];
     for (var i = 0; i < messages.length; i++) {
       Message message = messages[i];
-      if (message.messageType == MessageType.TEXT) {
-        result.add(message);
-      }
+      result.add(message);
     }
     return result;
   }
 
-  List<User> chatUsers = [];
   List<User> getChatUsers() {
-    if (chatUsers.isNotEmpty) {
-      return chatUsers;
-    }
+    List<User> chatUsers = [];
     List<int> chatUserIds = _dbMessage.getChatUsers();
     for (var i = 0; i < chatUserIds.length; i++) {
       int chatUserId = chatUserIds[i];

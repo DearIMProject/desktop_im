@@ -1,5 +1,6 @@
 import 'package:desktop_im/components/common/common_theme.dart';
 import 'package:desktop_im/log/log.dart';
+import 'package:desktop_im/models/fileBean.dart';
 
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
@@ -100,6 +101,17 @@ class _MesssageItemViewState extends State<MesssageItemView> {
 
   final double _textRadius = 8;
   List<Widget> children() {
+    double imageWidth = 0;
+    double imageHeight = 0;
+    if (widget.message.imageFileBean != null) {
+      imageWidth = 200.0;
+      imageHeight = widget.message.imageFileBean!.height *
+          200.0 /
+          widget.message.imageFileBean!.width;
+      Log.debug("imageWidth = $imageWidth");
+      Log.debug("imageHeight = $imageHeight");
+    }
+
     return [
       widget.icon != null
           ? radiusCustomBorder(
@@ -111,22 +123,50 @@ class _MesssageItemViewState extends State<MesssageItemView> {
               height: _iconWidth,
             ),
       itemSpaceWidthSizeBox,
-      maxWidthWidget(
-          ClipRRect(
-            borderRadius: BorderRadius.only(
-                topLeft:
-                    Radius.circular(widget.message.isOwner ? _textRadius : 0),
-                topRight:
-                    Radius.circular(!widget.message.isOwner ? _textRadius : 0),
-                bottomLeft: Radius.circular(_textRadius),
-                bottomRight: Radius.circular(_textRadius)),
-            child: Container(
-              color: kThemeColor,
-              child: roundItemPadding(
-                  littleTitleFontText(kMessageColor, widget.message.content)),
+      Visibility(
+        visible: widget.message.messageType == MessageType.TEXT,
+        child: maxWidthWidget(
+            ClipRRect(
+              borderRadius: BorderRadius.only(
+                  topLeft:
+                      Radius.circular(widget.message.isOwner ? _textRadius : 0),
+                  topRight: Radius.circular(
+                      !widget.message.isOwner ? _textRadius : 0),
+                  bottomLeft: Radius.circular(_textRadius),
+                  bottomRight: Radius.circular(_textRadius)),
+              child: Container(
+                color: kThemeColor,
+                child: roundItemPadding(
+                    littleTitleFontText(kMessageColor, widget.message.content)),
+              ),
             ),
-          ),
-          200),
+            200),
+      ),
+      Visibility(
+        visible: widget.message.messageType == MessageType.PICTURE,
+        child: maxWidthWidget(
+            ClipRRect(
+              borderRadius: BorderRadius.only(
+                  topLeft:
+                      Radius.circular(widget.message.isOwner ? _textRadius : 0),
+                  topRight: Radius.circular(
+                      !widget.message.isOwner ? _textRadius : 0),
+                  bottomLeft: Radius.circular(_textRadius),
+                  bottomRight: Radius.circular(_textRadius)),
+              child: Container(
+                color: kThemeColor,
+                // child: roundItemPadding(
+                //     littleTitleFontText(kMessageColor, widget.message.content)),
+                child: widget.message.messageType == MessageType.PICTURE
+                    ? roundItemPadding(networkImage(
+                        widget.message.imageFileBean!.filePath,
+                        imageWidth,
+                        imageHeight))
+                    : null,
+              ),
+            ),
+            200),
+      ),
       itemSpaceWidthSizeBox,
       Visibility(
         visible:

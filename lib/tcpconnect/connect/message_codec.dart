@@ -26,7 +26,7 @@ class MessageCodec {
     out.writeInt8(message.status.index);
     ByteBuf innercontent = ByteBuf.allocator(size: 16);
     innercontent.writeString(message.content);
-    out.writeInt(innercontent.couldReadableSize);
+    // out.writeInt(innercontent.couldReadableSize);
     out.writeString(message.content);
 
     ByteBuf result = ByteBuf(16);
