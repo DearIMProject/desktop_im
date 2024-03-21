@@ -1,4 +1,5 @@
 import 'package:desktop_im/components/common/common_theme.dart';
+import 'package:desktop_im/components/ui/loading_image.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/fileBean.dart';
 
@@ -158,10 +159,12 @@ class _MesssageItemViewState extends State<MesssageItemView> {
                 // child: roundItemPadding(
                 //     littleTitleFontText(kMessageColor, widget.message.content)),
                 child: widget.message.messageType == MessageType.PICTURE
-                    ? roundItemPadding(networkImage(
-                        widget.message.imageFileBean!.filePath,
-                        imageWidth,
-                        imageHeight))
+                    ? roundItemPadding(LoadingImage(
+                        showLoading: true,
+                        imageSrc: widget.message.imageFileBean!.filePath,
+                        width: imageWidth,
+                        height: imageHeight,
+                      ))
                     : null,
               ),
             ),

@@ -6,7 +6,8 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
 class FileUtils {
-  static Future<Tuple3<int, int, String>> imageWidth(MultipartFile file) async {
+  static Future<Tuple4<int, int, String, Uint8List>> imageDesc(
+      MultipartFile file) async {
     // 将Stream<List<int>>转换为Uint8List
     Uint8List bytes = await file.finalize().fold<Uint8List>(Uint8List(0),
         (previous, element) => Uint8List.fromList([...previous, ...element]));
@@ -28,6 +29,6 @@ class FileUtils {
     // Convert MD5 hash to hex string
     String md5Hex = md5Hash.toString();
 
-    return Tuple3(width, height, md5Hex);
+    return Tuple4(width, height, md5Hex, bytes);
   }
 }

@@ -15,15 +15,19 @@ Image networkImage(String imageSrc, double width, double height) {
     },
     loadingBuilder: (context, child, loadingProgress) {
       if (loadingProgress == null) return child;
-      return Center(
-        child: SizedBox(
-          width: width,
-          height: height,
-          child: CircularProgressIndicator(
-            value: loadingProgress.expectedTotalBytes != null
-                ? loadingProgress.cumulativeBytesLoaded /
-                    loadingProgress.expectedTotalBytes!
-                : null,
+      return SizedBox(
+        width: width,
+        height: height,
+        child: Center(
+          child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+            ),
           ),
         ),
       );

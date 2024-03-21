@@ -224,51 +224,53 @@ class _MessageListPageState extends State<MessageListPage>
   void sendAImage(String filePath) {
     // 先上传图片，上传成功后发送这个图片
     // 先添加一个message，然后上传图片，
-
-    uploadImage(filePath).then((fileBean) {
-      Log.debug(fileBean.toString());
-      if (fileBean != null) {
-        sendAImageMessage(fileBean);
-      } else {
-        //TODO: wmy 重试
-      }
+    addAImageMessageBefore(filePath).then((message) {
+      uploadImage(filePath).then((fileBean) {
+        Log.debug(fileBean.toString());
+        if (fileBean != null) {
+          sendAImageMessage(message, fileBean);
+        } else {
+          // 上传失败
+          // sendAImage(filePath);
+        }
+      });
     });
   }
 
-  Future<void> addAImageMessageBeforeSend(String filePath) async {
+  Future<Message> addAImageMessageBefore(String filePath) async {
+    Completer<Message> completer = Completer();
     Message message = MessageFactory.messageFromType(MessageType.PICTURE);
     message.fromId = user!.userId;
     message.fromEntity = MessageEntityType.USER;
     message.toId = chatUser!.userId;
     message.toEntity = MessageEntityType.USER;
-    MultipartFile file =
-        await MultipartFile.fromFile(filePath, filename: filePath);
-    Tuple3<int, int, String> imageDesc = await FileUtils.imageWidth(file);
-    FileBean fileBean = FileBean(
-        fileId: 0,
-        fileMd5: imageDesc.item3,
-        filePath: filePath,
-        width: imageDesc.item1,
-        height: imageDesc.item2);
+    FileBean fileBean = await FileBean.initFileBean(filePath);
     Log.debug(fileBean.toJson().toString());
     String content = jsonEncode(fileBean.toJson());
     message.content = content;
-    client.sendMessage(message);
-    messages.add(message);
-    Log.debug("发送了一个消息：$message");
+    completer.complete(message);
+    setState(() {
+      messages.add(message);
+    });
+    return completer.future;
   }
 
-  void sendAImageMessage(FileBean fileBean) {
-    Message message = MessageFactory.messageFromType(MessageType.PICTURE);
-    message.fromId = user!.userId;
-    message.fromEntity = MessageEntityType.USER;
-    message.toId = chatUser!.userId;
-    message.toEntity = MessageEntityType.USER;
-    Log.debug(fileBean.toJson().toString());
+  void sendAImageMessage(Message message, FileBean fileBean) {
     String content = jsonEncode(fileBean.toJson());
     message.content = content;
+    // 找到message 替换掉
+    int findIndex = -1;
+    for (var i = messages.length - 1; i >= 0; i--) {
+      Message aMessage = messages[i];
+      if (aMessage.timestamp == message.timestamp) {
+        findIndex = i;
+        break;
+      }
+    }
+    messages[findIndex] = message;
+    message.content = content;
+    setState(() {});
     client.sendMessage(message);
-    messages.add(message);
     Log.debug("发送了一个消息：$message");
   }
 
