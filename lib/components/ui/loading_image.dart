@@ -25,10 +25,11 @@ class _LoadingImageState extends State<LoadingImage> {
 
   @override
   Widget build(BuildContext context) {
+    Uri uri = Uri.parse(widget.imageSrc);
     fileImage ??= File(widget.imageSrc);
     bool isFile = fileImage != null && fileImage!.existsSync();
     Log.debug("isFile = $isFile");
-    return !isFile
+    return uri.isAbsolute
         ? networkImage(widget.imageSrc, widget.width!.toDouble(),
             widget.height!.toDouble())
         : Stack(

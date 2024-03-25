@@ -226,7 +226,7 @@ class _MessageListPageState extends State<MessageListPage>
     // 先添加一个message，然后上传图片，
     addAImageMessageBefore(filePath).then((message) {
       uploadImage(filePath).then((fileBean) {
-        Log.debug(fileBean.toString());
+        Log.debug("[picture]上传图片成功 $fileBean");
         if (fileBean != null) {
           sendAImageMessage(message, fileBean);
         } else {
@@ -249,6 +249,7 @@ class _MessageListPageState extends State<MessageListPage>
     String content = jsonEncode(fileBean.toJson());
     message.content = content;
     completer.complete(message);
+    Log.debug("[picture]本地添加一个消息 $message");
     setState(() {
       messages.add(message);
     });
@@ -256,8 +257,10 @@ class _MessageListPageState extends State<MessageListPage>
   }
 
   void sendAImageMessage(Message message, FileBean fileBean) {
+    Log.debug("[picture]发送图片");
     String content = jsonEncode(fileBean.toJson());
     message.content = content;
+    Log.debug(content);
     // 找到message 替换掉
     int findIndex = -1;
     for (var i = messages.length - 1; i >= 0; i--) {
@@ -269,12 +272,14 @@ class _MessageListPageState extends State<MessageListPage>
     }
     messages[findIndex] = message;
     message.content = content;
+    Log.debug("[picture]将本地消息进行更新 $messages");
     setState(() {});
     client.sendMessage(message);
-    Log.debug("发送了一个消息：$message");
+    Log.debug("[picture]发送了一个消息：$message");
   }
 
   Future<FileBean?> uploadImage(String filePath) {
+    Log.debug("[picture]上传图片 $filePath");
     Completer<FileBean?> completer = Completer();
     service.uploadFile(filePath, ImageType.image).then((fileBean) {
       completer.complete(fileBean);
