@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:desktop_im/components/common/common_dialog.dart';
 import 'package:desktop_im/components/common/common_theme.dart';
 import 'package:desktop_im/components/ui/add_keyboard.dart';
 import 'package:desktop_im/components/ui/emj_keyboard.dart';
 import 'package:desktop_im/components/ui/message_input.dart';
+import 'package:desktop_im/generated/l10n.dart';
 
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/fileBean.dart';
@@ -97,6 +99,7 @@ class _MessageListPageState extends State<MessageListPage>
     }
     if (messages.isEmpty) {
       messages.addAll(database.getChatMessages(chatUser!.userId));
+      Log.debug("$messages");
     }
     dataChangeCallback ??= () {
       messages = [];
@@ -154,11 +157,13 @@ class _MessageListPageState extends State<MessageListPage>
               itemCount: messages.length,
               itemBuilder: (BuildContext context, int index) {
                 Message message = messages[index];
-                return (message.isChatMessage)
-                    ? MesssageItemView(
-                        message: message,
-                        icon: message.isOwner ? user!.icon : chatUser!.icon)
-                    : null;
+                return MesssageItemView(
+                  message: message,
+                  icon: message.isOwner ? user!.icon : chatUser!.icon,
+                  deleteCallback: (message) {
+                    deleteMessage(message);
+                  },
+                );
               },
             ),
           )),
@@ -224,12 +229,13 @@ class _MessageListPageState extends State<MessageListPage>
   void sendAImage(String filePath) {
     // 先上传图片，上传成功后发送这个图片
     // 先添加一个message，然后上传图片，
-    addAImageMessageBefore(filePath).then((message) {
-      uploadImage(filePath).then((fileBean) {
+    _addAImageMessageBefore(filePath).then((message) {
+      _uploadImage(filePath).then((fileBean) {
         Log.debug("[picture]上传图片成功 $fileBean");
         if (fileBean != null) {
           sendAImageMessage(message, fileBean);
         } else {
+          //TODO: wmy
           // 上传失败
           // sendAImage(filePath);
         }
@@ -237,7 +243,7 @@ class _MessageListPageState extends State<MessageListPage>
     });
   }
 
-  Future<Message> addAImageMessageBefore(String filePath) async {
+  Future<Message> _addAImageMessageBefore(String filePath) async {
     Completer<Message> completer = Completer();
     Message message = MessageFactory.messageFromType(MessageType.PICTURE);
     message.fromId = user!.userId;
@@ -278,12 +284,47 @@ class _MessageListPageState extends State<MessageListPage>
     Log.debug("[picture]发送了一个消息：$message");
   }
 
-  Future<FileBean?> uploadImage(String filePath) {
+  Future<FileBean?> _uploadImage(String filePath) {
     Log.debug("[picture]上传图片 $filePath");
     Completer<FileBean?> completer = Completer();
     service.uploadFile(filePath, ImageType.image).then((fileBean) {
       completer.complete(fileBean);
     });
     return completer.future;
+  }
+
+  /// 删除一个消息
+  void deleteMessage(Message message) {
+    showBottomSubTitleDialog(
+        context,
+        S.current.delete,
+        S.current.delete_content,
+        [S.current.delete, S.current.cancel], (index) {
+      if (index == 0) {
+        Navigator.pop(context);
+        execDeleteMessage(message);
+      }
+    });
+  }
+
+  void execDeleteMessage(Message message) {
+    Message delMessage =
+        MessageFactory.messageFromType(MessageType.DELETE_MESSAGE);
+    delMessage.fromEntity = message.fromEntity;
+    delMessage.fromId = message.fromId;
+    delMessage.toEntity = message.toEntity;
+    delMessage.toId = message.toId;
+    delMessage.content = jsonEncode(
+      SendSuccessModel(
+              msgId: 0,
+              messageType: message.messageType,
+              timestamp: message.timestamp,
+              content: message.timestamp.toString())
+          .toJson(),
+    );
+    Log.debug("$delMessage");
+    client.sendMessage(delMessage);
+    database.removeMessage(message);
+    setState(() {});
   }
 }

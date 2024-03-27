@@ -15,6 +15,11 @@
     "test":"测试",
     "last_year":"去年",
     "fail_to_load_image":"图片加载失败",
+    "processing":"处理中",
+    "message_item_title":"菜单",
+    "delete":"删除",
+    "cancel":"取消",
+    "delete_content":"是否删除这条消息",
     "chat_user_image":"[图片]"
 
 }

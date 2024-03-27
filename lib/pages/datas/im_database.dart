@@ -172,7 +172,9 @@ class IMDatabase implements IMClientListener {
     List<Message> result = [];
     for (var i = 0; i < messages.length; i++) {
       Message message = messages[i];
-      result.add(message);
+      if (message.isChatMessage) {
+        result.add(message);
+      }
     }
     return result;
   }
@@ -250,5 +252,9 @@ class IMDatabase implements IMClientListener {
         }
       }
     }
+  }
+
+  void removeMessage(Message message) {
+    _dbMessage.removeItem(message);
   }
 }

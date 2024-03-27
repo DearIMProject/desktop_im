@@ -35,6 +35,10 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
         return MessageType.SEND_SUCCESS_MESSAGE;
       case 10:
         return MessageType.TRANSPARENT_MESSAGE;
+      case 11:
+        return MessageType.DELETE_MESSAGE;
+      case 12:
+        return MessageType.DELETE_RECALL;
       default:
         return MessageType.TEXT;
     }
@@ -76,6 +80,12 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
       case MessageType.TRANSPARENT_MESSAGE:
         writer.writeByte(10);
         break;
+      case MessageType.DELETE_MESSAGE:
+        writer.writeByte(11);
+        break;
+      case MessageType.DELETE_RECALL:
+        writer.writeByte(12);
+        break;
     }
   }
 
@@ -103,6 +113,10 @@ class MessageStatusAdapter extends TypeAdapter<MessageStatus> {
         return MessageStatus.STATUS_SUCCESS_READED;
       case 2:
         return MessageStatus.STATUS_NOT_SEND_UNREAD;
+      case 3:
+        return MessageStatus.STATUS_DELETE;
+      case 4:
+        return MessageStatus.STATUS_RECALL;
       default:
         return MessageStatus.STATUS_SUCCESS_UNREADED;
     }
@@ -119,6 +133,12 @@ class MessageStatusAdapter extends TypeAdapter<MessageStatus> {
         break;
       case MessageStatus.STATUS_NOT_SEND_UNREAD:
         writer.writeByte(2);
+        break;
+      case MessageStatus.STATUS_DELETE:
+        writer.writeByte(3);
+        break;
+      case MessageStatus.STATUS_RECALL:
+        writer.writeByte(4);
         break;
     }
   }

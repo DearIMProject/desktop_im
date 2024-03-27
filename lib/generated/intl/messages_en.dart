@@ -25,16 +25,22 @@ class MessageLookup extends MessageLookupByLibrary {
         "account": MessageLookupByLibrary.simpleMessage("account"),
         "address_book": MessageLookupByLibrary.simpleMessage("Address Book"),
         "addressbook": MessageLookupByLibrary.simpleMessage("addressbook"),
+        "cancel": MessageLookupByLibrary.simpleMessage("cancel"),
         "chat": MessageLookupByLibrary.simpleMessage("chat"),
         "chat_user_image": MessageLookupByLibrary.simpleMessage("[image]"),
+        "delete": MessageLookupByLibrary.simpleMessage("delete"),
+        "delete_content":
+            MessageLookupByLibrary.simpleMessage("sure delete current messge?"),
         "fail_to_load_image":
             MessageLookupByLibrary.simpleMessage("failed to load image"),
         "failure": MessageLookupByLibrary.simpleMessage("failure"),
         "last_year": MessageLookupByLibrary.simpleMessage("last year"),
         "login": MessageLookupByLibrary.simpleMessage("login"),
         "logout": MessageLookupByLibrary.simpleMessage("logout"),
+        "message_item_title": MessageLookupByLibrary.simpleMessage("Menu"),
         "password_tip":
             MessageLookupByLibrary.simpleMessage("please input password"),
+        "processing": MessageLookupByLibrary.simpleMessage("processing"),
         "send_log": MessageLookupByLibrary.simpleMessage("send log"),
         "success": MessageLookupByLibrary.simpleMessage("success"),
         "test": MessageLookupByLibrary.simpleMessage("test"),

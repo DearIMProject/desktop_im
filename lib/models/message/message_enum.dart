@@ -39,9 +39,12 @@ enum MessageType {
   @HiveField(10)
   @JsonValue(10)
   TRANSPARENT_MESSAGE, //(10, "透传消息");
-  // @HiveField(11)
-  // @JsonValue(11)
-  // EMPTY_MESSAGE, // 空消息，用来占位
+  @HiveField(11)
+  @JsonValue(11)
+  DELETE_MESSAGE, // (11,"删除消息")
+  @HiveField(12)
+  @JsonValue(12)
+  DELETE_RECALL, // (12,"删除消息")
 }
 
 MessageType intToMessageType(int index) {
@@ -59,6 +62,12 @@ enum MessageStatus {
   @HiveField(2)
   @JsonValue(2)
   STATUS_NOT_SEND_UNREAD, //(2, "未发送");
+  @HiveField(3)
+  @JsonValue(3)
+  STATUS_DELETE, //(3, "删除");
+  @HiveField(4)
+  @JsonValue(4)
+  STATUS_RECALL, //(4, "撤回");
 }
 
 MessageStatus intToMessageStatus(int index) {

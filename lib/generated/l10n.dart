@@ -200,11 +200,61 @@ class S {
     );
   }
 
+  /// `processing`
+  String get processing {
+    return Intl.message(
+      'processing',
+      name: 'processing',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `failed to load image`
   String get fail_to_load_image {
     return Intl.message(
       'failed to load image',
       name: 'fail_to_load_image',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Menu`
+  String get message_item_title {
+    return Intl.message(
+      'Menu',
+      name: 'message_item_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `delete`
+  String get delete {
+    return Intl.message(
+      'delete',
+      name: 'delete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `cancel`
+  String get cancel {
+    return Intl.message(
+      'cancel',
+      name: 'cancel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `sure delete current messge?`
+  String get delete_content {
+    return Intl.message(
+      'sure delete current messge?',
+      name: 'delete_content',
       desc: '',
       args: [],
     );

@@ -8,19 +8,16 @@ class SendSuccessModel {
   SendSuccessModel(
       {required this.msgId,
       required this.timestamp,
-      required this.messageType,
+      this.messageType,
       required this.content});
   int msgId;
   int timestamp;
-  MessageType messageType;
+  MessageType? messageType;
   String content;
 
   factory SendSuccessModel.fromJson(Map<String, dynamic> json) =>
       _$SendSuccessModelFromJson(json);
   Map<String, dynamic> toJson() => _$SendSuccessModelToJson(this);
-
-  // MessageType _messageTypeFromJson(int type) => MessageType.values[type];
-  // int _messageTypeToJson(MessageType messageType) => messageType.index;
 
   @override
   String toString() {

@@ -1,5 +1,7 @@
+import 'package:desktop_im/components/common/common_dialog.dart';
 import 'package:desktop_im/components/common/common_theme.dart';
 import 'package:desktop_im/components/ui/loading_image.dart';
+import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/fileBean.dart';
 
@@ -13,11 +15,15 @@ import 'package:flutter/material.dart';
 
 const double _iconWidth = 40;
 
+typedef DeleteCallback = void Function(Message message);
+
 // ignore: must_be_immutable
 class MesssageItemView extends StatefulWidget {
   Message message;
   String? icon;
-  MesssageItemView({super.key, this.icon, required this.message});
+  DeleteCallback? deleteCallback;
+  MesssageItemView(
+      {super.key, this.icon, required this.message, this.deleteCallback});
 
   @override
   State<MesssageItemView> createState() => _MesssageItemViewState();
@@ -202,14 +208,28 @@ class _MesssageItemViewState extends State<MesssageItemView> {
     return itemPadding(Column(
       children: [
         Text(getTime(widget.message.timestamp)),
-        Row(
-          mainAxisAlignment: widget.message.isOwner
-              ? MainAxisAlignment.end
-              : MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: !widget.message.isOwner
-              ? children()
-              : children().reversed.toList(),
+        GestureDetector(
+          onLongPress: () {
+            showBottomDialog(
+                context, S.current.message_item_title, [S.current.delete],
+                (index) {
+              if (index == 0) {
+                Navigator.of(context).pop();
+                if (widget.deleteCallback != null) {
+                  widget.deleteCallback!(widget.message);
+                }
+              }
+            });
+          },
+          child: Row(
+            mainAxisAlignment: widget.message.isOwner
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: !widget.message.isOwner
+                ? children()
+                : children().reversed.toList(),
+          ),
         )
       ],
     ));

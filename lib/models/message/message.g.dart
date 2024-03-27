@@ -120,12 +120,16 @@ const _$MessageTypeEnumMap = {
   MessageType.READED_MESSAGE: 8,
   MessageType.SEND_SUCCESS_MESSAGE: 9,
   MessageType.TRANSPARENT_MESSAGE: 10,
+  MessageType.DELETE_MESSAGE: 11,
+  MessageType.DELETE_RECALL: 12,
 };
 
 const _$MessageStatusEnumMap = {
   MessageStatus.STATUS_SUCCESS_UNREADED: 0,
   MessageStatus.STATUS_SUCCESS_READED: 1,
   MessageStatus.STATUS_NOT_SEND_UNREAD: 2,
+  MessageStatus.STATUS_DELETE: 3,
+  MessageStatus.STATUS_RECALL: 4,
 };
 
 const _$MessageSendStatusEnumMap = {

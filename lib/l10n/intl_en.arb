@@ -14,7 +14,12 @@
     "account":"account",
     "test":"test",
     "last_year":"last year",
+    "processing":"processing",
     "fail_to_load_image":"failed to load image",
+    "message_item_title":"Menu",
+    "delete":"delete",
+    "cancel":"cancel",
+    "delete_content":"sure delete current messge?",
     "chat_user_image":"[image]"
 
 }

@@ -10,7 +10,8 @@ SendSuccessModel _$SendSuccessModelFromJson(Map<String, dynamic> json) =>
     SendSuccessModel(
       msgId: json['msgId'] as int,
       timestamp: json['timestamp'] as int,
-      messageType: $enumDecode(_$MessageTypeEnumMap, json['messageType']),
+      messageType:
+          $enumDecodeNullable(_$MessageTypeEnumMap, json['messageType']),
       content: json['content'] as String,
     );
 
@@ -18,7 +19,7 @@ Map<String, dynamic> _$SendSuccessModelToJson(SendSuccessModel instance) =>
     <String, dynamic>{
       'msgId': instance.msgId,
       'timestamp': instance.timestamp,
-      'messageType': _$MessageTypeEnumMap[instance.messageType]!,
+      'messageType': _$MessageTypeEnumMap[instance.messageType],
       'content': instance.content,
     };
 
@@ -34,4 +35,6 @@ const _$MessageTypeEnumMap = {
   MessageType.READED_MESSAGE: 8,
   MessageType.SEND_SUCCESS_MESSAGE: 9,
   MessageType.TRANSPARENT_MESSAGE: 10,
+  MessageType.DELETE_MESSAGE: 11,
+  MessageType.DELETE_RECALL: 12,
 };

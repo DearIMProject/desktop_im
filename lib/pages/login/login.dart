@@ -23,9 +23,9 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    // username = "iphonex@apple.com"; // 真机
+    username = "iphonex@apple.com"; // 真机
     // username = "simulator@apple.com"; // 模拟器
-    username = "iphone8@apple.com";
+    // username = "iphone8@apple.com";
     password = "apple";
   }
 
