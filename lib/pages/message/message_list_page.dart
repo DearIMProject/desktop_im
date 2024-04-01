@@ -78,6 +78,7 @@ class _MessageListPageState extends State<MessageListPage>
 // 滚动到底部
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
+      Log.debug("_scrollToBottom");
       _scrollController.animateTo(_scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 100), curve: Curves.easeOut);
     }

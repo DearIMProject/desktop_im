@@ -1,6 +1,7 @@
 import 'package:desktop_im/components/common/common_dialog.dart';
 import 'package:desktop_im/components/common/common_theme.dart';
 import 'package:desktop_im/components/ui/loading_image.dart';
+import 'package:desktop_im/generated/intl/messages_zh_Hans_CN.dart';
 import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/fileBean.dart';
@@ -111,10 +112,12 @@ class _MesssageItemViewState extends State<MesssageItemView> {
     double imageWidth = 0;
     double imageHeight = 0;
     if (widget.message.imageFileBean != null) {
+      Log.debug("${widget.message.imageFileBean}");
       imageWidth = 200.0;
-      imageHeight = widget.message.imageFileBean!.height *
+      imageHeight = (widget.message.imageFileBean!.height *
           200.0 /
-          widget.message.imageFileBean!.width;
+          widget.message.imageFileBean!.width);
+      imageHeight = double.parse(imageHeight.toStringAsFixed(2));
       Log.debug("imageWidth = $imageWidth");
       Log.debug("imageHeight = $imageHeight");
     }

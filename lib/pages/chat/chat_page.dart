@@ -58,6 +58,7 @@ class _ChatPageState extends State<ChatPage>
   void initState() {
     super.initState();
     Log.debug("chat page init state");
+    NotificationHelper().clearNotification();
     if (chatUsers.isEmpty && database.dbHasInstalled) {
       chatUsers.addAll(database.getChatUsers());
       Log.debug("chatUsers = $chatUsers");
