@@ -37,6 +37,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "logout": MessageLookupByLibrary.simpleMessage("退出登录"),
         "message_item_title": MessageLookupByLibrary.simpleMessage("菜单"),
         "password_tip": MessageLookupByLibrary.simpleMessage("请输入密码"),
+        "preview": MessageLookupByLibrary.simpleMessage("预览"),
         "processing": MessageLookupByLibrary.simpleMessage("处理中"),
         "send_log": MessageLookupByLibrary.simpleMessage("发送日志"),
         "success": MessageLookupByLibrary.simpleMessage("成功"),

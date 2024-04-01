@@ -20,6 +20,7 @@
     "delete":"delete",
     "cancel":"cancel",
     "delete_content":"sure delete current messge?",
+    "preview":"preview",
     "chat_user_image":"[image]"
 
 }

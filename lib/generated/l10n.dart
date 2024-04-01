@@ -260,6 +260,16 @@ class S {
     );
   }
 
+  /// `preview`
+  String get preview {
+    return Intl.message(
+      'preview',
+      name: 'preview',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `[image]`
   String get chat_user_image {
     return Intl.message(

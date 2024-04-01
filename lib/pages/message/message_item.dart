@@ -9,6 +9,7 @@ import 'package:desktop_im/models/fileBean.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
+import 'package:desktop_im/router/routers.dart';
 import 'package:desktop_im/tcpconnect/connect/im_client.dart';
 import 'package:desktop_im/utils/time_utils.dart';
 
@@ -168,12 +169,17 @@ class _MesssageItemViewState extends State<MesssageItemView> {
                 // child: roundItemPadding(
                 //     littleTitleFontText(kMessageColor, widget.message.content)),
                 child: widget.message.messageType == MessageType.PICTURE
-                    ? roundItemPadding(LoadingImage(
-                        showLoading: true,
-                        imageSrc: widget.message.imageFileBean!.filePath,
-                        width: imageWidth,
-                        height: imageHeight,
-                      ))
+                    ? GestureDetector(
+                        onTap: () {
+                          onClickPicture(widget.message.imageFileBean!);
+                        },
+                        child: roundItemPadding(LoadingImage(
+                          showLoading: true,
+                          imageSrc: widget.message.imageFileBean!.filePath,
+                          width: imageWidth,
+                          height: imageHeight,
+                        )),
+                      )
                     : null,
               ),
             ),
@@ -236,5 +242,9 @@ class _MesssageItemViewState extends State<MesssageItemView> {
         )
       ],
     ));
+  }
+
+  void onClickPicture(FileBean fileBean) {
+    Routers().openRouter("/picture", {"fileBean": fileBean}, context);
   }
 }
