@@ -42,7 +42,7 @@ class IMClient implements SocketListener {
   late SocketProtocol _socketManager;
   late MessageCodec _messageCodec;
   late ByteBuf _readByteBuf;
-  IMDatabase database = IMDatabase.getInstance();
+  IMDatabase database = IMDatabase();
   @override
   SocketSuccessCallback? connectSuccess;
   @override

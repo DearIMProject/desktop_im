@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage>
       BottomTabbarItem(S.current.account, Icons.account_circle, false, 0);
   int _currentIndex = 0;
   bool hasAutoLogin = false;
-  IMDatabase database = IMDatabase.getInstance();
+  IMDatabase database = IMDatabase();
   _HomePageState() {
     init();
   }
@@ -195,4 +195,7 @@ class _HomePageState extends State<HomePage>
           ]),
     );
   }
+
+  @override
+  DatabaseAddReadableMessage? addReadableCallback;
 }

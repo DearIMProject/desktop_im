@@ -19,7 +19,7 @@ class ChatUserItem extends StatefulWidget {
 }
 
 class _ChatUserItemState extends State<ChatUserItem> {
-  IMDatabase database = IMDatabase.getInstance();
+  IMDatabase database = IMDatabase();
   List<Widget> children() {
     List<Widget> children = [];
 

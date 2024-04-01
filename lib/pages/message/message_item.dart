@@ -30,7 +30,7 @@ class MesssageItemView extends StatefulWidget {
 }
 
 class _MesssageItemViewState extends State<MesssageItemView> {
-  IMDatabase database = IMDatabase.getInstance();
+  IMDatabase database = IMDatabase();
   IMClient client = IMClient.getInstance();
   bool hasSend = false;
   bool isSendToSelf() {

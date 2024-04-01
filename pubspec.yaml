@@ -33,6 +33,7 @@ dependencies:
   flutter_keyboard_visibility: ^5.0.2
   image_picker: ^1.0.7
   permission_handler: ^11.3.0
+  flutter_local_notifications: ^17.0.0
   
 
 dev_dependencies:

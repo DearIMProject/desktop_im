@@ -15,22 +15,21 @@ import 'package:desktop_im/models/message/message_enum.dart';
 import 'package:desktop_im/models/message/send_success_model.dart';
 
 import 'package:desktop_im/models/user.dart';
-import 'package:desktop_im/network/request.dart';
+import 'package:desktop_im/notification/notification_helper.dart';
+import 'package:desktop_im/notification/notification_service.dart';
 import 'package:desktop_im/pages/base_page.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/pages/message/message_item.dart';
 import 'package:desktop_im/pages/message/services/message_service.dart';
+import 'package:desktop_im/router/routers.dart';
 import 'package:desktop_im/tcpconnect/connect/im_client.dart';
 import 'package:desktop_im/tcpconnect/connect/message_factory.dart';
 import 'package:desktop_im/user/user_manager.dart';
-import 'package:desktop_im/utils/file_utils.dart';
-import 'package:dio/dio.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:tuple/tuple.dart';
 
 class MessageListPage extends BasePage {
   const MessageListPage({super.key, super.params});
@@ -46,7 +45,7 @@ class _MessageListPageState extends State<MessageListPage>
 
   User? user = UserManager.getInstance().user;
   List<Message> messages = [];
-  IMDatabase database = IMDatabase.getInstance();
+  IMDatabase database = IMDatabase();
   IMClient client = IMClient.getInstance();
   @override
   DatabaseCompleteCallback? completeCallback;
@@ -327,4 +326,7 @@ class _MessageListPageState extends State<MessageListPage>
     database.removeMessage(message);
     setState(() {});
   }
+
+  @override
+  DatabaseAddReadableMessage? addReadableCallback;
 }

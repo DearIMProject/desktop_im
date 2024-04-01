@@ -41,7 +41,7 @@ class _AddressBookPageState extends State<AddressBookPage> {
     Routers().openRouter("/message", {"user": addressUser}, context);
   }
 
-  IMDatabase database = IMDatabase.getInstance();
+  IMDatabase database = IMDatabase();
 
   @override
   void initState() {

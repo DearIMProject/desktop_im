@@ -16,11 +16,13 @@ import 'package:tuple/tuple.dart';
 
 typedef DatabaseUnreadMessageNumberChange = void Function(int unreadNumber);
 typedef DatabaseCompleteCallback = void Function();
+typedef DatabaseAddReadableMessage = void Function(Message message);
 
 abstract class IMDatabaseListener {
   DatabaseUnreadMessageNumberChange? unreadMessageNumberChange;
   DatabaseCompleteCallback? completeCallback;
   DatabaseCompleteCallback? dataChangeCallback;
+  DatabaseAddReadableMessage? addReadableCallback;
 }
 
 class IMDatabase implements IMClientListener {
@@ -33,12 +35,15 @@ class IMDatabase implements IMClientListener {
 
   bool dbHasInstalled = false;
 
-  // 初始化
-  static IMDatabase? _instance;
-  static IMDatabase getInstance() {
-    _instance ??= IMDatabase();
-    return _instance!;
+  static final IMDatabase _instance = IMDatabase._internal();
+
+  factory IMDatabase() {
+    return _instance;
   }
+
+  IMDatabase._internal();
+
+  // 初始化
 
   final List<IMDatabaseListener> _listeners = [];
 
@@ -161,6 +166,17 @@ class IMDatabase implements IMClientListener {
         }
       }
     }
+
+    if (!message.isOwner && message.isChatMessage) {
+      //TODO: wmy
+
+      for (IMDatabaseListener listener in _listeners) {
+        if (listener.addReadableCallback != null) {
+          Log.debug("转发消息 $message");
+          listener.addReadableCallback!(message);
+        }
+      }
+    }
   }
 
   List<Message> getMessages(int userId) {
@@ -207,6 +223,10 @@ class IMDatabase implements IMClientListener {
   /// 添加用户
   void addUser(User user) {
     _dbUser.addItem(user);
+  }
+
+  User? getUser(int userId) {
+    return _dbUser.getItem(userId);
   }
 
   List<User> getUsers() {
@@ -256,5 +276,11 @@ class IMDatabase implements IMClientListener {
 
   void removeMessage(Message message) {
     _dbMessage.removeItem(message);
+    for (var i = 0; i < _listeners.length; i++) {
+      IMDatabaseListener listener = _listeners[i];
+      if (listener.dataChangeCallback != null) {
+        listener.dataChangeCallback!();
+      }
+    }
   }
 }

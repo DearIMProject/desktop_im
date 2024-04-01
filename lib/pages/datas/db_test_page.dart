@@ -13,7 +13,7 @@ class DatabaseTestPage extends StatefulWidget {
 
 class _DatabaseTestPageState extends State<DatabaseTestPage> {
   List<TestItemModel> models = [];
-  IMDatabase database = IMDatabase.getInstance();
+  IMDatabase database = IMDatabase();
   _DatabaseTestPageState() {
     {
       TestItemModel model = TestItemModel("清除所有数据库数据", () {

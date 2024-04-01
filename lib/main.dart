@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:desktop_im/components/common/colors.dart';
 import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/log/log.dart';
+import 'package:desktop_im/notification/notification_helper.dart';
+import 'package:desktop_im/notification/notification_service.dart';
 import 'package:desktop_im/notification/notification_stream.dart';
 import 'package:desktop_im/notification/notifications.dart';
 import 'package:desktop_im/pages/datas/db_test_page.dart';
@@ -23,7 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
-  IMDatabase database = IMDatabase.getInstance();
+  IMDatabase database = IMDatabase();
   database.init().then((value) {
     runApp(const MyApp());
   });
@@ -41,7 +43,7 @@ class _MyAppState extends State<MyApp> {
   IMClient connectManager = IMClient.getInstance();
 
   /// 数据库
-  IMDatabase database = IMDatabase.getInstance();
+  IMDatabase database = IMDatabase();
   @override
   void initState() {
     super.initState();
@@ -52,6 +54,8 @@ class _MyAppState extends State<MyApp> {
     init();
   }
   void init() {
+    notificationInit();
+    NotificationHelper().init();
     connectManager.init();
     NotificationStream().stream.listen((notification) {
       Log.debug("收到消息:$notification");
@@ -72,9 +76,14 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  void notificationInit() {
+    NotificationHelper().init();
+  }
+
   @override
   Widget build(BuildContext context) {
     configRouters(context);
+
     return MaterialApp(
       localizationsDelegates: const [
         S.delegate,

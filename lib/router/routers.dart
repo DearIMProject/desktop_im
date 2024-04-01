@@ -29,8 +29,8 @@ class Routers {
       var routerModel = _RouterModel();
       routerModel.router = host;
       routerModel.callback =
-          (Map<String, dynamic> params, BuildContext buildcontext) {
-        Navigator.push(buildcontext, MaterialPageRoute(builder: widget));
+          (Map<String, dynamic> params, BuildContext buildcontext) async {
+        await Navigator.push(buildcontext, MaterialPageRoute(builder: widget));
       };
       _routers[host] = routerModel;
     }

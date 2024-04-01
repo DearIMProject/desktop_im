@@ -9,13 +9,14 @@ typedef IamgeCallback = void Function(String filePath);
 
 class AddKeyboard extends StatefulWidget {
   IamgeCallback? imageCallback;
-  AddKeyboard({super.key, this.imageCallback});
+  AddKeyboard({super.key, required this.imageCallback});
 
   @override
   State<AddKeyboard> createState() => _AddKeyboardState();
 }
 
 class _AddKeyboardState extends State<AddKeyboard> {
+  final ImagePicker _picker = ImagePicker();
   List<Widget> icons = [
     const Icon(Icons.image),
     const Icon(Icons.camera_alt),
@@ -32,8 +33,7 @@ class _AddKeyboardState extends State<AddKeyboard> {
   }
 
   void selectImage() async {
-    ImagePicker picker = ImagePicker();
-    XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       if (widget.imageCallback != null) {
         widget.imageCallback!(pickedFile.path);

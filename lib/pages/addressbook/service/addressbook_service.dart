@@ -11,7 +11,7 @@ class AddressCallback {
 }
 
 class AddressbookService {
-  IMDatabase database = IMDatabase.getInstance();
+  IMDatabase database = IMDatabase();
   AddressbookService.getAllAddressbook(AddressCallback callback) {
     Request().postRequest(
         "addressbook/all",
