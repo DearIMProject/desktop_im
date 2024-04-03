@@ -1,3 +1,4 @@
+import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/network/request.dart';
 import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/notification/notification_stream.dart';
@@ -49,6 +50,7 @@ class LoginService {
             }
           },
           failureCallback: (code, errorStr, data) {
+            Log.debug("failureCallback");
             UserManager.getInstance().setUser(null);
             NotificationStream().publish(kLogoutSuccessNotification);
             if (callback.failureCallback != null) {

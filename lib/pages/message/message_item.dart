@@ -1,6 +1,7 @@
 import 'package:desktop_im/components/common/common_dialog.dart';
 import 'package:desktop_im/components/common/common_theme.dart';
 import 'package:desktop_im/components/ui/loading_image.dart';
+import 'package:desktop_im/components/uikits/emoji/emoji_special_text_span_builder.dart';
 import 'package:desktop_im/generated/intl/messages_zh_Hans_CN.dart';
 import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/log/log.dart';
@@ -12,6 +13,7 @@ import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/router/routers.dart';
 import 'package:desktop_im/tcpconnect/connect/im_client.dart';
 import 'package:desktop_im/utils/time_utils.dart';
+import 'package:extended_text_field/extended_text_field.dart';
 
 import 'package:flutter/material.dart';
 
@@ -147,8 +149,14 @@ class _MesssageItemViewState extends State<MesssageItemView> {
                   bottomRight: Radius.circular(_textRadius)),
               child: Container(
                 color: kThemeColor,
-                child: roundItemPadding(
-                    littleTitleFontText(kMessageColor, widget.message.content)),
+                child: roundItemPadding(ExtendedSelectableText(
+                  widget.message.content,
+                  style: const TextStyle(
+                    color: kWhiteBackColor,
+                    fontSize: 16,
+                  ),
+                  specialTextSpanBuilder: EmojiSpecialTextSpanBuilder(),
+                )),
               ),
             ),
             200),

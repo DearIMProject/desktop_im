@@ -15,13 +15,10 @@ import 'package:desktop_im/models/message/message_enum.dart';
 import 'package:desktop_im/models/message/send_success_model.dart';
 
 import 'package:desktop_im/models/user.dart';
-import 'package:desktop_im/notification/notification_helper.dart';
-import 'package:desktop_im/notification/notification_service.dart';
 import 'package:desktop_im/pages/base_page.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/pages/message/message_item.dart';
 import 'package:desktop_im/pages/message/services/message_service.dart';
-import 'package:desktop_im/router/routers.dart';
 import 'package:desktop_im/tcpconnect/connect/im_client.dart';
 import 'package:desktop_im/tcpconnect/connect/message_factory.dart';
 import 'package:desktop_im/user/user_manager.dart';
@@ -59,6 +56,7 @@ class _MessageListPageState extends State<MessageListPage>
   late final VoidCallback _keyboardOpenedListener;
   final KeyboardVisibilityController _keyboardVisibilityController =
       KeyboardVisibilityController();
+  MesssageInputViewController controller = MesssageInputViewController();
   @override
   void dispose() {
     database.removeListener(this);
@@ -168,6 +166,7 @@ class _MessageListPageState extends State<MessageListPage>
             ),
           )),
           MessageInputView(
+            controller: controller,
             sendCallback: (text) {
               if (text.isNotEmpty) {
                 sendAMessge(text);
@@ -203,7 +202,18 @@ class _MessageListPageState extends State<MessageListPage>
           ),
           Visibility(
             visible: emjVisiable,
-            child: const EmjKeyboard(),
+            child: EmjKeyboard(
+              emojisReadyCallback: (emojis) {
+                if (controller.emojiReadyCallback != null) {
+                  controller.emojiReadyCallback!(emojis);
+                }
+              },
+              clickEmjKeyboardCallback: (empjiName) {
+                if (controller.callback != null) {
+                  controller.callback!(empjiName);
+                }
+              },
+            ),
           ),
           const SafeArea(
               child: SizedBox(

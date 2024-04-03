@@ -1,22 +1,35 @@
 import 'package:desktop_im/components/common/common_theme.dart';
+import 'package:desktop_im/components/uikits/emoji/emoji_special_text_span_builder.dart';
+// import 'package:desktop_im/components/ui/rich_text_editing_controller.dart';
 import 'package:desktop_im/log/log.dart';
-
+import 'package:extended_text_field/extended_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 typedef SendCallback = void Function(String text);
 typedef ClickCallback = void Function();
+
+typedef AddTextCallback = void Function(String text);
+typedef EmojiReadyCallback = void Function(List<String> emojiNames);
+
+class MesssageInputViewController {
+  AddTextCallback? callback;
+  EmojiReadyCallback? emojiReadyCallback;
+}
 
 // ignore: must_be_immutable
 class MessageInputView extends StatefulWidget {
   SendCallback? sendCallback;
   ClickCallback? addClickCallback;
   ClickCallback? emjClickCallback;
+  MesssageInputViewController? controller;
 
   MessageInputView(
       {super.key,
       this.sendCallback,
       this.addClickCallback,
-      this.emjClickCallback});
+      this.emjClickCallback,
+      this.controller});
 
   @override
   State<MessageInputView> createState() => _MessageInputViewState();
@@ -24,7 +37,11 @@ class MessageInputView extends StatefulWidget {
 
 class _MessageInputViewState extends State<MessageInputView> {
   final FocusNode _focusNode = FocusNode();
-
+  final GlobalKey<ExtendedTextFieldState> _key =
+      GlobalKey<ExtendedTextFieldState>();
+  final TextEditingController textController = TextEditingController();
+  final EmojiSpecialTextSpanBuilder builder = EmojiSpecialTextSpanBuilder();
+  // bool _sendBtnEnabled = false;
   @override
   void dispose() {
     _focusNode.dispose();
@@ -32,9 +49,91 @@ class _MessageInputViewState extends State<MessageInputView> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.controller != null) {
+      widget.controller!.callback = (emojiName) {
+        insertText(emojiName);
+      };
+    }
+  }
+
+//插入文本
+  void insertText(String text) {
+    final TextEditingValue value = textController.value;
+    final int start = value.selection.baseOffset;
+    int end = value.selection.extentOffset;
+    if (value.selection.isValid) {
+      String newText = '';
+      if (value.selection.isCollapsed) {
+        if (end > 0) {
+          newText += value.text.substring(0, end);
+        }
+        newText += text;
+        if (value.text.length > end) {
+          newText += value.text.substring(end, value.text.length);
+        }
+      } else {
+        newText = value.text.replaceRange(start, end, text);
+        end = start;
+      }
+
+      textController.value = value.copyWith(
+          text: newText,
+          selection: value.selection.copyWith(
+              baseOffset: end + text.length, extentOffset: end + text.length));
+    } else {
+      textController.value = TextEditingValue(
+          text: text,
+          selection:
+              TextSelection.fromPosition(TextPosition(offset: text.length)));
+    }
+    SchedulerBinding.instance.addPostFrameCallback((Duration timeStamp) {
+      _key.currentState?.bringIntoView(textController.selection.base);
+    });
+  }
+
+  void manualDelete() {
+    //delete by code
+    final TextEditingValue _value = textController.value;
+    final TextSelection selection = _value.selection;
+    if (!selection.isValid) {
+      return;
+    }
+
+    TextEditingValue value;
+    final String actualText = _value.text;
+    if (selection.isCollapsed && selection.start == 0) {
+      return;
+    }
+
+    final int start =
+        selection.isCollapsed ? selection.start - 1 : selection.start;
+    final int end = selection.end;
+    // improve the case of emoji
+    // https://github.com/dart-lang/sdk/issues/35798
+    final CharacterRange characterRange =
+        CharacterRange.at(actualText, start, end);
+    value = TextEditingValue(
+      text: characterRange.stringBefore + characterRange.stringAfter,
+      selection:
+          TextSelection.collapsed(offset: characterRange.stringBefore.length),
+    );
+
+    final TextSpan oldTextSpan = builder.build(_value.text);
+
+    value = ExtendedTextLibraryUtils.handleSpecialTextSpanDelete(
+      value,
+      _value,
+      oldTextSpan,
+      null,
+    );
+
+    textController.value = value;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    TextEditingController textController = TextEditingController();
-    textController.text = "一行字而已";
     const border = OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(8.0)),
       borderSide: BorderSide(
@@ -60,9 +159,17 @@ class _MessageInputViewState extends State<MessageInputView> {
                       const BoxConstraints(minHeight: 15, maxHeight: 100),
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                    child: TextField(
+                    child: ExtendedTextField(
+                      key: _key,
+                      minLines: 1,
+                      maxLines: 2,
+                      specialTextSpanBuilder: builder,
                       controller: textController,
-                      maxLines: null,
+                      onTapOutside: (_) {
+                        _focusNode.unfocus();
+                      },
+                      strutStyle: const StrutStyle(),
+                      onChanged: (string) {},
                       focusNode: _focusNode,
                       keyboardType: TextInputType.multiline,
                       onSubmitted: (value) {
@@ -81,7 +188,7 @@ class _MessageInputViewState extends State<MessageInputView> {
                         focusedBorder: border,
                       ),
                       style: const TextStyle(
-                          color: kTitleColor, fontSize: 14, letterSpacing: 1),
+                          color: kTitleColor, fontSize: 16, letterSpacing: 1),
                     ),
                   ),
                 ),

@@ -3,10 +3,8 @@
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/network/request_manager.dart';
 import 'package:desktop_im/user/user_manager.dart';
-import 'package:desktop_im/utils/file_utils.dart';
 
 import 'package:dio/dio.dart';
-import 'package:tuple/tuple.dart';
 
 typedef RequestSuccessCallback = void Function(dynamic data);
 typedef RequestFailureCallback = void Function(
@@ -84,7 +82,12 @@ class Request {
       Log.info("param = $param");
       Dio dio = Dio();
       dio.options.headers.addAll(systemParam());
-      response = await dio.post(address, data: formData);
+      response = await dio.post(address, data: formData).catchError((error) {
+        Log.warn("catch e = $error");
+        if (callback.failureCallback != null) {
+          callback.failureCallback!(500, "server failure", {});
+        }
+      });
 
       Map<String, dynamic> responseMap = response.data;
       // Log.debug("responMap = $responseMap");

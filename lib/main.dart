@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:desktop_im/components/common/colors.dart';
+import 'package:desktop_im/components/uikits/emoji/emoji_utils.dart';
 import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/notification/notification_helper.dart';
@@ -55,6 +56,7 @@ class _MyAppState extends State<MyApp> {
     init();
   }
   void init() {
+    EmojiUtils().setup();
     notificationInit();
     NotificationHelper().init();
     connectManager.init();

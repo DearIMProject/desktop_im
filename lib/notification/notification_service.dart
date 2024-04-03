@@ -1,9 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
-import 'package:desktop_im/tcpconnect/connect/im_client.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:desktop_im/models/message/message.dart' as Msg;
@@ -27,6 +27,13 @@ class NotificationService {
       return;
     }
     hasInit = true;
+    if (Platform.isMacOS) {
+    } else {
+      checkPermission();
+    }
+  }
+
+  void checkPermission() {
     Permission.notification.status.then((status) {
       if (status.isDenied) {
         Log.debug("用户拒绝通知权限");
