@@ -8,9 +8,9 @@ class MessageFactory {
     message.messageType = messageType;
     switch (messageType) {
       case MessageType.REQUEST_LOGIN:
-        message.fromId = UserManager.getInstance().uid();
+        message.fromId = UserManager().uid();
         message.fromEntity = MessageEntityType.USER;
-        message.content = UserManager.getInstance().userToken();
+        message.content = UserManager().userToken();
         // Log.debug("token=${message.content}");
         break;
       case MessageType.CHAT_MESSAGE:
@@ -26,9 +26,9 @@ class MessageFactory {
       case MessageType.READED_MESSAGE:
         break;
       case MessageType.REQUEST_OFFLINE_MESSAGES:
-        message.fromId = UserManager.getInstance().uid();
+        message.fromId = UserManager().uid();
         message.fromEntity = MessageEntityType.USER;
-        message.content = UserManager.getInstance().userToken();
+        message.content = UserManager().userToken();
         break;
       case MessageType.SEND_SUCCESS_MESSAGE:
         break;

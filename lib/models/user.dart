@@ -82,7 +82,7 @@ class User extends HiveObject {
       User? user = value.get(_kMyUser);
       if (user != null) {
         // Log.debug("user is not null user = $user");
-        UserManager.getInstance().setUser(user);
+        UserManager().setUser(user);
         return completer.complete(true);
       }
       Log.debug("user is  null");

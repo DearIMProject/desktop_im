@@ -3,7 +3,6 @@ import 'dart:ui' as ui;
 import 'package:dio/dio.dart';
 import 'package:tuple/tuple.dart';
 import 'package:crypto/crypto.dart';
-import 'dart:convert';
 
 class FileUtils {
   static Future<Tuple4<int, int, String, Uint8List>> imageDesc(

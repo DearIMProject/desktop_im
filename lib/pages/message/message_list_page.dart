@@ -40,10 +40,10 @@ class _MessageListPageState extends State<MessageListPage>
   User? chatUser;
   MessageService service = MessageService();
 
-  User? user = UserManager.getInstance().user;
+  User? user = UserManager().user;
   List<Message> messages = [];
   IMDatabase database = IMDatabase();
-  IMClient client = IMClient.getInstance();
+  IMClient client = IMClient();
   @override
   DatabaseCompleteCallback? completeCallback;
 

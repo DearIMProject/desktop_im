@@ -1,6 +1,5 @@
 import 'package:desktop_im/components/uikits/emoji/emoji_special_text_span_builder.dart';
 import 'package:extended_text/extended_text.dart';
-import 'package:extended_text_field/extended_text_field.dart';
 import 'package:flutter/material.dart';
 
 /// 主标题

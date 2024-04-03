@@ -1,6 +1,4 @@
-import 'package:desktop_im/components/common/common_theme.dart';
 import 'package:desktop_im/components/ui/loading_image.dart';
-import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/models/fileBean.dart';
 import 'package:desktop_im/pages/base_page.dart';
 import 'package:flutter/material.dart';

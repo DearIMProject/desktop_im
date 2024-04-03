@@ -35,7 +35,7 @@ class _AddressBookPageState extends State<AddressBookPage> {
 
   void click(User addressUser) {
     // Message message = MessageFactory.messageFromType(MessageType.EMPTY_MESSAGE);
-    // message.fromId = UserManager.getInstance().uid();
+    // message.fromId = UserManager().uid();
     // message.toId = addressUser.userId;
     // database.addMessage(message);
     Routers().openRouter("/message", {"user": addressUser}, context);

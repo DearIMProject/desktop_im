@@ -57,7 +57,7 @@ class Message extends HiveObject {
 
   // 是否是本人发出的消息
   bool get isOwner {
-    if (fromId == UserManager.getInstance().uid()) {
+    if (fromId == UserManager().uid()) {
       return true;
     }
     return false;

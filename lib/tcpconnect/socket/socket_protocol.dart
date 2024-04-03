@@ -6,12 +6,12 @@ abstract class SocketListener {
   SocketReceiveCallback? receiveCallback;
 }
 
-typedef SocketSuccessCallback = void Function();
+typedef SocketSuccessCallback = void Function(bool success);
 typedef SocketSendMessagesCallback = void Function(int timestamp);
 typedef SocketReceiveCallback = void Function(Uint8List? data);
 
 abstract class SocketProtocol {
-  bool isConnected = false;
+  bool get isConnected;
   SocketListener? listener;
   void connect();
   void close();

@@ -22,7 +22,7 @@ class LoginService {
         RequestCallback(
           successCallback: (data) {
             User user = User.fromJson(data["user"]);
-            UserManager.getInstance().setUser(user);
+            UserManager().setUser(user);
             NotificationStream().publish(kLoginSuccessNotification);
             if (callback.successCallback != null) {
               callback.successCallback!();
@@ -39,11 +39,11 @@ class LoginService {
   LoginService.autoLogin(String token, Callback callback) {
     Request().postRequest(
         "user/autologin",
-        {"token": UserManager.getInstance().userToken()},
+        {"token": UserManager().userToken()},
         RequestCallback(
           successCallback: (data) {
             User user = User.fromJson(data["user"]);
-            UserManager.getInstance().setUser(user);
+            UserManager().setUser(user);
             NotificationStream().publish(kLoginSuccessNotification);
             if (callback.successCallback != null) {
               callback.successCallback!();
@@ -51,7 +51,7 @@ class LoginService {
           },
           failureCallback: (code, errorStr, data) {
             Log.debug("failureCallback");
-            UserManager.getInstance().setUser(null);
+            UserManager().setUser(null);
             NotificationStream().publish(kLogoutSuccessNotification);
             if (callback.failureCallback != null) {
               callback.failureCallback!(code, errorStr, data);
@@ -66,7 +66,7 @@ class LoginService {
       {"token": token},
       RequestCallback(
         successCallback: (data) {
-          UserManager.getInstance().setUser(null);
+          UserManager().setUser(null);
           NotificationStream().publish(kLogoutSuccessNotification);
           if (callback.successCallback != null) {
             callback.successCallback!();

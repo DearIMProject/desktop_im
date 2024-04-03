@@ -16,25 +16,25 @@ class _ConnectTestPageState extends State<ConnectTestPage> {
   _ConnectTestPageState() {
     {
       TestItemModel model = TestItemModel("连接", () {
-        IMClient.getInstance().connect();
+        IMClient().connect();
       });
       models.add(model);
     }
     {
       TestItemModel model = TestItemModel("发送登录消息", () {
-        IMClient.getInstance().sendRequestLoginMessage();
+        IMClient().sendRequestLoginMessage();
       });
       models.add(model);
     }
     {
       TestItemModel model = TestItemModel("发送获取离线消息", () {
-        IMClient.getInstance().sendRequestOfflineMessage();
+        IMClient().sendRequestOfflineMessage();
       });
       models.add(model);
     }
     {
       TestItemModel model = TestItemModel("断开", () {
-        IMClient.getInstance().close();
+        IMClient().close();
       });
       models.add(model);
     }

@@ -94,7 +94,7 @@ class MessageDB implements DbProtocol<Message> {
   /// 根据消息获取需要的userid
   int getMUserId(Message message) {
     int mUserId = message.fromId;
-    if (mUserId == UserManager.getInstance().uid() && message.toId != 0) {
+    if (mUserId == UserManager().uid() && message.toId != 0) {
       mUserId = message.toId;
     }
     return mUserId;
@@ -258,7 +258,7 @@ class MessageDB implements DbProtocol<Message> {
     int result = 0;
     for (String element in box.keys) {
       int parse = int.parse(element);
-      if (UserManager.getInstance().uid() == parse) {
+      if (UserManager().uid() == parse) {
         continue;
       }
       List list = box.get(element)!;
@@ -274,11 +274,11 @@ class MessageDB implements DbProtocol<Message> {
   /// 判断是否为未读消息
   bool isUnreadMessage(Message message) {
     return (message.status == MessageStatus.STATUS_SUCCESS_UNREADED &&
-        message.toId == UserManager.getInstance().uid());
+        message.toId == UserManager().uid());
   }
 
   int getUserUnReadMessageCount(int userId) {
-    if (userId == UserManager.getInstance().uid()) {
+    if (userId == UserManager().uid()) {
       return 0;
     }
     List? list = box.get("$userId");

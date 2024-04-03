@@ -134,7 +134,7 @@ class IMDatabase implements IMClientListener {
     Hive.init(appDocumentDir.path);
     await Hive.initFlutter();
     Hive.registerAdapter(UserAdapter());
-    IMClient.getInstance().addListener(this);
+    IMClient().addListener(this);
   }
 
   void uninstall() {
@@ -158,7 +158,7 @@ class IMDatabase implements IMClientListener {
       }
     }
     if (message.status == MessageStatus.STATUS_SUCCESS_UNREADED &&
-        message.toId == UserManager.getInstance().uid()) {
+        message.toId == UserManager().uid()) {
       _badgeValue = _dbMessage.getUnReadMessageCount();
       for (IMDatabaseListener listener in _listeners) {
         if (listener.unreadMessageNumberChange != null) {

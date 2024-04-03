@@ -41,7 +41,7 @@ class _ChatPageState extends State<ChatPage>
         setState(() {
           chatUsers = [];
           chatUsers.addAll(database.getChatUsers());
-          Log.debug("chatUsers = $chatUsers");
+          // Log.debug("chatUsers = $chatUsers");
           setState(() {});
         });
       });
@@ -61,7 +61,6 @@ class _ChatPageState extends State<ChatPage>
     NotificationHelper().clearNotification();
     if (chatUsers.isEmpty && database.dbHasInstalled) {
       chatUsers.addAll(database.getChatUsers());
-      Log.debug("chatUsers = $chatUsers");
       setState(() {});
     }
     clickCallback = (user) {

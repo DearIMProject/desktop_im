@@ -10,9 +10,9 @@ class IconItemView extends StatefulWidget {
 }
 
 class _IconItemViewState extends State<IconItemView> {
-  String? userIconUrl = UserManager.getInstance().user?.icon;
-  String? username = UserManager.getInstance().user?.username;
-  String? email = UserManager.getInstance().user?.email;
+  String? userIconUrl = UserManager().user?.icon;
+  String? username = UserManager().user?.username;
+  String? email = UserManager().user?.email;
   @override
   Widget build(BuildContext context) {
     return Row(

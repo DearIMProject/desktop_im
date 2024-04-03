@@ -25,7 +25,7 @@ class ProfilePage extends StatefulWidget {
 
 void logout(BuildContext context) {
   LoginService.logout(
-    UserManager.getInstance().userToken(),
+    UserManager().userToken(),
     Callback(
       successCallback: () {
         Routers().openRouter("/login", {}, context);

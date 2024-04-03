@@ -38,6 +38,8 @@ dependencies:
   # flutter_screenutil: ^5.9.0
   extended_text_field: ^13.1.0
   extended_text: ^13.0.0
+  connectivity_plus: ^6.0.1
+  
   
   
 

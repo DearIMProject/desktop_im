@@ -2,7 +2,6 @@ import 'package:desktop_im/components/common/common_dialog.dart';
 import 'package:desktop_im/components/common/common_theme.dart';
 import 'package:desktop_im/components/ui/loading_image.dart';
 import 'package:desktop_im/components/uikits/emoji/emoji_special_text_span_builder.dart';
-import 'package:desktop_im/generated/intl/messages_zh_Hans_CN.dart';
 import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/fileBean.dart';
@@ -35,7 +34,7 @@ class MesssageItemView extends StatefulWidget {
 
 class _MesssageItemViewState extends State<MesssageItemView> {
   IMDatabase database = IMDatabase();
-  IMClient client = IMClient.getInstance();
+  IMClient client = IMClient();
   bool hasSend = false;
   bool isSendToSelf() {
     return widget.message.fromId == widget.message.toId;

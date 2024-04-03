@@ -71,15 +71,18 @@ class _HomePageState extends State<HomePage>
       });
     };
     database.addListener(this);
-    IMClient.getInstance().addListener(this);
-    connectSuccessCallback = () {
+    IMClient().addListener(this);
+    connectSuccessCallback = (success) {
+      if (!success) {
+        return;
+      }
       Log.debug("home page listener completeCallback");
       AddressbookService.getAllAddressbook(AddressCallback(
         successCallback: (users) {
           Log.debug("通讯录信息都获取成功");
           NotificationStream().publish(kAddressReadyNotification);
           Log.debug("发送Login消息");
-          IMClient.getInstance().sendRequestLoginMessage();
+          IMClient().sendRequestLoginMessage();
         },
         failureCallback: (code, errorStr, data) {
           ToastShowUtils.show(errorStr, context);
@@ -133,7 +136,7 @@ class _HomePageState extends State<HomePage>
       return;
     }
     hasAutoLogin = true;
-    String token = UserManager.getInstance().userToken();
+    String token = UserManager().userToken();
     Log.debug("token = $token");
     if (token.isNotEmpty) {
       Log.debug("调用自动登录");

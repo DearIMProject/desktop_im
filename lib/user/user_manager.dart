@@ -2,17 +2,16 @@ import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/utils/time_utils.dart';
 
 class UserManager {
-  static UserManager? _instance;
   static User _user = User();
   User? get user => _user;
 
-  static UserManager getInstance() {
-    if (_instance == null) {
-      _instance = UserManager();
-      _user.restore();
-    }
-    return _instance!;
+  static final UserManager _instance = UserManager._internal();
+
+  factory UserManager() {
+    return _instance;
   }
+
+  UserManager._internal();
 
   void setUser(User? user) {
     _setUser(user);

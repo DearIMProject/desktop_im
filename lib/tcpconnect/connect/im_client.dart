@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:desktop_im/config.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/message/message.dart';
@@ -21,7 +23,7 @@ import 'package:flutter/foundation.dart';
 
 typedef IMClientReceiveMessageCallback = void Function(Message message);
 typedef IMClientUnReadedMessageCallback = void Function(int unreadNumber);
-typedef IMClientConnectSuccessCallback = void Function();
+typedef IMClientConnectSuccessCallback = void Function(bool success);
 
 // ignore: constant_identifier_names
 const String MAGIC_NUMBER = "891013";
@@ -38,10 +40,19 @@ abstract class IMClientListener {
 }
 
 class IMClient implements SocketListener {
-  static IMClient? _instance;
   late SocketProtocol _socketManager;
   late MessageCodec _messageCodec;
   late ByteBuf _readByteBuf;
+  final String _host = HOST;
+  final int _port = 9999;
+
+  final int _second = 30;
+  Timer? _timer;
+
+  bool get isConencted {
+    return _socketManager.isConnected;
+  }
+
   IMDatabase database = IMDatabase();
   @override
   SocketSuccessCallback? connectSuccess;
@@ -53,6 +64,7 @@ class IMClient implements SocketListener {
   List<IMClientListener> listeners = [];
   final MessageQueue _messageQueue = MessageQueue();
 
+  /// 添加监听
   void addListener(IMClientListener listener) {
     if (listeners.contains(listener)) {
       return;
@@ -60,42 +72,67 @@ class IMClient implements SocketListener {
     listeners.add(listener);
   }
 
+  /// 删除监听
   void removeListener(IMClientListener listener) {
     if (listeners.contains(listener)) {
       listeners.remove(listener);
     }
   }
 
-  String host = HOST;
-  int port = 9999;
+  static final IMClient _instance = IMClient._internal();
 
-  static IMClient getInstance() {
-    _instance ??= IMClient();
-    return _instance!;
+  factory IMClient() {
+    return _instance;
   }
+  void checkConnection() {
+    Connectivity().onConnectivityChanged.listen((event) {
+      if (event.contains(ConnectivityResult.mobile) ||
+          event.contains(ConnectivityResult.wifi)) {
+        // 有网络了，可以进行重连了
+        Log.debug("有网络了，可以进行重连了");
+        if (!_socketManager.isConnected &&
+            UserManager().userToken().isNotEmpty) {
+          retryConnectSocket();
+        }
+      }
+    });
+  }
+
+  IMClient._internal();
 
   void dispose() {
     // _messageQueue.dispose();
   }
 
   void init() {
+    checkConnection();
     _readByteBuf = ByteBuf.allocator(size: 100);
     _messageCodec = MessageCodec();
-    _socketManager = SocketManager(host, port);
+    _socketManager = SocketManager(_host, _port);
     _socketManager.listener = _instance;
-    connectSuccess = () {
+    connectSuccess = (isConected) {
+      if (!isConencted) {
+        Log.debug("断连了");
+        endTimer();
+        _socketManager.close();
+        // if (UserManager().userToken().isNotEmpty) {
+        //   retryConnectSocket();
+        // }
+        return;
+      }
       Log.info("成功建立长连接！");
       if (listeners.isNotEmpty) {
         for (IMClientListener listener in listeners) {
           if (listener.connectSuccessCallback != null) {
-            listener.connectSuccessCallback!();
+            listener.connectSuccessCallback!(isConected);
           }
         }
-      }
+      } else {}
     };
     sendMessageSuccess = (int timestamp) {
       Log.info("消息发送成功！ timestamp = $timestamp");
     };
+    // 底层数据包返回，处理粘包半包
     receiveCallback = (data) {
       if (data != null) {
         _readByteBuf.reset();
@@ -107,7 +144,7 @@ class IMClient implements SocketListener {
         if (_readByteBuf.couldReadableSize >= length) {
           // 粘包
           ByteBuf asByteBuf = _readByteBuf.readUint8ListAsByteBuf(length);
-          receiveData(asByteBuf.readAllUint8List());
+          _receiveData(asByteBuf.readAllUint8List());
           if (_readByteBuf.couldReadableSize != 0) {
             ByteBuf restByteBuf = _readByteBuf
                 .readUint8ListAsByteBuf(_readByteBuf.couldReadableSize);
@@ -124,8 +161,22 @@ class IMClient implements SocketListener {
     };
   }
 
+  retryConnectSocket() {
+    connect();
+  }
+
+  /// 发送登录成功信息
   void sendRequestLoginMessage() {
     _sendRequestLoginMessge();
+  }
+
+  void sendHeartBeatMessage() {
+    Log.debug("发送一个心跳包");
+    Message message = MessageFactory.messageFromType(MessageType.HEART_BEAT);
+    message.fromId = UserManager().uid();
+    message.fromEntity = MessageEntityType.USER;
+    sendMessage(message);
+    startTimer();
   }
 
   Future<void> _sendRequestLoginMessge() async {
@@ -134,7 +185,9 @@ class IMClient implements SocketListener {
     sendMessage(messageFromType);
   }
 
-  void receiveData(Uint8List aData) {
+  /// 收到完成数据包
+  void _receiveData(Uint8List aData) {
+    startTimer();
     Message? message = _messageCodec.decode(aData);
     if (message == null) {
       return;
@@ -142,20 +195,22 @@ class IMClient implements SocketListener {
     switch (message.messageType) {
       case MessageType.TEXT:
       case MessageType.PICTURE:
-        configReceiveTextMessage(message);
+        _configReceiveTextMessage(message);
         break;
       case MessageType.REQUEST_LOGIN:
-        configReceiveRequestLoginMessage(message);
+        _configReceiveRequestLoginMessage(message);
         break;
       case MessageType.SEND_SUCCESS_MESSAGE:
-        configReceiveSendSuccessMessage(message);
+        _configReceiveSendSuccessMessage(message);
         break;
-
+      case MessageType.HEART_BEAT:
+        Log.debug("收到心跳包");
       default:
     }
   }
 
-  void configReceiveTextMessage(Message message) {
+  /// 处理收到的text消息
+  void _configReceiveTextMessage(Message message) {
     message.sendStatue = MessageSendStatus.STATUS_SEND_SUCCESS;
     Log.info("收到一个消息 = $message");
     if (listeners.isNotEmpty) {
@@ -167,23 +222,25 @@ class IMClient implements SocketListener {
     }
   }
 
-  void configReceiveRequestLoginMessage(Message message) {
+  /// 处理收到的登录成功消息
+  void _configReceiveRequestLoginMessage(Message message) {
     Log.debug("收到登录消息 configReceiveRequestLoginMessage");
 
     if (message.content.contains(MAGIC_NUMBER)) {
       sendRequestOfflineMessage();
     } else {
       // 登录失败
-      String token = UserManager.getInstance().userToken();
+      String token = UserManager().userToken();
       if (token.isNotEmpty) {
-        autologin(token);
+        _autologin(token);
       } else {
         NotificationStream().publish(kLogoutSuccessNotification);
       }
     }
   }
 
-  void autologin(String token) {
+  /// 自动登录
+  void _autologin(String token) {
     LoginService.autoLogin(token, Callback(
       successCallback: () {
         sendRequestLoginMessage();
@@ -191,6 +248,7 @@ class IMClient implements SocketListener {
     ));
   }
 
+  /// 发送离线消息
   void sendRequestOfflineMessage() {
     Log.debug("发送获取离线消息 sendRequestOfflineMessage");
     Message messageFromType =
@@ -201,7 +259,7 @@ class IMClient implements SocketListener {
     sendMessage(messageFromType);
   }
 
-  void configReceiveSendSuccessMessage(Message message) {
+  void _configReceiveSendSuccessMessage(Message message) {
     Log.debug("收到发送成功消息 configReceiveSendSuccessMessage $message");
     Map<String, dynamic> decode = json.decode(message.content);
     SendSuccessModel model = SendSuccessModel.fromJson(decode);
@@ -247,8 +305,24 @@ class IMClient implements SocketListener {
     Message readMessage =
         MessageFactory.messageFromType(MessageType.READED_MESSAGE);
     readMessage.content = "${message.timestamp}";
-    readMessage.fromId = UserManager.getInstance().uid();
+    readMessage.fromId = UserManager().uid();
     readMessage.fromEntity = MessageEntityType.USER;
     sendMessage(readMessage);
+  }
+
+  void startTimer() {
+    endTimer();
+    Log.debug("开始30s计时");
+    _timer ??= Timer.periodic(Duration(seconds: _second), (timer) {
+      sendHeartBeatMessage();
+    });
+  }
+
+  void endTimer() {
+    Log.debug("结束30s计时");
+    if (_timer != null) {
+      _timer!.cancel();
+      _timer = null;
+    }
   }
 }

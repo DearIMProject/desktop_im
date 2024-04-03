@@ -42,7 +42,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   /// 长连接
-  IMClient connectManager = IMClient.getInstance();
+  IMClient connectManager = IMClient();
 
   /// 数据库
   IMDatabase database = IMDatabase();
@@ -64,9 +64,7 @@ class _MyAppState extends State<MyApp> {
       Log.debug("收到消息:$notification");
       if (notification.contains(kLoginSuccessNotification)) {
         // 初始化数据库
-        database
-            .install(UserManager.getInstance().uid().toString())
-            .then((value) {
+        database.install(UserManager().uid().toString()).then((value) {
           connectManager.connect();
         });
       }
@@ -174,7 +172,7 @@ Future<User> getUser() async {
 
   user.restore().then((hasUser) {
     if (hasUser) {
-      User? aUser = UserManager.getInstance().user;
+      User? aUser = UserManager().user;
       if (aUser != null) {
         user = aUser;
       }
