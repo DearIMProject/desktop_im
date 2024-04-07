@@ -57,10 +57,16 @@ class SocketManager implements SocketProtocol {
       onError: (error) {
         Log.debug('Error: $error');
         closeConnect();
+        if (listener != null && listener!.connectSuccess != null) {
+          listener!.connectSuccess!(_isConnected);
+        }
       },
       onDone: () {
         Log.debug('Connection closed');
         closeConnect();
+        if (listener != null && listener!.connectSuccess != null) {
+          listener!.connectSuccess!(_isConnected);
+        }
       },
     );
   }
@@ -75,11 +81,9 @@ class SocketManager implements SocketProtocol {
 
   @override
   void close() {
+    if (_socket == null) return;
     try {
-      _socket!.close().then((value) {
-        _socket!.destroy();
-        _socket = null;
-      });
+      _socket!.close();
     } catch (e) {
       Log.warn("error = $e");
     }
@@ -89,7 +93,7 @@ class SocketManager implements SocketProtocol {
   Future<void> sendData(Uint8List data, int timestamp) async {
     Completer completer = Completer();
     String dataStr = Uint8ListUtils.uint8ListToHex(data);
-    Log.debug("发送一个信息：$dataStr");
+    Log.info("发送一个数据段：$dataStr");
     _socket!.add(data);
     _socket!.flush().then((value) => completer.complete());
     if (listener != null && listener!.sendMessageSuccess != null) {

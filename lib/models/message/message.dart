@@ -63,6 +63,11 @@ class Message extends HiveObject {
     return false;
   }
 
+  bool get isNeedSendReadedMessage {
+    return status == MessageStatus.STATUS_NOT_SEND_UNREAD ||
+        status == MessageStatus.STATUS_NOT_SEND_UNREAD;
+  }
+
   bool get isChatMessage {
     if (messageType == MessageType.CHAT_MESSAGE ||
         messageType == MessageType.FILE ||

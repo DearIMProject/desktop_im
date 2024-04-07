@@ -22,6 +22,7 @@
     "delete_content":"sure delete current messge?",
     "preview":"preview",
     "writting":"writting...",
+    "retry_connecting":"retry connecting...",
     "chat_user_image":"[image]"
 
 }

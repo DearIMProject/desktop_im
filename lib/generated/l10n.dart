@@ -280,6 +280,16 @@ class S {
     );
   }
 
+  /// `retry connecting...`
+  String get retry_connecting {
+    return Intl.message(
+      'retry connecting...',
+      name: 'retry_connecting',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `[image]`
   String get chat_user_image {
     return Intl.message(

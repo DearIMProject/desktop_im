@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:desktop_im/components/common/common_dialog.dart';
 import 'package:desktop_im/components/common/common_theme.dart';
@@ -121,7 +120,6 @@ class _MessageListPageState extends State<MessageListPage>
     transparentCallback ??= (message) {
       if (chatUser!.userId == message.fromId) {
         // 显示title 正在输入中..
-        Log.debug("chatUser!.userId == message.fromId");
         isUserWriting = true;
         setState(() {});
         // 并开启定时 ..

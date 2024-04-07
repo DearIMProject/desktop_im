@@ -1,4 +1,5 @@
 import 'package:desktop_im/components/common/common_theme.dart';
+import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/notification/notification_helper.dart';
@@ -6,6 +7,7 @@ import 'package:desktop_im/notification/notification_service.dart';
 import 'package:desktop_im/pages/chat/chat_user_item.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/router/routers.dart';
+import 'package:desktop_im/tcpconnect/connect/im_client.dart';
 import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
@@ -16,7 +18,10 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage>
-    implements IMDatabaseListener, NotificationHelperListener {
+    implements
+        IMDatabaseListener,
+        NotificationHelperListener,
+        IMClientListener {
   @override
   DatabaseCompleteCallback? completeCallback;
 
@@ -28,15 +33,24 @@ class _ChatPageState extends State<ChatPage>
   List<User> chatUsers = [];
   IMDatabase database = IMDatabase();
 
+  @override
+  void dispose() {
+    database.removeListener(this);
+    IMClient().removeListener(this);
+    NotificationHelper().listener = null;
+    super.dispose();
+  }
+
   _ChatPageState() {
     database.addListener(this);
+    IMClient().addListener(this);
     NotificationHelper().listener = this;
-    completeCallback = () {
+    completeCallback ??= () {
       chatUsers.addAll(database.getChatUsers());
       // Log.debug("chatUsers = $chatUsers");
       setState(() {});
     };
-    dataChangeCallback = () {
+    dataChangeCallback ??= () {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         setState(() {
           chatUsers = [];
@@ -46,13 +60,18 @@ class _ChatPageState extends State<ChatPage>
         });
       });
     };
-  }
 
-  @override
-  void dispose() {
-    database.removeListener(this);
-    super.dispose();
+    connectSuccessCallback ??= (success) {
+      Log.debug("连接成功？$success");
+      if (success) {
+        _showConnectStatus = false;
+      } else {
+        Log.debug("content");
+        _showConnectStatus = true;
+      }
+    };
   }
+  static bool _showConnectStatus = true;
 
   @override
   void initState() {
@@ -72,9 +91,27 @@ class _ChatPageState extends State<ChatPage>
   Widget build(BuildContext context) {
     return pagePadding(
       ListView.builder(
-        itemCount: chatUsers.length,
+        itemCount: _showConnectStatus ? chatUsers.length + 1 : chatUsers.length,
         itemBuilder: (BuildContext context, int index) {
-          User user = chatUsers[index];
+          if (index == 0 && _showConnectStatus) {
+            return GestureDetector(
+              onTap: () {
+                reconnectSocket();
+              },
+              child: Container(
+                color: Colors.red,
+                child: Center(
+                  child: itemPadding(Text(
+                    "<-- ${S.current.retry_connecting} -- >",
+                    style:
+                        const TextStyle(color: kWhiteBackColor, fontSize: 16),
+                  )),
+                ),
+              ),
+            );
+          }
+          int userIndex = _showConnectStatus ? index - 1 : index;
+          User user = chatUsers[userIndex];
           return GestureDetector(
             onTap: () {
               Routers().openRouter("/message", {"user": user}, context);
@@ -95,4 +132,20 @@ class _ChatPageState extends State<ChatPage>
 
   @override
   NotificationClickCallback? clickCallback;
+
+  @override
+  IMClientConnectSuccessCallback? connectSuccessCallback;
+
+  @override
+  IMClientReceiveMessageCallback? messageCallback;
+
+  @override
+  IMClientTransparentCallback? transparentCallback;
+
+  @override
+  IMClientUnReadedMessageCallback? unreadMessageCallback;
+
+  void reconnectSocket() {
+    IMClient().connect();
+  }
 }

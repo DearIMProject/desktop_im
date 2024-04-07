@@ -42,6 +42,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("please input password"),
         "preview": MessageLookupByLibrary.simpleMessage("preview"),
         "processing": MessageLookupByLibrary.simpleMessage("processing"),
+        "retry_connecting":
+            MessageLookupByLibrary.simpleMessage("retry connecting..."),
         "send_log": MessageLookupByLibrary.simpleMessage("send log"),
         "success": MessageLookupByLibrary.simpleMessage("success"),
         "test": MessageLookupByLibrary.simpleMessage("test"),

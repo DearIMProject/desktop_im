@@ -6,8 +6,10 @@ class LoginTextField extends StatefulWidget {
   final String hintText;
   final ValueChanged<String> onChanged;
   final String defaultText;
-  const LoginTextField(
+  FocusNode? focusNode;
+  LoginTextField(
       {Key? key,
+      this.focusNode,
       required this.textInputAction,
       required this.hintText,
       required this.onChanged,
@@ -32,6 +34,10 @@ class _LoginTextFieldState extends State<LoginTextField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      focusNode: widget.focusNode,
+      onTapOutside: (event) {
+        widget.focusNode?.unfocus();
+      },
       onChanged: onChanged,
       textInputAction: textInputAction,
       style: const TextStyle(

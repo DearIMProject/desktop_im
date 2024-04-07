@@ -114,14 +114,14 @@ class IMClient implements SocketListener {
     _messageCodec = MessageCodec();
     _socketManager = SocketManager(_host, _port);
     _socketManager.listener = _instance;
-    connectSuccess = (isConected) {
+    connectSuccess ??= (isConected) {
       if (!isConencted) {
         Log.debug("断连了");
         endTimer();
         _socketManager.close();
-        // if (UserManager().userToken().isNotEmpty) {
-        //   retryConnectSocket();
-        // }
+        if (UserManager().userToken().isNotEmpty) {
+          retryConnectSocket();
+        }
         return;
       }
       Log.info("成功建立长连接！");
@@ -169,6 +169,10 @@ class IMClient implements SocketListener {
     connect();
   }
 
+  // ignore: non_constant_identifier_names
+  final int _MAX_LOST_HEART_BEAT_COUNT = 5;
+  int _currentSendHeartBeatCount = 0;
+
   /// 发送登录成功信息
   void sendRequestLoginMessage() {
     _sendRequestLoginMessge();
@@ -176,6 +180,13 @@ class IMClient implements SocketListener {
 
   void sendHeartBeatMessage() {
     Log.debug("发送一个心跳包");
+    _currentSendHeartBeatCount++;
+    if (_currentSendHeartBeatCount >= _MAX_LOST_HEART_BEAT_COUNT) {
+      //TODO: wmy 重连；
+      _socketManager.close();
+      _socketManager.connect();
+      return;
+    }
     Message message = MessageFactory.messageFromType(MessageType.HEART_BEAT);
     message.fromId = UserManager().uid();
     message.fromEntity = MessageEntityType.USER;
@@ -209,6 +220,7 @@ class IMClient implements SocketListener {
         break;
       case MessageType.HEART_BEAT:
         Log.debug("收到心跳包");
+        _currentSendHeartBeatCount--;
         break;
       case MessageType.TRANSPARENT_MESSAGE:
         _configTransparentMessage(message);

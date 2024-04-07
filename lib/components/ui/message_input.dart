@@ -1,7 +1,5 @@
 import 'package:desktop_im/components/common/common_theme.dart';
 import 'package:desktop_im/components/uikits/emoji/emoji_special_text_span_builder.dart';
-// import 'package:desktop_im/components/ui/rich_text_editing_controller.dart';
-import 'package:desktop_im/log/log.dart';
 import 'package:extended_text_field/extended_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -183,6 +181,7 @@ class _MessageInputViewState extends State<MessageInputView> {
                         if (widget.sendCallback != null) {
                           widget.sendCallback!(value);
                         }
+                        textController.text = "";
                         _focusNode.requestFocus();
                       },
                       textInputAction: TextInputAction.send,

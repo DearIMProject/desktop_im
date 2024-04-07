@@ -53,7 +53,7 @@ class _MesssageItemViewState extends State<MesssageItemView> {
     hasSend = true;
     if (!widget.message.isOwner) {
       // Log.debug("${widget.message.status}");
-      if (widget.message.status == MessageStatus.STATUS_SUCCESS_UNREADED) {
+      if (widget.message.status != MessageStatus.STATUS_SUCCESS_READED) {
         // Log.debug("消息 ${widget.message}");
         client.sendReadedMessage(widget.message);
       }

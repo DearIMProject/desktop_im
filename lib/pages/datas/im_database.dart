@@ -72,15 +72,17 @@ class IMDatabase implements IMClientListener {
 
   final MessageDB _dbMessage = MessageDB();
   final UserDB _dbUser = UserDB();
-
+  bool hasRegister = false;
   Future<void> _initialDatabase(String boxName) {
     Completer<void> completer = Completer<void>();
-
-    Hive.registerAdapter(MessageAdapter());
-    Hive.registerAdapter(MessageStatusAdapter());
-    Hive.registerAdapter(MessageTypeAdapter());
-    Hive.registerAdapter(MessageEntityTypeAdapter());
-    Hive.registerAdapter(MessageSendStatusAdapter());
+    if (!hasRegister) {
+      Hive.registerAdapter(MessageAdapter());
+      Hive.registerAdapter(MessageStatusAdapter());
+      Hive.registerAdapter(MessageTypeAdapter());
+      Hive.registerAdapter(MessageEntityTypeAdapter());
+      Hive.registerAdapter(MessageSendStatusAdapter());
+      hasRegister = true;
+    }
     _dbMessage.install(boxName).then((value) {
       _dbUser.install(boxName).then((value) {
         Log.info("初始化数据库完毕！");

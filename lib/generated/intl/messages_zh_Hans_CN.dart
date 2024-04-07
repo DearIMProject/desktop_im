@@ -39,6 +39,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "password_tip": MessageLookupByLibrary.simpleMessage("请输入密码"),
         "preview": MessageLookupByLibrary.simpleMessage("预览"),
         "processing": MessageLookupByLibrary.simpleMessage("处理中"),
+        "retry_connecting": MessageLookupByLibrary.simpleMessage("正在连接中..."),
         "send_log": MessageLookupByLibrary.simpleMessage("发送日志"),
         "success": MessageLookupByLibrary.simpleMessage("成功"),
         "test": MessageLookupByLibrary.simpleMessage("测试"),
