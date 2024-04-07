@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'send_success_model.dart';
+part of 'send_json_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-SendSuccessModel _$SendSuccessModelFromJson(Map<String, dynamic> json) =>
-    SendSuccessModel(
+SendJsonModel _$SendJsonModelFromJson(Map<String, dynamic> json) =>
+    SendJsonModel(
       msgId: json['msgId'] as int,
       timestamp: json['timestamp'] as int,
       messageType:
@@ -15,7 +15,7 @@ SendSuccessModel _$SendSuccessModelFromJson(Map<String, dynamic> json) =>
       content: json['content'] as String,
     );
 
-Map<String, dynamic> _$SendSuccessModelToJson(SendSuccessModel instance) =>
+Map<String, dynamic> _$SendJsonModelToJson(SendJsonModel instance) =>
     <String, dynamic>{
       'msgId': instance.msgId,
       'timestamp': instance.timestamp,

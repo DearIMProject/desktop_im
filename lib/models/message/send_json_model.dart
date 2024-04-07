@@ -1,11 +1,11 @@
 import 'package:desktop_im/models/message/message_enum.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'send_success_model.g.dart';
+part 'send_json_model.g.dart';
 
 @JsonSerializable()
-class SendSuccessModel {
-  SendSuccessModel(
+class SendJsonModel {
+  SendJsonModel(
       {required this.msgId,
       required this.timestamp,
       this.messageType,
@@ -15,9 +15,9 @@ class SendSuccessModel {
   MessageType? messageType;
   String content;
 
-  factory SendSuccessModel.fromJson(Map<String, dynamic> json) =>
-      _$SendSuccessModelFromJson(json);
-  Map<String, dynamic> toJson() => _$SendSuccessModelToJson(this);
+  factory SendJsonModel.fromJson(Map<String, dynamic> json) =>
+      _$SendJsonModelFromJson(json);
+  Map<String, dynamic> toJson() => _$SendJsonModelToJson(this);
 
   @override
   String toString() {

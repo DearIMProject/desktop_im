@@ -21,6 +21,7 @@
     "cancel":"cancel",
     "delete_content":"sure delete current messge?",
     "preview":"preview",
+    "writting":"writting...",
     "chat_user_image":"[image]"
 
 }

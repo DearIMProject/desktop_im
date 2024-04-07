@@ -44,6 +44,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "test": MessageLookupByLibrary.simpleMessage("测试"),
         "title": MessageLookupByLibrary.simpleMessage("IM App"),
         "username_tip": MessageLookupByLibrary.simpleMessage("请输入登录账号或邮箱"),
-        "welcome": MessageLookupByLibrary.simpleMessage("欢迎！")
+        "welcome": MessageLookupByLibrary.simpleMessage("欢迎！"),
+        "writting": MessageLookupByLibrary.simpleMessage("正在输入中...")
       };
 }

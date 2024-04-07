@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:desktop_im/components/common/common_dialog.dart';
 import 'package:desktop_im/components/common/common_theme.dart';
@@ -12,7 +13,7 @@ import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/fileBean.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
-import 'package:desktop_im/models/message/send_success_model.dart';
+import 'package:desktop_im/models/message/send_json_model.dart';
 
 import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/pages/base_page.dart';
@@ -36,7 +37,7 @@ class MessageListPage extends BasePage {
 }
 
 class _MessageListPageState extends State<MessageListPage>
-    implements IMDatabaseListener {
+    implements IMDatabaseListener, IMClientListener {
   User? chatUser;
   MessageService service = MessageService();
 
@@ -57,15 +58,19 @@ class _MessageListPageState extends State<MessageListPage>
   final KeyboardVisibilityController _keyboardVisibilityController =
       KeyboardVisibilityController();
   MesssageInputViewController controller = MesssageInputViewController();
+  bool isUserWriting = false;
+  Timer? timer;
   @override
   void dispose() {
     database.removeListener(this);
+    IMClient().removeListener(this);
     _scrollController.dispose();
     super.dispose();
   }
 
   _MessageListPageState() {
     database.addListener(this);
+    IMClient().addListener(this);
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection !=
           ScrollDirection.idle) {
@@ -85,6 +90,7 @@ class _MessageListPageState extends State<MessageListPage>
   @override
   void initState() {
     super.initState();
+
     if (messages.isNotEmpty) {
       return;
     }
@@ -112,6 +118,29 @@ class _MessageListPageState extends State<MessageListPage>
       );
     };
 
+    transparentCallback ??= (message) {
+      if (chatUser!.userId == message.fromId) {
+        // 显示title 正在输入中..
+        Log.debug("chatUser!.userId == message.fromId");
+        isUserWriting = true;
+        setState(() {});
+        // 并开启定时 ..
+        if (timer != null) {
+          timer!.cancel();
+          timer = null;
+        } else {
+          timer = Timer(const Duration(seconds: 5), () {
+            delayTransparnetTask();
+          });
+        }
+      }
+    };
+
+    controller.textChangeback ??= (string) {
+      Log.debug("string = $string");
+      _configSendTranparnetMessage();
+    };
+
     // 滚动到底部
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
@@ -134,6 +163,11 @@ class _MessageListPageState extends State<MessageListPage>
     });
   }
 
+  void delayTransparnetTask() {
+    isUserWriting = false;
+    setState(() {});
+  }
+
   bool hasSend = false;
   bool addVisiable = false;
   bool emjVisiable = false;
@@ -143,7 +177,11 @@ class _MessageListPageState extends State<MessageListPage>
 
     return Scaffold(
       appBar: AppBar(
-        title: titleFontText(kTitleColor, chatUser?.username ?? ""),
+        title: Text(
+          isUserWriting ? S.current.writting : chatUser!.username,
+          style: const TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 20, color: kTitleColor),
+        ),
       ),
       resizeToAvoidBottomInset: true,
       body: Column(
@@ -325,7 +363,7 @@ class _MessageListPageState extends State<MessageListPage>
     delMessage.toEntity = message.toEntity;
     delMessage.toId = message.toId;
     delMessage.content = jsonEncode(
-      SendSuccessModel(
+      SendJsonModel(
               msgId: 0,
               messageType: message.messageType,
               timestamp: message.timestamp,
@@ -338,6 +376,45 @@ class _MessageListPageState extends State<MessageListPage>
     setState(() {});
   }
 
+  Timer? sendTimer;
+  void _configSendTranparnetMessage() {
+    if (sendTimer != null) {
+      Log.debug("5秒时间没到，不发消息");
+      return;
+    }
+    _sendTranparnetMessage();
+    sendTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      Log.debug("$timer");
+      timer.cancel();
+      sendTimer = null;
+    });
+  }
+
+  void _sendTranparnetMessage() {
+    Message message =
+        MessageFactory.messageFromType(MessageType.TRANSPARENT_MESSAGE);
+    message.fromEntity = MessageEntityType.USER;
+    message.fromId = UserManager().uid();
+    message.toEntity = MessageEntityType.USER;
+    message.toId = chatUser!.userId;
+    Log.debug("message = $message");
+    client.sendMessage(message);
+  }
+
+  /// ------   im-client-listener   ------
+
   @override
   DatabaseAddReadableMessage? addReadableCallback;
+
+  @override
+  IMClientConnectSuccessCallback? connectSuccessCallback;
+
+  @override
+  IMClientReceiveMessageCallback? messageCallback;
+
+  @override
+  IMClientTransparentCallback? transparentCallback;
+
+  @override
+  IMClientUnReadedMessageCallback? unreadMessageCallback;
 }

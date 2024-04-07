@@ -6,7 +6,7 @@ import 'package:desktop_im/config.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
-import 'package:desktop_im/models/message/send_success_model.dart';
+import 'package:desktop_im/models/message/send_json_model.dart';
 import 'package:desktop_im/notification/notification_stream.dart';
 import 'package:desktop_im/notification/notifications.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
@@ -24,6 +24,7 @@ import 'package:flutter/foundation.dart';
 typedef IMClientReceiveMessageCallback = void Function(Message message);
 typedef IMClientUnReadedMessageCallback = void Function(int unreadNumber);
 typedef IMClientConnectSuccessCallback = void Function(bool success);
+typedef IMClientTransparentCallback = void Function(Message message);
 
 // ignore: constant_identifier_names
 const String MAGIC_NUMBER = "891013";
@@ -37,6 +38,9 @@ abstract class IMClientListener {
 
   /// 连接成功
   IMClientConnectSuccessCallback? connectSuccessCallback;
+
+  /// 透传信息
+  IMClientTransparentCallback? transparentCallback;
 }
 
 class IMClient implements SocketListener {
@@ -205,6 +209,10 @@ class IMClient implements SocketListener {
         break;
       case MessageType.HEART_BEAT:
         Log.debug("收到心跳包");
+        break;
+      case MessageType.TRANSPARENT_MESSAGE:
+        _configTransparentMessage(message);
+        break;
       default:
     }
   }
@@ -262,7 +270,7 @@ class IMClient implements SocketListener {
   void _configReceiveSendSuccessMessage(Message message) {
     Log.debug("收到发送成功消息 configReceiveSendSuccessMessage $message");
     Map<String, dynamic> decode = json.decode(message.content);
-    SendSuccessModel model = SendSuccessModel.fromJson(decode);
+    SendJsonModel model = SendJsonModel.fromJson(decode);
     if (model.messageType == MessageType.READED_MESSAGE) {
       database.configMessageReaded(model);
     } else {
@@ -323,6 +331,16 @@ class IMClient implements SocketListener {
     if (_timer != null) {
       _timer!.cancel();
       _timer = null;
+    }
+  }
+
+  /// 处理自定义透传消息
+  void _configTransparentMessage(Message message) {
+    Log.debug("收到一个透传消息");
+    for (IMClientListener listener in listeners) {
+      if (listener.transparentCallback != null) {
+        listener.transparentCallback!(message);
+      }
     }
   }
 }

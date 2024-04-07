@@ -201,4 +201,7 @@ class _HomePageState extends State<HomePage>
 
   @override
   DatabaseAddReadableMessage? addReadableCallback;
+
+  @override
+  IMClientTransparentCallback? transparentCallback;
 }

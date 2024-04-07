@@ -48,6 +48,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "title": MessageLookupByLibrary.simpleMessage("IM App"),
         "username_tip": MessageLookupByLibrary.simpleMessage(
             "please input account or email address"),
-        "welcome": MessageLookupByLibrary.simpleMessage("Welcome!")
+        "welcome": MessageLookupByLibrary.simpleMessage("Welcome!"),
+        "writting": MessageLookupByLibrary.simpleMessage("writting...")
       };
 }

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 typedef SendCallback = void Function(String text);
+typedef OnTextChangeback = void Function(String text);
 typedef ClickCallback = void Function();
 
 typedef AddTextCallback = void Function(String text);
@@ -15,6 +16,7 @@ typedef EmojiReadyCallback = void Function(List<String> emojiNames);
 class MesssageInputViewController {
   AddTextCallback? callback;
   EmojiReadyCallback? emojiReadyCallback;
+  OnTextChangeback? textChangeback;
 }
 
 // ignore: must_be_immutable
@@ -169,7 +171,12 @@ class _MessageInputViewState extends State<MessageInputView> {
                         _focusNode.unfocus();
                       },
                       strutStyle: const StrutStyle(),
-                      onChanged: (string) {},
+                      onChanged: (string) {
+                        if (widget.controller != null &&
+                            widget.controller!.textChangeback != null) {
+                          widget.controller!.textChangeback!(string);
+                        }
+                      },
                       focusNode: _focusNode,
                       keyboardType: TextInputType.multiline,
                       onSubmitted: (value) {

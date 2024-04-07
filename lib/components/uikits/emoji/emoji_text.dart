@@ -14,7 +14,7 @@ class EmojiText extends SpecialText {
   InlineSpan finishText() {
     final String key = toString();
     String emojiName = getContent();
-    Log.debug("emojiName = $emojiName");
+    // Log.debug("emojiName = $emojiName");
     double size = textStyle!.fontSize! * 1.5;
     if (EmojiUtils().emojiNames.contains(emojiName)) {
       return ImageSpan(

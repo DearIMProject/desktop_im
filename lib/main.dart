@@ -70,6 +70,7 @@ class _MyAppState extends State<MyApp> {
       }
       if (notification.contains(kLogoutSuccessNotification)) {
         connectManager.close();
+        database.uninstall();
       }
       if (notification.contains(kAddressReadyNotification)) {
         //TODO: wmy 请求了所有的通讯录数据，可以进行登录操作了

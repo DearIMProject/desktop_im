@@ -270,6 +270,16 @@ class S {
     );
   }
 
+  /// `writting...`
+  String get writting {
+    return Intl.message(
+      'writting...',
+      name: 'writting',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `[image]`
   String get chat_user_image {
     return Intl.message(

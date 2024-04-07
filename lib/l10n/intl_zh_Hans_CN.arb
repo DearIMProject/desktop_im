@@ -21,6 +21,7 @@
     "cancel":"取消",
     "delete_content":"是否删除这条消息",
     "preview":"预览",
+    "writting":"正在输入中...",
     "chat_user_image":"[图片]"
 
 }

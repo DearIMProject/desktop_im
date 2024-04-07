@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
-import 'package:desktop_im/models/message/send_success_model.dart';
+import 'package:desktop_im/models/message/send_json_model.dart';
 import 'package:desktop_im/pages/datas/db_protocol.dart';
 import 'package:desktop_im/user/user_manager.dart';
 import 'package:hive/hive.dart';
@@ -240,7 +240,7 @@ class MessageDB implements DbProtocol<Message> {
   }
 
   void configMessageSendSuccess(
-      SendSuccessModel model, MessageSendStatus status) async {
+      SendJsonModel model, MessageSendStatus status) async {
     Log.debug("model = $model");
     // 找到对应的message，标记为status
     Tuple2<Message, int>? tuple =

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
-import 'package:desktop_im/models/message/send_success_model.dart';
+import 'package:desktop_im/models/message/send_json_model.dart';
 import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/pages/datas/db_message.dart';
 import 'package:desktop_im/pages/datas/db_user.dart';
@@ -140,6 +140,7 @@ class IMDatabase implements IMClientListener {
   void uninstall() {
     _dbMessage.uninstall();
     _dbUser.uninstall();
+    dbHasInstalled = false;
   }
 
   /// 添加一条消息
@@ -239,8 +240,7 @@ class IMDatabase implements IMClientListener {
   }
 
 // 设置消息发送成功
-  void configMessageSendSuccess(
-      SendSuccessModel model, MessageSendStatus status) {
+  void configMessageSendSuccess(SendJsonModel model, MessageSendStatus status) {
     _dbMessage.configMessageSendSuccess(model, status);
     for (var i = 0; i < _listeners.length; i++) {
       IMDatabaseListener listener = _listeners[i];
@@ -260,7 +260,7 @@ class IMDatabase implements IMClientListener {
     _dbMessage.setMessageReaded(message);
   }
 
-  void configMessageReaded(SendSuccessModel model) {
+  void configMessageReaded(SendJsonModel model) {
     int timestamp = int.parse(model.content);
     Tuple2<Message, int>? tuple = _dbMessage.getMessageByTimestamp(timestamp);
     if (tuple != null) {
@@ -283,4 +283,7 @@ class IMDatabase implements IMClientListener {
       }
     }
   }
+
+  @override
+  IMClientTransparentCallback? transparentCallback;
 }
