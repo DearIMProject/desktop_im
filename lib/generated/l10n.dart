@@ -200,6 +200,16 @@ class S {
     );
   }
 
+  /// `loading...`
+  String get loading {
+    return Intl.message(
+      'loading...',
+      name: 'loading',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `processing`
   String get processing {
     return Intl.message(

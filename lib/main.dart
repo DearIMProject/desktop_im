@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:desktop_im/components/common/colors.dart';
+import 'package:desktop_im/components/ui/camera_page.dart';
 import 'package:desktop_im/components/uikits/emoji/emoji_utils.dart';
 import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/log/log.dart';
@@ -15,6 +16,7 @@ import 'package:desktop_im/pages/home/home_page.dart';
 import 'package:desktop_im/pages/login/login.dart';
 import 'package:desktop_im/pages/message/message_list_page.dart';
 import 'package:desktop_im/pages/picture/picture_page.dart';
+import 'package:desktop_im/pages/test/test_dialog/test_dialog_page.dart';
 import 'package:desktop_im/pages/test/test_page.dart';
 import 'package:desktop_im/pages/welcome/welcome_page.dart';
 import 'package:desktop_im/router/routers.dart';
@@ -156,11 +158,20 @@ class _MyAppState extends State<MyApp> {
           "/test_connect_page", (context) => const ConnectTestPage(), context);
       Routers().addPageRouter(
           "/test_db_page", (context) => const DatabaseTestPage(), context);
+      Routers().addPageRouter(
+          "/test_dialog_page", (context) => const TestDialogPage(), context);
       Routers().addPageParamRouter(
           "/picture",
           (context) => const PicturePage(),
           (aprams) => PicturePage(
                 params: aprams,
+              ),
+          context);
+      Routers().addPageParamRouter(
+          "/toke_photo",
+          (context) => const IMCameraPage(),
+          (params) => IMCameraPage(
+                params: params,
               ),
           context);
     }

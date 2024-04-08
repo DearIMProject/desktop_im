@@ -14,6 +14,7 @@
     "account":"账户",
     "test":"测试",
     "last_year":"去年",
+    "loading":"加载中...",
     "fail_to_load_image":"图片加载失败",
     "processing":"处理中",
     "message_item_title":"菜单",

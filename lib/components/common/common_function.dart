@@ -1,64 +1,58 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desktop_im/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
-Image networkImage(String imageSrc, double width, double height) {
-  return Image.network(
-    imageSrc,
+CachedNetworkImage networkImage(String imageSrc, double width, double height) {
+  return CachedNetworkImage(
+    imageUrl: imageSrc,
     fit: BoxFit.cover,
     width: width,
     height: height,
-    errorBuilder: (context, error, stackTrace) {
-      return Text(
-        S.current.fail_to_load_image,
-        style: const TextStyle(fontSize: 18),
-      );
-    },
-    loadingBuilder: (context, child, loadingProgress) {
-      if (loadingProgress == null) return child;
+    errorWidget: (context, error, stackTrace) {
       return SizedBox(
         width: width,
         height: height,
-        child: Center(
-          child: SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
-                  : null,
-            ),
-          ),
+        child: Text(
+          S.current.fail_to_load_image,
+          style: const TextStyle(fontSize: 18),
         ),
       );
     },
+    progressIndicatorBuilder: (context, url, progress) => Center(
+      child: SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(
+          value: progress.progress,
+        ),
+      ),
+    ),
   );
 }
 
-Image networkImageFitHeight(
+CachedNetworkImage networkImageFitHeight(
   String imageSrc,
   double width,
 ) {
-  return Image.network(
-    imageSrc,
+  return CachedNetworkImage(
+    imageUrl: imageSrc,
     fit: BoxFit.fitHeight,
     width: width,
-    errorBuilder: (context, error, stackTrace) {
-      return Text(
-        S.current.fail_to_load_image,
-        style: const TextStyle(fontSize: 18),
+    errorWidget: (context, url, error) {
+      return SizedBox(
+        width: width,
+        child: Text(
+          S.current.fail_to_load_image,
+          style: const TextStyle(fontSize: 18),
+        ),
       );
     },
-    loadingBuilder: (context, child, loadingProgress) {
-      if (loadingProgress == null) return child;
+    progressIndicatorBuilder: (context, url, progress) {
       return Center(
         child: SizedBox(
           width: width,
           child: CircularProgressIndicator(
-            value: loadingProgress.expectedTotalBytes != null
-                ? loadingProgress.cumulativeBytesLoaded /
-                    loadingProgress.expectedTotalBytes!
-                : null,
+            value: progress.progress,
           ),
         ),
       );

@@ -44,6 +44,12 @@ class _TestPageState extends State<TestPage> {
       });
       models.add(itemModel);
     }
+    {
+      TestItemModel itemModel = TestItemModel("dialog", () {
+        Routers().openRouter("/test_dialog_page", {}, context);
+      });
+      models.add(itemModel);
+    }
   }
 
   @override
@@ -58,7 +64,7 @@ class _TestPageState extends State<TestPage> {
           TestItemModel itemModel = models[index];
           return GestureDetector(
             onTap: itemModel.callback,
-            child: subTitleFontText(kTitleColor, itemModel.title),
+            child: itemPadding(subTitleFontText(kTitleColor, itemModel.title)),
           );
         },
       )),

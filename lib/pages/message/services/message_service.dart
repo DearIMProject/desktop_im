@@ -10,7 +10,7 @@ enum ImageType {
 }
 
 class MessageService {
-  Future<FileBean?> uploadFile(String filePath, ImageType imageType) {
+  static Future<FileBean?> uploadFile(String filePath, ImageType imageType) {
     Completer<FileBean?> completer = Completer();
     Request().uploadRequest(
         "file/uploadBucket",

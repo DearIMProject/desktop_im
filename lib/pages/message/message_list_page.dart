@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:desktop_im/components/common/common_dialog.dart';
 import 'package:desktop_im/components/common/common_theme.dart';
 import 'package:desktop_im/components/ui/add_keyboard.dart';
+import 'package:desktop_im/components/ui/custom_dialog.dart';
 import 'package:desktop_im/components/ui/emj_keyboard.dart';
 import 'package:desktop_im/components/ui/message_input.dart';
 import 'package:desktop_im/generated/l10n.dart';
@@ -22,6 +23,7 @@ import 'package:desktop_im/pages/message/services/message_service.dart';
 import 'package:desktop_im/tcpconnect/connect/im_client.dart';
 import 'package:desktop_im/tcpconnect/connect/message_factory.dart';
 import 'package:desktop_im/user/user_manager.dart';
+import 'package:desktop_im/utils/image_utils.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -195,7 +197,7 @@ class _MessageListPageState extends State<MessageListPage>
                   message: message,
                   icon: message.isOwner ? user!.icon : chatUser!.icon,
                   deleteCallback: (message) {
-                    deleteMessage(message);
+                    _deleteMessage(message);
                   },
                 );
               },
@@ -273,74 +275,32 @@ class _MessageListPageState extends State<MessageListPage>
   }
 
   void sendAImage(String filePath) {
-    // 先上传图片，上传成功后发送这个图片
-    // 先添加一个message，然后上传图片，
-    _addAImageMessageBefore(filePath).then((message) {
-      _uploadImage(filePath).then((fileBean) {
-        Log.debug("[picture]上传图片成功 $fileBean");
-        if (fileBean != null) {
-          sendAImageMessage(message, fileBean);
-        } else {
-          //TODO: wmy
-          // 上传失败
-          // sendAImage(filePath);
-        }
+    CustomDialog().showLoadingDialog(context, S.current.processing);
+    ImageUtils.sendFile(filePath, user!.userId, chatUser!.userId, (message) {
+      setState(() {
+        CustomDialog().dismissDialog(context);
+        messages.add(message);
+        _scrollToBottom();
       });
-    });
-  }
-
-  Future<Message> _addAImageMessageBefore(String filePath) async {
-    Completer<Message> completer = Completer();
-    Message message = MessageFactory.messageFromType(MessageType.PICTURE);
-    message.fromId = user!.userId;
-    message.fromEntity = MessageEntityType.USER;
-    message.toId = chatUser!.userId;
-    message.toEntity = MessageEntityType.USER;
-    FileBean fileBean = await FileBean.initFileBean(filePath);
-    Log.debug(fileBean.toJson().toString());
-    String content = jsonEncode(fileBean.toJson());
-    message.content = content;
-    completer.complete(message);
-    Log.debug("[picture]本地添加一个消息 $message");
-    setState(() {
-      messages.add(message);
-    });
-    return completer.future;
-  }
-
-  void sendAImageMessage(Message message, FileBean fileBean) {
-    Log.debug("[picture]发送图片");
-    String content = jsonEncode(fileBean.toJson());
-    message.content = content;
-    Log.debug(content);
-    // 找到message 替换掉
-    int findIndex = -1;
-    for (var i = messages.length - 1; i >= 0; i--) {
-      Message aMessage = messages[i];
-      if (aMessage.timestamp == message.timestamp) {
-        findIndex = i;
-        break;
+    }).then((message) {
+      // 找到message 替换掉
+      int findIndex = -1;
+      for (var i = messages.length - 1; i >= 0; i--) {
+        Message aMessage = messages[i];
+        if (aMessage.timestamp == message.timestamp) {
+          findIndex = i;
+          break;
+        }
       }
-    }
-    messages[findIndex] = message;
-    message.content = content;
-    Log.debug("[picture]将本地消息进行更新 $messages");
-    setState(() {});
-    client.sendMessage(message);
-    Log.debug("[picture]发送了一个消息：$message");
-  }
-
-  Future<FileBean?> _uploadImage(String filePath) {
-    Log.debug("[picture]上传图片 $filePath");
-    Completer<FileBean?> completer = Completer();
-    service.uploadFile(filePath, ImageType.image).then((fileBean) {
-      completer.complete(fileBean);
+      messages[findIndex] = message;
+      Log.debug("[picture]将本地消息进行更新 $messages");
+      setState(() {});
+      Log.debug("[picture]发送了一个消息：$message");
     });
-    return completer.future;
   }
 
   /// 删除一个消息
-  void deleteMessage(Message message) {
+  void _deleteMessage(Message message) {
     showBottomSubTitleDialog(
         context,
         S.current.delete,
@@ -348,12 +308,12 @@ class _MessageListPageState extends State<MessageListPage>
         [S.current.delete, S.current.cancel], (index) {
       if (index == 0) {
         Navigator.pop(context);
-        execDeleteMessage(message);
+        _execDeleteMessage(message);
       }
     });
   }
 
-  void execDeleteMessage(Message message) {
+  void _execDeleteMessage(Message message) {
     Message delMessage =
         MessageFactory.messageFromType(MessageType.DELETE_MESSAGE);
     delMessage.fromEntity = message.fromEntity;

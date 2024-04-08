@@ -33,6 +33,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "fail_to_load_image": MessageLookupByLibrary.simpleMessage("图片加载失败"),
         "failure": MessageLookupByLibrary.simpleMessage("失败"),
         "last_year": MessageLookupByLibrary.simpleMessage("去年"),
+        "loading": MessageLookupByLibrary.simpleMessage("加载中..."),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
         "logout": MessageLookupByLibrary.simpleMessage("退出登录"),
         "message_item_title": MessageLookupByLibrary.simpleMessage("菜单"),
