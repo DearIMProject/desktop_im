@@ -1,6 +1,4 @@
-import 'package:desktop_im/components/common/colors.dart';
 import 'package:desktop_im/components/common/common_theme.dart';
-import 'package:desktop_im/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
 class CustomDialog {

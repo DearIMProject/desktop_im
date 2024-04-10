@@ -19,6 +19,8 @@
     "fail_to_load_image":"failed to load image",
     "message_item_title":"Menu",
     "delete":"delete",
+    "add_group":"add group",
+    "select_address_user":"select user",
     "cancel":"cancel",
     "delete_content":"sure delete current messge?",
     "preview":"preview",

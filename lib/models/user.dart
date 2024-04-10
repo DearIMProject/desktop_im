@@ -54,6 +54,8 @@ class User extends HiveObject {
   @HiveField(11)
   String icon = "";
 
+  bool isSelected = false;
+
   User([
     this.userId = 0,
     this.token = "",
@@ -67,6 +69,7 @@ class User extends HiveObject {
     this.icon = "",
     this.vipExpired = "",
     this.os = "",
+    this.isSelected = false,
   ]);
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);

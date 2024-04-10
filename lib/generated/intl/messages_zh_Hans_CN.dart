@@ -23,6 +23,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("账户"),
+        "add_group": MessageLookupByLibrary.simpleMessage("发起群聊"),
         "address_book": MessageLookupByLibrary.simpleMessage("通讯录"),
         "addressbook": MessageLookupByLibrary.simpleMessage("通讯录"),
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
@@ -41,6 +42,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "preview": MessageLookupByLibrary.simpleMessage("预览"),
         "processing": MessageLookupByLibrary.simpleMessage("处理中"),
         "retry_connecting": MessageLookupByLibrary.simpleMessage("正在连接中..."),
+        "select_address_user": MessageLookupByLibrary.simpleMessage("选择联系人"),
         "send_log": MessageLookupByLibrary.simpleMessage("发送日志"),
         "success": MessageLookupByLibrary.simpleMessage("成功"),
         "test": MessageLookupByLibrary.simpleMessage("测试"),

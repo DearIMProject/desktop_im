@@ -1,7 +1,6 @@
-import 'package:desktop_im/components/common/colors.dart';
 import 'package:desktop_im/components/common/common_theme.dart';
-import 'package:desktop_im/components/common/fonts.dart';
 import 'package:desktop_im/components/ui/custom_dialog.dart';
+import 'package:desktop_im/components/uikits/toast_show_utils.dart';
 import 'package:desktop_im/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +19,7 @@ class _TestDialogPageState extends State<TestDialogPage> {
         title: titleFontText(kTitleColor, "dialog test"),
       ),
       body: pagePadding(ListView.builder(
-        itemCount: 1,
+        itemCount: 2,
         itemBuilder: (BuildContext context, int index) {
           if (index == 0) {
             return GestureDetector(
@@ -30,11 +29,22 @@ class _TestDialogPageState extends State<TestDialogPage> {
                   CustomDialog().dismissDialog(context);
                 });
               },
-              child: subTitleFontText(kTitleColor, "显示一个loading"),
+              child: itemPadding(subTitleFontText(kTitleColor, "显示一个loading")),
+            );
+          }
+          if (index == 1) {
+            return GestureDetector(
+              onTap: () {
+                ToastShowUtils.show("toast", context);
+              },
+              child: itemPadding(subTitleFontText(kTitleColor, "显示一个toast")),
             );
           }
           return GestureDetector(
-            child: const Text("data"),
+            onTap: () {
+              ToastShowUtils.show("", context);
+            },
+            child: const Text("显示一个toast"),
           );
         },
       )),

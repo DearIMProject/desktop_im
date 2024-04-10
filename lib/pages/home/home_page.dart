@@ -1,4 +1,5 @@
 import 'package:desktop_im/components/common/colors.dart';
+import 'package:desktop_im/components/common/common_theme.dart';
 import 'package:desktop_im/components/common/fonts.dart';
 import 'package:desktop_im/components/ui/bottom_tabbar_item.dart';
 import 'package:desktop_im/components/uikits/toast_show_utils.dart';
@@ -175,6 +176,24 @@ class _HomePageState extends State<HomePage>
     return Scaffold(
       appBar: AppBar(
         title: titleFontText(kTitleColor, S.current.title),
+        centerTitle: true,
+        actions: [
+          PopupMenuButton(
+            position: PopupMenuPosition.under,
+            onSelected: (value) {
+              if (value == S.current.add_group) {
+                jumpToAddGroup();
+              }
+            },
+            itemBuilder: (context) => popupActions(),
+            child: const SizedBox(
+              width: 60,
+              height: 60,
+              child: Icon(Icons.add),
+            ),
+          ),
+          itemSpaceHeightSizeBox
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: tabs,
@@ -204,4 +223,25 @@ class _HomePageState extends State<HomePage>
 
   @override
   IMClientTransparentCallback? transparentCallback;
+
+// 添加text列表
+  List<String> popupTexts() {
+    return [S.current.add_group];
+  }
+
+  List<PopupMenuEntry<String>> popupActions() {
+    List<String> tests = popupTexts();
+    List<PopupMenuEntry<String>> widgets = [];
+    for (var e in tests) {
+      widgets.add(PopupMenuItem(
+        value: e,
+        child: subTitleFontText(kTitleColor, e),
+      ));
+    }
+    return widgets;
+  }
+
+  void jumpToAddGroup() {
+    Routers().openRouter("/add_group", {}, context);
+  }
 }

@@ -250,6 +250,26 @@ class S {
     );
   }
 
+  /// `add group`
+  String get add_group {
+    return Intl.message(
+      'add group',
+      name: 'add_group',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `select user`
+  String get select_address_user {
+    return Intl.message(
+      'select user',
+      name: 'select_address_user',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `cancel`
   String get cancel {
     return Intl.message(

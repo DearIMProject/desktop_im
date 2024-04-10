@@ -12,6 +12,7 @@ import 'package:desktop_im/notification/notification_stream.dart';
 import 'package:desktop_im/notification/notifications.dart';
 import 'package:desktop_im/pages/datas/db_test_page.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
+import 'package:desktop_im/pages/groups/add_group_user_list_page.dart';
 import 'package:desktop_im/pages/home/home_page.dart';
 import 'package:desktop_im/pages/login/login.dart';
 import 'package:desktop_im/pages/message/message_list_page.dart';
@@ -134,6 +135,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void configRouters(BuildContext context) {
+    // 之后拆包可以添加入口文件。
     Routers()
         .addPageRouter("/home_tab", (context) => const HomePage(), context);
     Routers()
@@ -151,6 +153,27 @@ class _MyAppState extends State<MyApp> {
     Routers().registerRouter("/login", (params, context) {
       Navigator.of(context).pushReplacementNamed("/login_page");
     });
+    Routers().addPageParamRouter(
+        "/picture",
+        (context) => const PicturePage(),
+        (aprams) => PicturePage(
+              params: aprams,
+            ),
+        context);
+    Routers().addPageParamRouter(
+        "/toke_photo",
+        (context) => const IMCameraPage(),
+        (params) => IMCameraPage(
+              params: params,
+            ),
+        context);
+    Routers().addPageParamRouter(
+        "/add_group",
+        (context) => const AddGroupUserListPage(),
+        (params) => AddGroupUserListPage(
+              params: params,
+            ),
+        context);
     if (kDebugMode) {
       Routers()
           .addPageRouter("/test_page", (context) => const TestPage(), context);
@@ -160,20 +183,6 @@ class _MyAppState extends State<MyApp> {
           "/test_db_page", (context) => const DatabaseTestPage(), context);
       Routers().addPageRouter(
           "/test_dialog_page", (context) => const TestDialogPage(), context);
-      Routers().addPageParamRouter(
-          "/picture",
-          (context) => const PicturePage(),
-          (aprams) => PicturePage(
-                params: aprams,
-              ),
-          context);
-      Routers().addPageParamRouter(
-          "/toke_photo",
-          (context) => const IMCameraPage(),
-          (params) => IMCameraPage(
-                params: params,
-              ),
-          context);
     }
   }
 }

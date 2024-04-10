@@ -17,6 +17,8 @@
     "loading":"加载中...",
     "fail_to_load_image":"图片加载失败",
     "processing":"处理中",
+    "add_group":"发起群聊",
+    "select_address_user":"选择联系人",
     "message_item_title":"菜单",
     "delete":"删除",
     "cancel":"取消",

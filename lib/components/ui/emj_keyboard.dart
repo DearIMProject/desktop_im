@@ -37,7 +37,7 @@ class _EmjKeyboardState extends State<EmjKeyboard> {
         itemCount: filePaths.length,
         itemBuilder: (BuildContext context, int index) {
           String filePath = filePaths[index];
-          Log.debug("file = ${filePaths[index]}");
+          // Log.debug("file = ${filePaths[index]}");
           return GestureDetector(
             onTap: () {
               if (widget.clickEmjKeyboardCallback != null) {
