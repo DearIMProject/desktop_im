@@ -320,6 +320,16 @@ class S {
     );
   }
 
+  /// `you invite {name} to group chat`
+  String group_init(Object name) {
+    return Intl.message(
+      'you invite $name to group chat',
+      name: 'group_init',
+      desc: '',
+      args: [name],
+    );
+  }
+
   /// `[image]`
   String get chat_user_image {
     return Intl.message(

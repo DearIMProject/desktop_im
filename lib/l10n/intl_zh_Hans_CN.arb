@@ -26,6 +26,7 @@
     "preview":"预览",
     "writting":"正在输入中...",
     "retry_connecting":"正在连接中...",
+    "group_init":"你邀请 {name} 加入群聊",
     "chat_user_image":"[图片]"
 
 }

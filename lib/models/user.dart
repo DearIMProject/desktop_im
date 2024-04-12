@@ -162,6 +162,11 @@ class User extends HiveObject with ChatEntity {
   }
 
   @override
+  int getId() {
+    return userId;
+  }
+
+  @override
   String getName() {
     return username;
   }

@@ -20,6 +20,8 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
+  static String m0(name) => "you invite ${name} to group chat";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("account"),
@@ -35,6 +37,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "fail_to_load_image":
             MessageLookupByLibrary.simpleMessage("failed to load image"),
         "failure": MessageLookupByLibrary.simpleMessage("failure"),
+        "group_init": m0,
         "last_year": MessageLookupByLibrary.simpleMessage("last year"),
         "loading": MessageLookupByLibrary.simpleMessage("loading..."),
         "login": MessageLookupByLibrary.simpleMessage("login"),

@@ -26,6 +26,7 @@
     "preview":"preview",
     "writting":"writting...",
     "retry_connecting":"retry connecting...",
+    "group_init":"you invite {name} to group chat",
     "chat_user_image":"[image]"
 
 }

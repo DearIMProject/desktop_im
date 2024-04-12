@@ -40,7 +40,7 @@ class _AddressBookPageState extends State<AddressBookPage> {
     // message.toId = addressUser.userId;
     // database.addMessage(message);
     Routers().openRouter("/message",
-        {"user": addressUser, "type": MessageListType.USER}, context);
+        {"entity": addressUser, "type": MessageListType.USER}, context);
   }
 
   IMDatabase database = IMDatabase();

@@ -1,18 +1,18 @@
 import 'package:desktop_im/components/common/common_theme.dart';
 import 'package:desktop_im/generated/l10n.dart';
+import 'package:desktop_im/models/message/chat_entity.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
-import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class ChatEntityItem extends StatefulWidget {
-  User? user;
+  ChatEntity? entity;
   Message? lastMessage;
   int? unreadNumber = 0;
-  ChatEntityItem({super.key, this.user, this.lastMessage, this.unreadNumber});
+  ChatEntityItem({super.key, this.entity, this.lastMessage, this.unreadNumber});
 
   @override
   State<ChatEntityItem> createState() => _ChatEntityItemState();
@@ -26,11 +26,12 @@ class _ChatEntityItemState extends State<ChatEntityItem> {
     children.add(Badge(
       isLabelVisible: widget.unreadNumber != 0,
       label: Text("${widget.unreadNumber}"),
-      child: radiusBorder(networkImage(widget.user!.icon, 40, 40)),
+      child: radiusBorder(networkImage(widget.entity!.getIconUrl(), 40, 40)),
     ));
     children.add(widthSpaceSizeBox);
     List<Widget> columnChildren = [];
-    columnChildren.add(littleTitleFontText(kTitleColor, widget.user!.username));
+    columnChildren
+        .add(littleTitleFontText(kTitleColor, widget.entity!.getName()));
 
     if (widget.lastMessage != null) {
       String content = widget.lastMessage!.content;
@@ -57,7 +58,7 @@ class _ChatEntityItemState extends State<ChatEntityItem> {
 
   @override
   Widget build(BuildContext context) {
-    assert(widget.user != null, "user is null!");
+    assert(widget.entity != null, "user is null!");
     return Container(
       color: kWhiteBackColor,
       child: Column(

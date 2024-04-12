@@ -76,7 +76,7 @@ class IMDatabase implements IMClientListener {
 
   final MessageDB _dbMessage = MessageDB();
   final UserDB _dbUser = UserDB();
-  final GroupDB _dbGroupD = GroupDB();
+  final GroupDB _dbGroup = GroupDB();
   bool hasRegister = false;
   Future<void> _initialDatabase(String boxName) {
     Completer<void> completer = Completer<void>();
@@ -90,7 +90,7 @@ class IMDatabase implements IMClientListener {
     }
     _dbMessage.install(boxName).then((value) {
       _dbUser.install(boxName).then((value) {
-        _dbGroupD.install(boxName).then((value) {
+        _dbGroup.install(boxName).then((value) {
           Log.info("初始化数据库完毕！");
           initBadgeValue();
           dbHasInstalled = true;
@@ -149,7 +149,7 @@ class IMDatabase implements IMClientListener {
   void uninstall() {
     _dbMessage.uninstall();
     _dbUser.uninstall();
-    _dbGroupD.uninstall();
+    _dbGroup.uninstall();
     dbHasInstalled = false;
   }
 
@@ -190,12 +190,12 @@ class IMDatabase implements IMClientListener {
     }
   }
 
-  List<Message> getMessages(int userId) {
-    return _dbMessage.getMessages(userId);
+  List<Message> getMessages(String key) {
+    return _dbMessage.getMessages(key);
   }
 
-  List<Message> getChatMessages(int userId) {
-    List<Message> messages = _dbMessage.getMessages(userId);
+  List<Message> getChatMessages(String key) {
+    List<Message> messages = _dbMessage.getMessages(key);
     List<Message> result = [];
     for (var i = 0; i < messages.length; i++) {
       Message message = messages[i];
@@ -206,7 +206,7 @@ class IMDatabase implements IMClientListener {
     return result;
   }
 
-  List<ChatEntity> getChatUsers() {
+  List<ChatEntity> getChatEntitys() {
     List<ChatEntity> chatEntitys = [];
     List<String> chatEntityIds = _dbMessage.getChatEntityIds();
     for (var i = 0; i < chatEntityIds.length; i++) {
@@ -220,7 +220,7 @@ class IMDatabase implements IMClientListener {
           chatEntitys.add(chatUser);
         }
       } else if (type == 1) {
-        Group? group = _dbGroupD.getItem(entityId);
+        Group? group = _dbGroup.getItem(entityId);
         if (group != null) {
           chatEntitys.add(group);
         }
@@ -255,12 +255,12 @@ class IMDatabase implements IMClientListener {
   }
 
   /// 获取用户最新的Message
-  Message? getLastMessage(int userId) {
-    return _dbMessage.getLastMessage(userId);
+  Message? getLastMessage(String key) {
+    return _dbMessage.getLastMessage(key);
   }
 
   bool hasContextMessage(String key) {
-    return _dbMessage.hasContentMessage(userId);
+    return _dbMessage.hasContentMessage(key);
   }
 
 // 设置消息发送成功
@@ -275,8 +275,8 @@ class IMDatabase implements IMClientListener {
   }
 
 //获取userId下未读数量
-  int unreadNumber(int userId) {
-    return _dbMessage.getUserUnReadMessageCount(userId);
+  int unreadNumber(String key) {
+    return _dbMessage.getUserUnReadMessageCount(key);
   }
 
 // 设置消息为已读
@@ -310,4 +310,9 @@ class IMDatabase implements IMClientListener {
 
   @override
   IMClientTransparentCallback? transparentCallback;
+
+  /// 保存群组
+  void saveGroup(Group group) {
+    _dbGroup.addItem(group);
+  }
 }

@@ -19,9 +19,9 @@ class GroupAdapter extends TypeAdapter<Group> {
     return Group(
       groupId: fields[0] as int,
       name: fields[1] as String,
-      userIds: fields[2] as String,
+      contentUserIds: (fields[2] as List).cast<int>(),
       ownUserId: fields[3] as int,
-      mUserIds: fields[4] as String,
+      managerUserIds: (fields[4] as List).cast<int>(),
     );
   }
 
@@ -34,11 +34,11 @@ class GroupAdapter extends TypeAdapter<Group> {
       ..writeByte(1)
       ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.userIds)
+      ..write(obj.contentUserIds)
       ..writeByte(3)
       ..write(obj.ownUserId)
       ..writeByte(4)
-      ..write(obj.mUserIds);
+      ..write(obj.managerUserIds);
   }
 
   @override
@@ -59,15 +59,19 @@ class GroupAdapter extends TypeAdapter<Group> {
 Group _$GroupFromJson(Map<String, dynamic> json) => Group(
       groupId: json['groupId'] as int,
       name: json['name'] as String,
-      userIds: json['userIds'] as String,
+      contentUserIds: (json['contentUserIds'] as List<dynamic>)
+          .map((e) => e as int)
+          .toList(),
       ownUserId: json['ownUserId'] as int,
-      mUserIds: json['mUserIds'] as String,
+      managerUserIds: (json['managerUserIds'] as List<dynamic>)
+          .map((e) => e as int)
+          .toList(),
     );
 
 Map<String, dynamic> _$GroupToJson(Group instance) => <String, dynamic>{
       'groupId': instance.groupId,
       'name': instance.name,
-      'userIds': instance.userIds,
+      'contentUserIds': instance.contentUserIds,
       'ownUserId': instance.ownUserId,
-      'mUserIds': instance.mUserIds,
+      'managerUserIds': instance.managerUserIds,
     };

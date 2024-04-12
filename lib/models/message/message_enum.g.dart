@@ -45,6 +45,8 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
         return MessageType.GROUP_UPDATE;
       case 15:
         return MessageType.GROUP_DELETE;
+      case 100:
+        return MessageType.LOCAL_TEXT;
       default:
         return MessageType.TEXT;
     }
@@ -100,6 +102,9 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
         break;
       case MessageType.GROUP_DELETE:
         writer.writeByte(15);
+        break;
+      case MessageType.LOCAL_TEXT:
+        writer.writeByte(100);
         break;
     }
   }

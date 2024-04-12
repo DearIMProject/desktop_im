@@ -20,6 +20,8 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'zh_Hans_CN';
 
+  static String m0(name) => "你邀请 ${name} 加入群聊";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("账户"),
@@ -33,6 +35,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "delete_content": MessageLookupByLibrary.simpleMessage("是否删除这条消息"),
         "fail_to_load_image": MessageLookupByLibrary.simpleMessage("图片加载失败"),
         "failure": MessageLookupByLibrary.simpleMessage("失败"),
+        "group_init": m0,
         "last_year": MessageLookupByLibrary.simpleMessage("去年"),
         "loading": MessageLookupByLibrary.simpleMessage("加载中..."),
         "login": MessageLookupByLibrary.simpleMessage("登录"),

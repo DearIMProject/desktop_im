@@ -40,4 +40,5 @@ const _$MessageTypeEnumMap = {
   MessageType.GROUP_ADD: 13,
   MessageType.GROUP_UPDATE: 14,
   MessageType.GROUP_DELETE: 15,
+  MessageType.LOCAL_TEXT: 100,
 };

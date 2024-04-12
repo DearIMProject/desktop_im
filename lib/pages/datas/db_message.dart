@@ -153,8 +153,8 @@ class MessageDB implements DbProtocol<Message> {
   }
 
   /// 获取用户userId的所有消息
-  List<Message> getMessages(int userId) {
-    var list = box.get("$userId");
+  List<Message> getMessages(String key) {
+    var list = box.get(key);
     List<Message> messages = [];
     if (list != null) {
       for (var i = 0; i < list.length; i++) {
@@ -283,10 +283,10 @@ class MessageDB implements DbProtocol<Message> {
 
   int getUserUnReadMessageCount(String key) {
     //TODO: wmy write here
-    if (userId == UserManager().uid()) {
+    if (key == "${UserManager().uid()}_0") {
       return 0;
     }
-    List? list = box.get("$userId");
+    List? list = box.get(key);
     if (list == null) {
       return 0;
     }

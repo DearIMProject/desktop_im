@@ -2,7 +2,6 @@ import 'package:desktop_im/components/common/common_theme.dart';
 import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/message/chat_entity.dart';
-import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/notification/notification_helper.dart';
 import 'package:desktop_im/notification/notification_service.dart';
 import 'package:desktop_im/pages/chat/chat_user_item.dart';
@@ -32,7 +31,7 @@ class _ChatPageState extends State<ChatPage>
 
   @override
   DatabaseUnreadMessageNumberChange? unreadMessageNumberChange;
-  List<ChatEntity> chatUsers = [];
+  List<ChatEntity> chatEntitys = [];
   IMDatabase database = IMDatabase();
 
   @override
@@ -52,7 +51,7 @@ class _ChatPageState extends State<ChatPage>
     };
     dataChangeCallback ??= () {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        chatUsers = [];
+        chatEntitys = [];
         refreshDatas();
       });
     };
@@ -70,11 +69,11 @@ class _ChatPageState extends State<ChatPage>
   static bool _showConnectStatus = true;
 
   void refreshDatas() {
-    List<ChatEntity> aChatUsers = database.getChatUsers();
-    for (ChatEntity chatUser in aChatUsers) {
-      bool hasMessage = database.hasContextMessage(chatUser.getKey());
+    List<ChatEntity> aChatEntitys = database.getChatEntitys();
+    for (ChatEntity chatEntity in aChatEntitys) {
+      bool hasMessage = database.hasContextMessage(chatEntity.getKey());
       if (hasMessage) {
-        chatUsers.add(chatUser);
+        chatEntitys.add(chatEntity);
       }
     }
     setState(() {});
@@ -85,12 +84,12 @@ class _ChatPageState extends State<ChatPage>
     super.initState();
     Log.debug("chat page init state");
     NotificationHelper().clearNotification();
-    if (chatUsers.isEmpty && database.dbHasInstalled) {
+    if (chatEntitys.isEmpty && database.dbHasInstalled) {
       refreshDatas();
     }
     clickCallback = (user) {
-      Routers().openRouter(
-          "/message", {"user": user, "type": MessageListType.USER}, context);
+      Map<String, dynamic> map = {"user": user, "type": MessageListType.USER};
+      Routers().openRouter("/message", map, context);
     };
   }
 
@@ -98,7 +97,8 @@ class _ChatPageState extends State<ChatPage>
   Widget build(BuildContext context) {
     return pagePadding(
       ListView.builder(
-        itemCount: _showConnectStatus ? chatUsers.length + 1 : chatUsers.length,
+        itemCount:
+            _showConnectStatus ? chatEntitys.length + 1 : chatEntitys.length,
         itemBuilder: (BuildContext context, int index) {
           if (index == 0 && _showConnectStatus) {
             return GestureDetector(
@@ -118,15 +118,16 @@ class _ChatPageState extends State<ChatPage>
             );
           }
           int userIndex = _showConnectStatus ? index - 1 : index;
-          ChatEntity entity = chatUsers[userIndex];
+          ChatEntity entity = chatEntitys[userIndex];
           return GestureDetector(
             onTap: () {
-              Routers().openRouter("/message", {"user": entity}, context);
+              Routers().openRouter("/message",
+                  {"user": entity, "type": MessageListType.USER}, context);
             },
             child: ChatEntityItem(
-              user: entity,
-              lastMessage: database.getLastMessage(entity.userId),
-              unreadNumber: database.unreadNumber(entity.userId),
+              entity: entity,
+              lastMessage: database.getLastMessage(entity.getKey()),
+              unreadNumber: database.unreadNumber(entity.getKey()),
             ),
           );
         },

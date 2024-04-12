@@ -1,5 +1,3 @@
-// ignore_for_file: file_names, depend_on_referenced_packages
-
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/network/request_manager.dart';
 import 'package:desktop_im/user/user_manager.dart';

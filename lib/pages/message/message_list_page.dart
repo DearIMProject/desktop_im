@@ -10,7 +10,7 @@ import 'package:desktop_im/components/ui/message_input.dart';
 import 'package:desktop_im/generated/l10n.dart';
 
 import 'package:desktop_im/log/log.dart';
-import 'package:desktop_im/models/group.dart';
+import 'package:desktop_im/models/message/chat_entity.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
 import 'package:desktop_im/models/message/send_json_model.dart';
@@ -42,12 +42,12 @@ class _MessageListPageState extends State<MessageListPage>
     implements IMDatabaseListener, IMClientListener {
   /// 聊天类型
   MessageListType? type;
+  ChatEntity? entity;
 
   /// 个人聊天时的聊天放
-  User? chatUser;
 
   /// 群组聊天时的聊天群组
-  Group? group;
+  // Group? group;
   MessageService service = MessageService();
 
   User? user = UserManager().user;
@@ -103,30 +103,27 @@ class _MessageListPageState extends State<MessageListPage>
     if (messages.isNotEmpty) {
       return;
     }
+    Log.debug("param = ${widget.params}");
     type = widget.params?["type"] as MessageListType?;
     if (type == null) {
-      throw Exception("chatUser is null && group is null");
+      throw Exception("type is null");
     }
-    chatUser = widget.params?["user"];
-    if (type == MessageListType.USER && chatUser == null) {
-      throw Exception("chatUser is null");
-    }
+    entity = widget.params?["entity"];
 
-    group = widget.params?["group"];
-    if (type == MessageListType.GROUP && group == null) {
-      throw Exception("group is null");
+    if (entity == null) {
+      throw Exception("entity is null");
     }
 
     if (user == null) {
       throw Exception("user is null");
     }
     if (messages.isEmpty) {
-      messages.addAll(database.getChatMessages(chatUser!.userId));
+      messages.addAll(database.getChatMessages(entity!.getKey()));
       Log.debug("$messages");
     }
     dataChangeCallback ??= () {
       messages = [];
-      messages.addAll(database.getChatMessages(chatUser!.userId));
+      messages.addAll(database.getChatMessages(entity!.getKey()));
       // configSendReadMessage();
       Log.debug("收到消息发生了变化 $messages");
       WidgetsBinding.instance.addPostFrameCallback(
@@ -138,7 +135,7 @@ class _MessageListPageState extends State<MessageListPage>
     };
 
     transparentCallback ??= (message) {
-      if (chatUser!.userId == message.fromId) {
+      if (entity!.getId() == message.fromId) {
         // 显示title 正在输入中..
         isUserWriting = true;
         setState(() {});
@@ -191,12 +188,10 @@ class _MessageListPageState extends State<MessageListPage>
   bool emjVisiable = false;
   @override
   Widget build(BuildContext context) {
-    // Log.debug("chatUser = $chatUser");
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          isUserWriting ? S.current.writting : chatUser!.username,
+          isUserWriting ? S.current.writting : entity!.getName(),
           style: const TextStyle(
               fontWeight: FontWeight.bold, fontSize: 20, color: kTitleColor),
         ),
@@ -283,8 +278,10 @@ class _MessageListPageState extends State<MessageListPage>
     Message message = MessageFactory.messageFromType(MessageType.TEXT);
     message.fromId = user!.userId;
     message.fromEntity = MessageEntityType.USER;
-    message.toId = chatUser!.userId;
-    message.toEntity = MessageEntityType.USER;
+    message.toId = entity!.getId();
+    message.toEntity = type == MessageListType.GROUP
+        ? MessageEntityType.GROUP
+        : MessageEntityType.USER;
     message.content = text;
     client.sendMessage(message);
     messages.add(message);
@@ -293,7 +290,7 @@ class _MessageListPageState extends State<MessageListPage>
 
   void sendAImage(String filePath) {
     CustomDialog().showLoadingDialog(context, S.current.processing);
-    ImageUtils.sendFile(filePath, user!.userId, chatUser!.userId, (message) {
+    ImageUtils.sendFile(filePath, user!.userId, entity!.getId(), (message) {
       setState(() {
         CustomDialog().dismissDialog(context);
         messages.add(message);
@@ -371,7 +368,7 @@ class _MessageListPageState extends State<MessageListPage>
     message.fromEntity = MessageEntityType.USER;
     message.fromId = UserManager().uid();
     message.toEntity = MessageEntityType.USER;
-    message.toId = chatUser!.userId;
+    message.toId = entity!.getId();
     Log.debug("message = $message");
     client.sendMessage(message);
   }

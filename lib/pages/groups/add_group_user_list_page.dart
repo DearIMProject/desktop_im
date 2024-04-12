@@ -130,7 +130,7 @@ class _AddGroupUserListPageState extends State<AddGroupUserListPage> {
           },
           failureCallback: (code, errorStr, data) {
             CustomDialog().dismissDialog(context);
-            Log.debug("添加m群组失败");
+            Log.debug("添加群组失败");
             ToastShowUtils.show(errorStr, context);
           },
         ));

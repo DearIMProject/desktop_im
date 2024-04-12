@@ -54,6 +54,11 @@ enum MessageType {
   @HiveField(15)
   @JsonValue(15)
   GROUP_DELETE, // (15, "群组删除")
+
+  // 本地消息
+  @HiveField(100)
+  @JsonValue(100)
+  LOCAL_TEXT,
 }
 
 MessageType intToMessageType(int index) {
