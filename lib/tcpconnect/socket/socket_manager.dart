@@ -18,6 +18,10 @@ class SocketManager implements SocketProtocol {
   @override
   bool get isConnected => _isConnected;
 
+  bool _isConnecting = false;
+
+  bool get isConnecting => _isConnecting;
+
   SocketManager(this.host, this.port) {
     checkConnection();
   }
@@ -38,7 +42,12 @@ class SocketManager implements SocketProtocol {
   // 建立socket连接
   @override
   Future<void> connect() async {
+    if (_isConnecting) {
+      return;
+    }
+    _isConnecting = true;
     _socket = await Socket.connect(host, port);
+    _isConnecting = false;
     Log.debug(
         'Connected to: ${_socket!.remoteAddress.address}:${_socket!.remotePort}');
     if (_socket!.remoteAddress.host.isNotEmpty) {
@@ -57,16 +66,10 @@ class SocketManager implements SocketProtocol {
       onError: (error) {
         Log.debug('Error: $error');
         closeConnect();
-        if (listener != null && listener!.connectSuccess != null) {
-          listener!.connectSuccess!(_isConnected);
-        }
       },
       onDone: () {
         Log.debug('Connection closed');
         closeConnect();
-        if (listener != null && listener!.connectSuccess != null) {
-          listener!.connectSuccess!(_isConnected);
-        }
       },
     );
   }

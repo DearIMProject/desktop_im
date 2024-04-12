@@ -9,7 +9,7 @@ import 'package:tuple/tuple.dart';
 part 'fileBean.g.dart';
 
 @JsonSerializable()
-@HiveType(typeId: 3)
+@HiveType(typeId: 4)
 class FileBean extends HiveObject {
   FileBean({
     required this.fileId,

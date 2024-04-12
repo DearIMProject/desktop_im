@@ -8,7 +8,7 @@ part of 'fileBean.dart';
 
 class FileBeanAdapter extends TypeAdapter<FileBean> {
   @override
-  final int typeId = 3;
+  final int typeId = 4;
 
   @override
   FileBean read(BinaryReader reader) {

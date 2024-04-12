@@ -12,7 +12,7 @@ class CustomDialog {
 
   dismissDialog(BuildContext context) {
     if (_isShowDialog) {
-      Navigator.of(context).pop();
+      Navigator.pop(context);
     }
   }
 
@@ -20,6 +20,7 @@ class CustomDialog {
     double space = 25;
     double top = 15;
     _isShowDialog = true;
+
     return showDialog(
         context: context,
         barrierDismissible: false,

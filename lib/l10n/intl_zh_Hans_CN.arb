@@ -4,7 +4,7 @@
     "login": "登录",
     "send_log":"发送日志",
     "logout":"退出登录",
-    "success":"成功",
+    "success":"操作成功",
     "failure":"失败",
     "username_tip":"请输入登录账号或邮箱",
     "address_book":"通讯录",

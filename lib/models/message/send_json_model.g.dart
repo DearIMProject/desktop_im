@@ -37,4 +37,7 @@ const _$MessageTypeEnumMap = {
   MessageType.TRANSPARENT_MESSAGE: 10,
   MessageType.DELETE_MESSAGE: 11,
   MessageType.DELETE_RECALL: 12,
+  MessageType.GROUP_ADD: 13,
+  MessageType.GROUP_UPDATE: 14,
+  MessageType.GROUP_DELETE: 15,
 };

@@ -177,23 +177,9 @@ class _HomePageState extends State<HomePage>
       appBar: AppBar(
         title: titleFontText(kTitleColor, S.current.title),
         centerTitle: true,
-        actions: [
-          PopupMenuButton(
-            position: PopupMenuPosition.under,
-            onSelected: (value) {
-              if (value == S.current.add_group) {
-                jumpToAddGroup();
-              }
-            },
-            itemBuilder: (context) => popupActions(),
-            child: const SizedBox(
-              width: 60,
-              height: 60,
-              child: Icon(Icons.add),
-            ),
-          ),
-          itemSpaceHeightSizeBox
-        ],
+        actions: chatPagePopupButton() == null
+            ? null
+            : [chatPagePopupButton()!, itemSpaceHeightSizeBox],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: tabs,
@@ -218,6 +204,25 @@ class _HomePageState extends State<HomePage>
     );
   }
 
+  PopupMenuButton<String>? chatPagePopupButton() {
+    List<String> tests = popupTexts();
+    if (tests.isEmpty) return null;
+    return PopupMenuButton(
+      position: PopupMenuPosition.under,
+      onSelected: (value) {
+        if (value == S.current.add_group) {
+          jumpToAddGroup();
+        }
+      },
+      itemBuilder: (context) => popupActions()!,
+      child: const SizedBox(
+        width: 60,
+        height: 60,
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+
   @override
   DatabaseAddReadableMessage? addReadableCallback;
 
@@ -226,11 +231,17 @@ class _HomePageState extends State<HomePage>
 
 // 添加text列表
   List<String> popupTexts() {
-    return [S.current.add_group];
+    if (_currentIndex == 0) {
+      return [S.current.add_group];
+    }
+    return [];
   }
 
-  List<PopupMenuEntry<String>> popupActions() {
+  List<PopupMenuEntry<String>>? popupActions() {
     List<String> tests = popupTexts();
+    if (tests.isEmpty) {
+      return null;
+    }
     List<PopupMenuEntry<String>> widgets = [];
     for (var e in tests) {
       widgets.add(PopupMenuItem(

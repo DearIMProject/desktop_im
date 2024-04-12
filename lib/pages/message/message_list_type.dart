@@ -1,0 +1,4 @@
+enum MessageListType {
+  USER,
+  GROUP,
+}

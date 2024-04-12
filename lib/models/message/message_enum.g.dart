@@ -39,6 +39,12 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
         return MessageType.DELETE_MESSAGE;
       case 12:
         return MessageType.DELETE_RECALL;
+      case 13:
+        return MessageType.GROUP_ADD;
+      case 14:
+        return MessageType.GROUP_UPDATE;
+      case 15:
+        return MessageType.GROUP_DELETE;
       default:
         return MessageType.TEXT;
     }
@@ -85,6 +91,15 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
         break;
       case MessageType.DELETE_RECALL:
         writer.writeByte(12);
+        break;
+      case MessageType.GROUP_ADD:
+        writer.writeByte(13);
+        break;
+      case MessageType.GROUP_UPDATE:
+        writer.writeByte(14);
+        break;
+      case MessageType.GROUP_DELETE:
+        writer.writeByte(15);
         break;
     }
   }

@@ -59,7 +59,7 @@ class MessageDB implements DbProtocol<Message> {
     int mUserId = getMUserId(message);
     List<Message>? messages = _getMessages(message);
     messages.add(message);
-    box.put("$mUserId", messages);
+    box.put(_getKey(mUserId, message), messages);
     Log.debug("数据库添加了一个消息 ${messages.last}");
   }
 
@@ -69,7 +69,7 @@ class MessageDB implements DbProtocol<Message> {
     List<Message>? messages = _getMessages(item);
     if (messages.contains(item)) {
       messages.remove(item);
-      box.put("$mUserId", messages);
+      box.put(_getKey(mUserId, item), messages);
     }
   }
 
@@ -87,7 +87,7 @@ class MessageDB implements DbProtocol<Message> {
         }
       }
       messages[index] = item;
-      box.put("$mUserId", messages);
+      box.put(_getKey(mUserId, item), messages);
     }
   }
 
@@ -123,7 +123,7 @@ class MessageDB implements DbProtocol<Message> {
       }
     }
     if (tuple != null) {
-      box.put("${tuple.item2}", resultMessages);
+      box.put(_getKey(tuple.item2, tuple.item1), resultMessages);
       return tuple;
     }
     return null;
@@ -206,19 +206,19 @@ class MessageDB implements DbProtocol<Message> {
   }
 
   /// 获取所有有聊天内容的用户id
-  List<int> getChatUsers() {
-    List<int> chatUserIds = [];
+  List<String> getChatEntityIds() {
+    List<String> chatChatEntityIds = [];
     for (var e in box.keys) {
       if (e is String) {
-        chatUserIds.add(int.parse(e));
+        chatChatEntityIds.add(e);
       }
     }
-    return chatUserIds;
+    return chatChatEntityIds;
   }
 
   /// 获取用户最新信息（有内容的信息）
-  Message? getLastMessage(int userId) {
-    List? messages = box.get("$userId");
+  Message? getLastMessage(String key) {
+    List? messages = box.get(key);
     if (messages == null || messages.isEmpty) {
       return null;
     }
@@ -257,7 +257,7 @@ class MessageDB implements DbProtocol<Message> {
   int getUnReadMessageCount() {
     int result = 0;
     for (String element in box.keys) {
-      int parse = int.parse(element);
+      int parse = _userIdFromKey(element);
       if (UserManager().uid() == parse) {
         continue;
       }
@@ -271,13 +271,18 @@ class MessageDB implements DbProtocol<Message> {
     return result;
   }
 
+  int _userIdFromKey(String key) {
+    return int.parse(key.split("_").first);
+  }
+
   /// 判断是否为未读消息
   bool isUnreadMessage(Message message) {
     return (message.status == MessageStatus.STATUS_SUCCESS_UNREADED &&
         message.toId == UserManager().uid());
   }
 
-  int getUserUnReadMessageCount(int userId) {
+  int getUserUnReadMessageCount(String key) {
+    //TODO: wmy write here
     if (userId == UserManager().uid()) {
       return 0;
     }
@@ -304,7 +309,16 @@ class MessageDB implements DbProtocol<Message> {
       }
       messages.insert(0, message);
     }
-    box.put("$userId", messages);
+    box.put(_getKey(userId, aMessage), messages);
+  }
+
+  String _getKey(int userId, Message aMessage) {
+    int type = 0;
+    if (aMessage.fromEntity == MessageEntityType.GROUP ||
+        aMessage.toEntity == MessageEntityType.GROUP) {
+      type = 1;
+    }
+    return "${userId}_$type";
   }
 
   @override
@@ -322,5 +336,19 @@ class MessageDB implements DbProtocol<Message> {
   @override
   Future<int> deleteAllDatas() {
     return box.clear();
+  }
+
+  bool hasContentMessage(String key) {
+    List? messages = box.get(key);
+    if (messages == null || messages.isEmpty) {
+      return false;
+    }
+    for (Message message in messages) {
+      if (message.isChatMessage) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

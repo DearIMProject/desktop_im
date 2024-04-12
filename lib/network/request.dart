@@ -90,7 +90,7 @@ class Request {
       });
 
       Map<String, dynamic> responseMap = response.data;
-      // Log.debug("responMap = $responseMap");
+      Log.debug("responMap = $responseMap");
       int code = responseMap["code"];
       if (code != 200) {
         // 返回失败内容 给出回调

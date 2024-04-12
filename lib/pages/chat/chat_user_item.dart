@@ -8,17 +8,17 @@ import 'package:desktop_im/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
-class ChatUserItem extends StatefulWidget {
+class ChatEntityItem extends StatefulWidget {
   User? user;
   Message? lastMessage;
   int? unreadNumber = 0;
-  ChatUserItem({super.key, this.user, this.lastMessage, this.unreadNumber});
+  ChatEntityItem({super.key, this.user, this.lastMessage, this.unreadNumber});
 
   @override
-  State<ChatUserItem> createState() => _ChatUserItemState();
+  State<ChatEntityItem> createState() => _ChatEntityItemState();
 }
 
-class _ChatUserItemState extends State<ChatUserItem> {
+class _ChatEntityItemState extends State<ChatEntityItem> {
   IMDatabase database = IMDatabase();
   List<Widget> children() {
     List<Widget> children = [];

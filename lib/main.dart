@@ -7,7 +7,6 @@ import 'package:desktop_im/components/uikits/emoji/emoji_utils.dart';
 import 'package:desktop_im/generated/l10n.dart';
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/notification/notification_helper.dart';
-import 'package:desktop_im/notification/notification_service.dart';
 import 'package:desktop_im/notification/notification_stream.dart';
 import 'package:desktop_im/notification/notifications.dart';
 import 'package:desktop_im/pages/datas/db_test_page.dart';
@@ -15,6 +14,7 @@ import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/pages/groups/add_group_user_list_page.dart';
 import 'package:desktop_im/pages/home/home_page.dart';
 import 'package:desktop_im/pages/login/login.dart';
+import 'package:desktop_im/pages/message/message_group_page.dart';
 import 'package:desktop_im/pages/message/message_list_page.dart';
 import 'package:desktop_im/pages/picture/picture_page.dart';
 import 'package:desktop_im/pages/test/test_dialog/test_dialog_page.dart';
@@ -74,6 +74,8 @@ class _MyAppState extends State<MyApp> {
       if (notification.contains(kLogoutSuccessNotification)) {
         connectManager.close();
         database.uninstall();
+        UserManager().setUser(null);
+        setState(() {});
       }
       if (notification.contains(kAddressReadyNotification)) {
         //TODO: wmy 请求了所有的通讯录数据，可以进行登录操作了
@@ -147,6 +149,13 @@ class _MyAppState extends State<MyApp> {
               params: aparams,
             ),
         context);
+    // Routers().addPageParamRouter(
+    //     "/group_message",
+    //     (context) => const GroupMesssageListPage(),
+    //     (aparams) => MessageListPage(
+    //           params: aparams,
+    //         ),
+    //     context);
     Routers().registerRouter("/home", (params, context) {
       Navigator.of(context).pushReplacementNamed("/home_tab");
     });

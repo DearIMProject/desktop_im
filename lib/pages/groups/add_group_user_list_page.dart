@@ -1,10 +1,15 @@
 import 'package:desktop_im/components/common/common_theme.dart';
+import 'package:desktop_im/components/ui/custom_dialog.dart';
 import 'package:desktop_im/components/uikits/toast_show_utils.dart';
 import 'package:desktop_im/generated/l10n.dart';
+import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/pages/addressbook/service/addressbook_service.dart';
 import 'package:desktop_im/pages/base_page.dart';
 import 'package:desktop_im/pages/groups/select_user_item.dart';
+import 'package:desktop_im/pages/groups/services/group_services.dart';
+import 'package:desktop_im/pages/message/message_list_type.dart';
+import 'package:desktop_im/router/routers.dart';
 import 'package:flutter/material.dart';
 
 class AddGroupUserListPage extends BasePage {
@@ -16,6 +21,7 @@ class AddGroupUserListPage extends BasePage {
 
 class _AddGroupUserListPageState extends State<AddGroupUserListPage> {
   List<User> addressUsers = [];
+  List<User> selectUsers = [];
   @override
   void initState() {
     super.initState();
@@ -34,8 +40,14 @@ class _AddGroupUserListPageState extends State<AddGroupUserListPage> {
             return GestureDetector(
               onTap: () {
                 setState(() {
-                  addressUsers[index].isSelected =
-                      !addressUsers[index].isSelected;
+                  User user = addressUsers[index];
+                  user.isSelected = !user.isSelected;
+                  if (user.isSelected) {
+                    selectUsers.add(user);
+                  } else {
+                    selectUsers.remove(user);
+                  }
+                  setState(() {});
                 });
               },
               child: SelectUserItem(
@@ -57,7 +69,7 @@ class _AddGroupUserListPageState extends State<AddGroupUserListPage> {
                   borderRadius: BorderRadius.circular(30),
                   child: Container(
                     width: double.infinity,
-                    color: kThemeColor,
+                    color: selectUsers.isNotEmpty ? kThemeColor : kDisableColor,
                     child: Center(
                       child: Text(
                         S.current.add_group,
@@ -80,6 +92,9 @@ class _AddGroupUserListPageState extends State<AddGroupUserListPage> {
       successCallback: (users) {
         setState(() {
           addressUsers.clear();
+          for (User user in users) {
+            user.isSelected = false;
+          }
           addressUsers.addAll(users);
         });
       },
@@ -90,5 +105,34 @@ class _AddGroupUserListPageState extends State<AddGroupUserListPage> {
   }
 
   // 添加群组
-  void _onClickAddGroup() {}
+  void _onClickAddGroup() {
+    CustomDialog().showLoadingDialog(context, S.current.loading);
+    List<int> userIds = [];
+    for (User user in selectUsers) {
+      userIds.add(user.userId);
+    }
+    Log.debug("$userIds");
+    GroupServices.createGroup(
+        userIds,
+        GroupCallback(
+          successCallback: (group) {
+            CustomDialog().dismissDialog(context);
+            Log.debug("添加群组成功");
+            ToastShowUtils.show(S.current.success, context);
+            Log.debug("当前页面pop");
+            Navigator.pop(context);
+            Log.debug("跳转到群组页面");
+            Map<String, dynamic> map = {
+              "group": group,
+              "type": MessageListType.GROUP
+            };
+            Routers().openRouter("/message", map, context);
+          },
+          failureCallback: (code, errorStr, data) {
+            CustomDialog().dismissDialog(context);
+            Log.debug("添加m群组失败");
+            ToastShowUtils.show(errorStr, context);
+          },
+        ));
+  }
 }

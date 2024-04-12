@@ -44,7 +44,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "retry_connecting": MessageLookupByLibrary.simpleMessage("正在连接中..."),
         "select_address_user": MessageLookupByLibrary.simpleMessage("选择联系人"),
         "send_log": MessageLookupByLibrary.simpleMessage("发送日志"),
-        "success": MessageLookupByLibrary.simpleMessage("成功"),
+        "success": MessageLookupByLibrary.simpleMessage("操作成功"),
         "test": MessageLookupByLibrary.simpleMessage("测试"),
         "title": MessageLookupByLibrary.simpleMessage("IM App"),
         "username_tip": MessageLookupByLibrary.simpleMessage("请输入登录账号或邮箱"),

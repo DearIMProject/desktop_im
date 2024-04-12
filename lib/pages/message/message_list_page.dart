@@ -10,7 +10,7 @@ import 'package:desktop_im/components/ui/message_input.dart';
 import 'package:desktop_im/generated/l10n.dart';
 
 import 'package:desktop_im/log/log.dart';
-import 'package:desktop_im/models/fileBean.dart';
+import 'package:desktop_im/models/group.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
 import 'package:desktop_im/models/message/send_json_model.dart';
@@ -19,6 +19,7 @@ import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/pages/base_page.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/pages/message/message_item.dart';
+import 'package:desktop_im/pages/message/message_list_type.dart';
 import 'package:desktop_im/pages/message/services/message_service.dart';
 import 'package:desktop_im/tcpconnect/connect/im_client.dart';
 import 'package:desktop_im/tcpconnect/connect/message_factory.dart';
@@ -39,7 +40,14 @@ class MessageListPage extends BasePage {
 
 class _MessageListPageState extends State<MessageListPage>
     implements IMDatabaseListener, IMClientListener {
+  /// 聊天类型
+  MessageListType? type;
+
+  /// 个人聊天时的聊天放
   User? chatUser;
+
+  /// 群组聊天时的聊天群组
+  Group? group;
   MessageService service = MessageService();
 
   User? user = UserManager().user;
@@ -95,10 +103,20 @@ class _MessageListPageState extends State<MessageListPage>
     if (messages.isNotEmpty) {
       return;
     }
+    type = widget.params?["type"] as MessageListType?;
+    if (type == null) {
+      throw Exception("chatUser is null && group is null");
+    }
     chatUser = widget.params?["user"];
-    if (chatUser == null) {
+    if (type == MessageListType.USER && chatUser == null) {
       throw Exception("chatUser is null");
     }
+
+    group = widget.params?["group"];
+    if (type == MessageListType.GROUP && group == null) {
+      throw Exception("group is null");
+    }
+
     if (user == null) {
       throw Exception("user is null");
     }
@@ -195,7 +213,6 @@ class _MessageListPageState extends State<MessageListPage>
                 Message message = messages[index];
                 return MesssageItemView(
                   message: message,
-                  icon: message.isOwner ? user!.icon : chatUser!.icon,
                   deleteCallback: (message) {
                     _deleteMessage(message);
                   },

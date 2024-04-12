@@ -8,6 +8,7 @@ import 'package:desktop_im/models/fileBean.dart';
 
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
+import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/router/routers.dart';
 import 'package:desktop_im/tcpconnect/connect/im_client.dart';
@@ -23,10 +24,8 @@ typedef DeleteCallback = void Function(Message message);
 // ignore: must_be_immutable
 class MesssageItemView extends StatefulWidget {
   Message message;
-  String? icon;
   DeleteCallback? deleteCallback;
-  MesssageItemView(
-      {super.key, this.icon, required this.message, this.deleteCallback});
+  MesssageItemView({super.key, required this.message, this.deleteCallback});
 
   @override
   State<MesssageItemView> createState() => _MesssageItemViewState();
@@ -35,6 +34,7 @@ class MesssageItemView extends StatefulWidget {
 class _MesssageItemViewState extends State<MesssageItemView> {
   IMDatabase database = IMDatabase();
   IMClient client = IMClient();
+  String icon = "";
   bool hasSend = false;
   bool isSendToSelf() {
     return widget.message.fromId == widget.message.toId;
@@ -43,6 +43,7 @@ class _MesssageItemViewState extends State<MesssageItemView> {
   @override
   void initState() {
     super.initState();
+    configIcon();
     configSendReadMessage();
   }
 
@@ -125,10 +126,9 @@ class _MesssageItemViewState extends State<MesssageItemView> {
     }
 
     return [
-      widget.icon != null
+      icon.isNotEmpty
           ? radiusCustomBorder(
-              networkImage(widget.icon ?? "", _iconWidth, _iconWidth),
-              _iconWidth * 0.5)
+              networkImage(icon, _iconWidth, _iconWidth), _iconWidth * 0.5)
           : Image.asset(
               "/assets/images/icon.png",
               width: _iconWidth,
@@ -253,5 +253,12 @@ class _MesssageItemViewState extends State<MesssageItemView> {
 
   void onClickPicture(FileBean fileBean) {
     Routers().openRouter("/picture", {"fileBean": fileBean}, context);
+  }
+
+  void configIcon() {
+    User? user = database.getUser(widget.message.fromId);
+    if (user != null) {
+      icon = user.icon;
+    }
   }
 }

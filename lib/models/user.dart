@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:desktop_im/log/log.dart';
+import 'package:desktop_im/models/message/chat_entity.dart';
 import 'package:desktop_im/user/login_service.dart';
 import 'package:desktop_im/user/user_manager.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -12,7 +13,7 @@ const String _kMyUser = "kMyUser";
 
 @JsonSerializable() //这个标注是告诉生成器，这个类是需要生成Model类的
 @HiveType(typeId: 1)
-class User extends HiveObject {
+class User extends HiveObject with ChatEntity {
   @JsonKey(includeFromJson: false, includeToJson: false)
   Box<User>? _userBox;
   Future<Box<User>> get userBox async {
@@ -46,7 +47,7 @@ class User extends HiveObject {
   @HiveField(7)
   int vipStatus = 0;
   @HiveField(8)
-  String vipExpired = "";
+  int vipExpired = 0;
   @HiveField(9)
   String os = "";
   @HiveField(10)
@@ -67,7 +68,7 @@ class User extends HiveObject {
     this.vipStatus = 0,
     this.registerTime = 0,
     this.icon = "",
-    this.vipExpired = "",
+    this.vipExpired = 0,
     this.os = "",
     this.isSelected = false,
   ]);
@@ -152,6 +153,21 @@ class User extends HiveObject {
 
   @override
   String toString() {
-    return 'User{_userBox=$_userBox, userId=$userId, token=$token, username=$username, email=$email, password=$password, expireTime=$expireTime, status=$status, vipStatus=$vipStatus, vipExpired=$vipExpired, os=$os, registerTime=$registerTime, icon=$icon}';
+    return 'User{_userBox=$_userBox, userId=$userId, token=$token, username=$username, email=$email, password=$password, expireTime=$expireTime, status=$status, vipStatus=$vipStatus, vipExpired=$vipExpired, os=$os, registerTime=$registerTime, icon=$icon, isSelected=$isSelected}';
+  }
+
+  @override
+  String getIconUrl() {
+    return icon;
+  }
+
+  @override
+  String getName() {
+    return username;
+  }
+
+  @override
+  String getKey() {
+    return "${userId}_0";
   }
 }

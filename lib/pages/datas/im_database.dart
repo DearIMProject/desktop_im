@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:desktop_im/log/log.dart';
+import 'package:desktop_im/models/group.dart';
+import 'package:desktop_im/models/message/chat_entity.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
 import 'package:desktop_im/models/message/send_json_model.dart';
 import 'package:desktop_im/models/user.dart';
+import 'package:desktop_im/pages/datas/db_group.dart';
 import 'package:desktop_im/pages/datas/db_message.dart';
 import 'package:desktop_im/pages/datas/db_user.dart';
 import 'package:desktop_im/tcpconnect/connect/im_client.dart';
@@ -72,6 +76,7 @@ class IMDatabase implements IMClientListener {
 
   final MessageDB _dbMessage = MessageDB();
   final UserDB _dbUser = UserDB();
+  final GroupDB _dbGroupD = GroupDB();
   bool hasRegister = false;
   Future<void> _initialDatabase(String boxName) {
     Completer<void> completer = Completer<void>();
@@ -85,17 +90,19 @@ class IMDatabase implements IMClientListener {
     }
     _dbMessage.install(boxName).then((value) {
       _dbUser.install(boxName).then((value) {
-        Log.info("初始化数据库完毕！");
-        initBadgeValue();
-        dbHasInstalled = true;
-        completer.complete();
-        Log.debug("Listeners = $_listeners");
-        for (var i = 0; i < _listeners.length; i++) {
-          IMDatabaseListener listener = _listeners[i];
-          if (listener.completeCallback != null) {
-            listener.completeCallback!();
+        _dbGroupD.install(boxName).then((value) {
+          Log.info("初始化数据库完毕！");
+          initBadgeValue();
+          dbHasInstalled = true;
+          completer.complete();
+          Log.debug("Listeners = $_listeners");
+          for (var i = 0; i < _listeners.length; i++) {
+            IMDatabaseListener listener = _listeners[i];
+            if (listener.completeCallback != null) {
+              listener.completeCallback!();
+            }
           }
-        }
+        });
       });
     });
 
@@ -142,6 +149,7 @@ class IMDatabase implements IMClientListener {
   void uninstall() {
     _dbMessage.uninstall();
     _dbUser.uninstall();
+    _dbGroupD.uninstall();
     dbHasInstalled = false;
   }
 
@@ -198,17 +206,27 @@ class IMDatabase implements IMClientListener {
     return result;
   }
 
-  List<User> getChatUsers() {
-    List<User> chatUsers = [];
-    List<int> chatUserIds = _dbMessage.getChatUsers();
-    for (var i = 0; i < chatUserIds.length; i++) {
-      int chatUserId = chatUserIds[i];
-      User? chatUser = _dbUser.getItem(chatUserId);
-      if (chatUser != null) {
-        chatUsers.add(chatUser);
+  List<ChatEntity> getChatUsers() {
+    List<ChatEntity> chatEntitys = [];
+    List<String> chatEntityIds = _dbMessage.getChatEntityIds();
+    for (var i = 0; i < chatEntityIds.length; i++) {
+      String chatEntityId = chatEntityIds[i];
+      List<String> entityIds = chatEntityId.split("_");
+      int entityId = int.parse(entityIds.first);
+      int type = int.parse(entityIds.last);
+      if (type == 0) {
+        User? chatUser = _dbUser.getItem(entityId);
+        if (chatUser != null) {
+          chatEntitys.add(chatUser);
+        }
+      } else if (type == 1) {
+        Group? group = _dbGroupD.getItem(entityId);
+        if (group != null) {
+          chatEntitys.add(group);
+        }
       }
     }
-    return chatUsers;
+    return chatEntitys;
   }
 
 // 获取消息列表最新的时间戳
@@ -239,6 +257,10 @@ class IMDatabase implements IMClientListener {
   /// 获取用户最新的Message
   Message? getLastMessage(int userId) {
     return _dbMessage.getLastMessage(userId);
+  }
+
+  bool hasContextMessage(String key) {
+    return _dbMessage.hasContentMessage(userId);
   }
 
 // 设置消息发送成功

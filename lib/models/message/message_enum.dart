@@ -45,6 +45,15 @@ enum MessageType {
   @HiveField(12)
   @JsonValue(12)
   DELETE_RECALL, // (12,"删除消息")
+  @HiveField(13)
+  @JsonValue(13)
+  GROUP_ADD, // (13, "群组添加")
+  @HiveField(14)
+  @JsonValue(14)
+  GROUP_UPDATE, // (14, "群组更新")
+  @HiveField(15)
+  @JsonValue(15)
+  GROUP_DELETE, // (15, "群组删除")
 }
 
 MessageType intToMessageType(int index) {

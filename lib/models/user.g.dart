@@ -27,7 +27,7 @@ class UserAdapter extends TypeAdapter<User> {
       fields[7] as int,
       fields[10] as int,
       fields[11] as String,
-      fields[8] as String,
+      fields[8] as int,
       fields[9] as String,
     );
   }
@@ -88,8 +88,9 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       json['vipStatus'] as int? ?? 0,
       json['registerTime'] as int? ?? 0,
       json['icon'] as String? ?? "",
-      json['vipExpired'] as String? ?? "",
+      json['vipExpired'] as int? ?? 0,
       json['os'] as String? ?? "",
+      json['isSelected'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
@@ -105,4 +106,5 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'os': instance.os,
       'registerTime': instance.registerTime,
       'icon': instance.icon,
+      'isSelected': instance.isSelected,
     };

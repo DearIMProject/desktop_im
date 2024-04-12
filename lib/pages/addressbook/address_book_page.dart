@@ -5,6 +5,7 @@ import 'package:desktop_im/components/uikits/toast_show_utils.dart';
 import 'package:desktop_im/models/user.dart';
 import 'package:desktop_im/pages/addressbook/service/addressbook_service.dart';
 import 'package:desktop_im/pages/datas/im_database.dart';
+import 'package:desktop_im/pages/message/message_list_type.dart';
 import 'package:desktop_im/router/routers.dart';
 
 import 'package:flutter/material.dart';
@@ -38,7 +39,8 @@ class _AddressBookPageState extends State<AddressBookPage> {
     // message.fromId = UserManager().uid();
     // message.toId = addressUser.userId;
     // database.addMessage(message);
-    Routers().openRouter("/message", {"user": addressUser}, context);
+    Routers().openRouter("/message",
+        {"user": addressUser, "type": MessageListType.USER}, context);
   }
 
   IMDatabase database = IMDatabase();
