@@ -123,8 +123,7 @@ class _AddGroupUserListPageState extends State<AddGroupUserListPage> {
             Navigator.pop(context);
             Log.debug("跳转到群组页面");
             Map<String, dynamic> map = {
-              "group": group,
-              "type": MessageListType.GROUP
+              "entity": group,
             };
             Routers().openRouter("/message", map, context);
           },

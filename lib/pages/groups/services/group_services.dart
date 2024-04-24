@@ -7,6 +7,13 @@ import 'package:desktop_im/pages/datas/im_database.dart';
 import 'package:desktop_im/tcpconnect/connect/message_factory.dart';
 
 typedef GroupSuccessCallback = void Function(Group group);
+typedef GroupListSuccessCallback = void Function(List<Group> groups);
+
+class GroupListCallback {
+  GroupListSuccessCallback? successCallback;
+  RequestFailureCallback? failureCallback;
+  GroupListCallback({this.successCallback, this.failureCallback});
+}
 
 class GroupCallback {
   GroupSuccessCallback? successCallback;
@@ -16,6 +23,28 @@ class GroupCallback {
 
 class GroupServices {
   IMDatabase database = IMDatabase();
+
+  GroupServices.getGroups(GroupListCallback callback) {
+    Request().postRequest(
+        "group/list",
+        {},
+        RequestCallback(
+          successCallback: (data) {
+            List<dynamic> mapGroups = data["list"];
+            List<Group> groups =
+                mapGroups.map((e) => Group.fromJson(e)).toList();
+            database.saveGroups(groups);
+            if (callback.successCallback != null) {
+              callback.successCallback!(groups);
+            }
+          },
+          failureCallback: (code, errorStr, data) {
+            if (callback.failureCallback != null) {
+              callback.failureCallback!(code, errorStr, data);
+            }
+          },
+        ));
+  }
 
   /// 创建群组
   GroupServices.createGroup(List<int> userIds, GroupCallback callback) {

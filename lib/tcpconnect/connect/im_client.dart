@@ -332,14 +332,14 @@ class IMClient implements SocketListener {
 
   void startTimer() {
     endTimer();
-    Log.debug("开始30s计时");
+    // Log.debug("开始30s计时");
     _timer ??= Timer.periodic(Duration(seconds: _second), (timer) {
       sendHeartBeatMessage();
     });
   }
 
   void endTimer() {
-    Log.debug("结束30s计时");
+    // Log.debug("结束30s计时");
     if (_timer != null) {
       _timer!.cancel();
       _timer = null;

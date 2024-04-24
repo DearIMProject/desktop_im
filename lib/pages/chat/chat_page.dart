@@ -88,7 +88,7 @@ class _ChatPageState extends State<ChatPage>
       refreshDatas();
     }
     clickCallback = (user) {
-      Map<String, dynamic> map = {"user": user, "type": MessageListType.USER};
+      Map<String, dynamic> map = {"entity": user};
       Routers().openRouter("/message", map, context);
     };
   }
@@ -121,8 +121,7 @@ class _ChatPageState extends State<ChatPage>
           ChatEntity entity = chatEntitys[userIndex];
           return GestureDetector(
             onTap: () {
-              Routers().openRouter("/message",
-                  {"user": entity, "type": MessageListType.USER}, context);
+              Routers().openRouter("/message", {"entity": entity}, context);
             },
             child: ChatEntityItem(
               entity: entity,

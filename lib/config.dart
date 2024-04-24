@@ -2,7 +2,7 @@
 
 const String APP_NAME = "IM";
 // const String HOST = "localhost"; // local
-const String HOST = "192.168.31.181"; // mac
+const String HOST = "172.16.92.129"; // mac
 // const String HOST = "192.168.31.37"; // windows
 // const String HOST = "101.34.23.152"; //online
 

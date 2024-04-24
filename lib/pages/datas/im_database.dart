@@ -82,6 +82,7 @@ class IMDatabase implements IMClientListener {
     Completer<void> completer = Completer<void>();
     if (!hasRegister) {
       Hive.registerAdapter(MessageAdapter());
+      Hive.registerAdapter(GroupAdapter());
       Hive.registerAdapter(MessageStatusAdapter());
       Hive.registerAdapter(MessageTypeAdapter());
       Hive.registerAdapter(MessageEntityTypeAdapter());
@@ -226,6 +227,19 @@ class IMDatabase implements IMClientListener {
         }
       }
     }
+    // 做最后消息的排序
+    chatEntitys.sort((a, b) {
+      Message? aMessage = getLastMessage(a.getKey());
+      Message? bMessage = getLastMessage(b.getKey());
+      if (aMessage == null || bMessage == null) {
+        return 0;
+      } else if (aMessage.timestamp > bMessage.timestamp) {
+        return -1;
+      } else if (bMessage.timestamp > aMessage.timestamp) {
+        return 1;
+      }
+      return 0;
+    });
     return chatEntitys;
   }
 
@@ -314,5 +328,12 @@ class IMDatabase implements IMClientListener {
   /// 保存群组
   void saveGroup(Group group) {
     _dbGroup.addItem(group);
+  }
+
+  void saveGroups(List<Group> groups) {
+    for (var i = 0; i < groups.length; i++) {
+      Group group = groups[i];
+      saveGroup(group);
+    }
   }
 }

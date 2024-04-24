@@ -27,13 +27,15 @@ class MessageAdapter extends TypeAdapter<Message> {
       fields[7] as int,
       fields[8] as MessageStatus,
       fields[9] as MessageSendStatus,
+      fields[11] as int,
+      fields[10] as MessageEntityType,
     );
   }
 
   @override
   void write(BinaryWriter writer, Message obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.msgId)
       ..writeByte(1)
@@ -53,7 +55,11 @@ class MessageAdapter extends TypeAdapter<Message> {
       ..writeByte(8)
       ..write(obj.status)
       ..writeByte(9)
-      ..write(obj.sendStatue);
+      ..write(obj.sendStatue)
+      ..writeByte(10)
+      ..write(obj.entityType)
+      ..writeByte(11)
+      ..write(obj.entityId);
   }
 
   @override
@@ -87,6 +93,9 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
           MessageStatus.STATUS_NOT_SEND_UNREAD,
       $enumDecodeNullable(_$MessageSendStatusEnumMap, json['sendStatue']) ??
           MessageSendStatus.STATUS_SEND_ING,
+      json['entityId'] as int? ?? 0,
+      $enumDecodeNullable(_$MessageEntityTypeEnumMap, json['entityType']) ??
+          MessageEntityType.USER,
     );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
@@ -100,6 +109,8 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'timestamp': instance.timestamp,
       'status': _$MessageStatusEnumMap[instance.status]!,
       'sendStatue': _$MessageSendStatusEnumMap[instance.sendStatue]!,
+      'entityType': _$MessageEntityTypeEnumMap[instance.entityType]!,
+      'entityId': instance.entityId,
     };
 
 const _$MessageEntityTypeEnumMap = {

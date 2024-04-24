@@ -10,6 +10,7 @@ import 'package:desktop_im/components/ui/message_input.dart';
 import 'package:desktop_im/generated/l10n.dart';
 
 import 'package:desktop_im/log/log.dart';
+import 'package:desktop_im/models/group.dart';
 import 'package:desktop_im/models/message/chat_entity.dart';
 import 'package:desktop_im/models/message/message.dart';
 import 'package:desktop_im/models/message/message_enum.dart';
@@ -41,7 +42,6 @@ class MessageListPage extends BasePage {
 class _MessageListPageState extends State<MessageListPage>
     implements IMDatabaseListener, IMClientListener {
   /// 聊天类型
-  MessageListType? type;
   ChatEntity? entity;
 
   /// 个人聊天时的聊天放
@@ -54,6 +54,8 @@ class _MessageListPageState extends State<MessageListPage>
   List<Message> messages = [];
   IMDatabase database = IMDatabase();
   IMClient client = IMClient();
+  late MessageListType type;
+
   @override
   DatabaseCompleteCallback? completeCallback;
 
@@ -104,15 +106,13 @@ class _MessageListPageState extends State<MessageListPage>
       return;
     }
     Log.debug("param = ${widget.params}");
-    type = widget.params?["type"] as MessageListType?;
-    if (type == null) {
-      throw Exception("type is null");
-    }
+
     entity = widget.params?["entity"];
 
     if (entity == null) {
       throw Exception("entity is null");
     }
+    type = entity is Group ? MessageListType.GROUP : MessageListType.USER;
 
     if (user == null) {
       throw Exception("user is null");
@@ -191,7 +191,11 @@ class _MessageListPageState extends State<MessageListPage>
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          isUserWriting ? S.current.writting : entity!.getName(),
+          isUserWriting
+              ? S.current.writting
+              : entity is Group
+                  ? "${entity!.getName()}(${(entity as Group).contentUserIds.length})"
+                  : entity!.getName(),
           style: const TextStyle(
               fontWeight: FontWeight.bold, fontSize: 20, color: kTitleColor),
         ),

@@ -93,8 +93,15 @@ class MessageDB implements DbProtocol<Message> {
 
   /// 根据消息获取需要的userid
   int getMUserId(Message message) {
-    int mUserId = message.fromId;
-    if (mUserId == UserManager().uid() && message.toId != 0) {
+    int mUserId = 0;
+    if (message.fromEntity == MessageEntityType.USER) {
+      mUserId = message.fromId;
+    }
+    if (message.toEntity == MessageEntityType.USER) {
+      if (mUserId == UserManager().uid() && message.toId != 0) {
+        mUserId = message.toId;
+      }
+    } else {
       mUserId = message.toId;
     }
     return mUserId;
@@ -117,7 +124,8 @@ class MessageDB implements DbProtocol<Message> {
         Message message = messages[i];
         if (message.timestamp == timestamp) {
           message.sendStatue = status;
-          tuple = Tuple2(message, int.parse(uidStr));
+          tuple = Tuple2(message, int.parse(uidStr.split("_").first));
+          // break;
         }
         resultMessages.insert(0, message);
       }
@@ -168,7 +176,7 @@ class MessageDB implements DbProtocol<Message> {
   /// 根据某一个发送的消息获取所有与该用户的消息
   List<Message> _getMessages(Message message) {
     int mUserId = getMUserId(message);
-    List<dynamic>? list = box.get("$mUserId");
+    List<dynamic>? list = box.get(_getKey(mUserId, message));
     if (list == null) {
       return [];
     }
@@ -301,7 +309,7 @@ class MessageDB implements DbProtocol<Message> {
 
   void setMessageReaded(Message aMessage) {
     int userId = aMessage.fromId;
-    List list = box.get("$userId")!;
+    List list = box.get(_getKey(userId, aMessage))!;
     List<Message> messages = [];
     for (Message message in list.reversed) {
       if (message.timestamp == aMessage.timestamp) {
@@ -316,6 +324,7 @@ class MessageDB implements DbProtocol<Message> {
     int type = 0;
     if (aMessage.fromEntity == MessageEntityType.GROUP ||
         aMessage.toEntity == MessageEntityType.GROUP) {
+      //TODO: wmy 这里需要判断entityType
       type = 1;
     }
     return "${userId}_$type";
