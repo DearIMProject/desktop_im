@@ -158,10 +158,15 @@ class IMDatabase implements IMClientListener {
   void addMessage(Message message) {
     _dbMessage.addItem(message);
     int userId = _dbMessage.getMUserId(message);
-    User? user = _dbUser.getItem(userId);
-    if (user != null) {
-      _dbUser.updateItem(user);
+    if (message.entityType == MessageEntityType.USER) {
+      User? user = _dbUser.getItem(userId);
+      if (user != null) {
+        _dbUser.updateItem(user);
+      }
+    } else {
+      //TODO: wmy
     }
+
     // 告诉监听消息添加
     for (var i = 0; i < _listeners.length; i++) {
       IMDatabaseListener listener = _listeners[i];

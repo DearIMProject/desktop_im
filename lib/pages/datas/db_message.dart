@@ -104,6 +104,9 @@ class MessageDB implements DbProtocol<Message> {
     } else {
       mUserId = message.toId;
     }
+    if (message.entityId != 0) {
+      mUserId = message.entityId;
+    }
     return mUserId;
   }
 
@@ -323,7 +326,8 @@ class MessageDB implements DbProtocol<Message> {
   String _getKey(int userId, Message aMessage) {
     int type = 0;
     if (aMessage.fromEntity == MessageEntityType.GROUP ||
-        aMessage.toEntity == MessageEntityType.GROUP) {
+        aMessage.toEntity == MessageEntityType.GROUP ||
+        aMessage.entityType == MessageEntityType.GROUP) {
       //TODO: wmy 这里需要判断entityType
       type = 1;
     }

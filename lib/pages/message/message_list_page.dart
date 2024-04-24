@@ -73,9 +73,14 @@ class _MessageListPageState extends State<MessageListPage>
   Timer? timer;
   @override
   void dispose() {
+    dataChangeCallback = null;
+    transparentCallback = null;
+    controller.textChangeback = null;
+
     database.removeListener(this);
     IMClient().removeListener(this);
     _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -287,6 +292,10 @@ class _MessageListPageState extends State<MessageListPage>
         ? MessageEntityType.GROUP
         : MessageEntityType.USER;
     message.content = text;
+    message.entityId = entity!.getId();
+    message.entityType = type == MessageListType.GROUP
+        ? MessageEntityType.GROUP
+        : MessageEntityType.USER;
     client.sendMessage(message);
     messages.add(message);
     Log.debug("发送了一个消息：$message");

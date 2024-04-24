@@ -86,7 +86,7 @@ class SocketManager implements SocketProtocol {
   void close() {
     if (_socket == null) return;
     try {
-      _socket!.close();
+      _socket!.close().then((value) => _socket = null);
     } catch (e) {
       Log.warn("error = $e");
     }
