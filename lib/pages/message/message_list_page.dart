@@ -157,8 +157,11 @@ class _MessageListPageState extends State<MessageListPage>
     };
 
     controller.textChangeback ??= (string) {
-      Log.debug("string = $string");
-      _configSendTranparnetMessage();
+      // Log.debug("string = $string");
+      //TODO: wmy 判断是否是个人消息
+      if (type == MessageListType.USER) {
+        _configSendTranparnetMessage();
+      }
     };
 
     // 滚动到底部
@@ -226,6 +229,15 @@ class _MessageListPageState extends State<MessageListPage>
           )),
           MessageInputView(
             controller: controller,
+            audioCallback: (isAudioPress) {
+              if (isAudioPress) {
+                // 开始录音
+                // AudioManager.instance.startRecord();
+              } else {
+                // 停止录音
+                // AudioManager.instance.stopRecord();
+              }
+            },
             sendCallback: (text) {
               if (text.isNotEmpty) {
                 sendAMessge(text);

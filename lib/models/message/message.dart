@@ -11,21 +11,25 @@ part 'message.g.dart';
 @JsonSerializable()
 @HiveType(typeId: 2)
 class Message extends HiveObject {
-  Message(
-      [this.msgId = 0,
-      this.fromId = 0,
-      this.fromEntity = MessageEntityType.USER,
-      this.toId = 0,
-      this.toEntity = MessageEntityType.USER,
-      this.content = "",
-      this.messageType = MessageType.TEXT,
-      this.timestamp = 0,
-      this.status = MessageStatus.STATUS_NOT_SEND_UNREAD,
-      this.sendStatue = MessageSendStatus.STATUS_SEND_ING,
-      this.entityId = 0,
-      this.entityType = MessageEntityType.USER]);
+  Message([
+    this.msgId = 0,
+    this.fromId = 0,
+    this.fromEntity = MessageEntityType.USER,
+    this.toId = 0,
+    this.toEntity = MessageEntityType.USER,
+    this.content = "",
+    this.messageType = MessageType.TEXT,
+    this.timestamp = 0,
+    this.status = MessageStatus.STATUS_SUCCESS,
+    this.sendStatue = MessageSendStatus.STATUS_SEND_ING,
+    this.entityId = 0,
+    this.entityType = MessageEntityType.USER,
+    this.mReadUserIds = "",
+  ]);
   @HiveField(0)
   int msgId = 0;
+
+  static const List<int> constUserIds = [];
 
   @HiveField(1)
   int fromId = 0;
@@ -50,7 +54,7 @@ class Message extends HiveObject {
   int timestamp = 0;
 
   @HiveField(8)
-  MessageStatus status = MessageStatus.STATUS_SUCCESS_UNREADED;
+  MessageStatus status = MessageStatus.STATUS_SUCCESS;
 
   @HiveField(9)
   MessageSendStatus sendStatue = MessageSendStatus.STATUS_SEND_ING;
@@ -58,6 +62,38 @@ class Message extends HiveObject {
   MessageEntityType entityType = MessageEntityType.USER;
   @HiveField(11)
   int entityId = 0;
+
+  @HiveField(12)
+  String mReadUserIds = "";
+
+  List<int> _readUserIds = [];
+
+  List<int> get readUserIds {
+    if (_readUserIds.isEmpty) {
+      if (mReadUserIds.isNotEmpty) {
+        List<String> readUserIds = mReadUserIds.split(",");
+        if (readUserIds.isNotEmpty) {
+          _readUserIds = readUserIds.map((e) => int.parse(e)).toList();
+        }
+      }
+    }
+    return _readUserIds;
+  }
+
+  set setReadUserIds(String mReadUserIds) {
+    mReadUserIds = mReadUserIds;
+    List<String> readUserIds = mReadUserIds.split(",");
+    if (readUserIds.isNotEmpty) {
+      _readUserIds = readUserIds.map((e) => int.parse(e)).toList();
+    }
+  }
+
+  String get getReadUserIds {
+    if (mReadUserIds.isEmpty) {
+      return "";
+    }
+    return mReadUserIds;
+  }
 
 /* 以下变量不为数据库所持有 */
 
@@ -69,11 +105,33 @@ class Message extends HiveObject {
     return false;
   }
 
+  /// 是否需要发送已读消息
   bool get isNeedSendReadedMessage {
-    return status == MessageStatus.STATUS_NOT_SEND_UNREAD ||
-        status == MessageStatus.STATUS_NOT_SEND_UNREAD;
+    if (!isNeedShowMessage) {
+      return false;
+    }
+    if (isOwner) {
+      return false;
+    }
+    if (readUserIds.isEmpty) {
+      return true;
+    }
+    int userId = UserManager().uid();
+    if (!readUserIds.contains(userId)) {
+      return true;
+    }
+    return false;
   }
 
+  bool get isNeedShowMessage {
+    if (status == MessageStatus.STATUS_DELETE ||
+        status == MessageStatus.STATUS_RECALL) {
+      return false;
+    }
+    return true;
+  }
+
+  /// 是否是聊天消息
   bool get isChatMessage {
     if (messageType == MessageType.CHAT_MESSAGE ||
         messageType == MessageType.FILE ||
@@ -99,6 +157,6 @@ class Message extends HiveObject {
 
   @override
   String toString() {
-    return 'Message{msgId=$msgId, fromId=$fromId, fromEntity=$fromEntity, toId=$toId, toEntity=$toEntity, content=$content, messageType=$messageType, timestamp=$timestamp, status=$status, sendStatue=$sendStatue, entityType=$entityType, entityId=$entityId}';
+    return 'Message{msgId=$msgId,\n fromId=$fromId,\n fromEntity=$fromEntity,\n toId=$toId, \ntoEntity=$toEntity,\n content=$content, \nmessageType=$messageType,\n timestamp=$timestamp, \nstatus=$status,\n sendStatue=$sendStatue,\n entityType=$entityType, \nentityId=$entityId, \n_mReadUserIds=$mReadUserIds,\n _readUserIds=$_readUserIds}';
   }
 }

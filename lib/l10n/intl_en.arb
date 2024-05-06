@@ -27,6 +27,8 @@
     "writting":"writting...",
     "retry_connecting":"retry connecting...",
     "group_init":"you invite {name} to group chat",
-    "chat_user_image":"[image]"
+    "chat_user_image":"[image]",
+    "press_to_speak":"press to speak",
+    "release_to_send":"release to send"
 
 }

@@ -174,7 +174,8 @@ class IMDatabase implements IMClientListener {
         listener.dataChangeCallback!();
       }
     }
-    if (message.status == MessageStatus.STATUS_SUCCESS_UNREADED &&
+    // 未读信息改变
+    if (!message.readUserIds.contains(UserManager().uid()) &&
         message.toId == UserManager().uid()) {
       _badgeValue = _dbMessage.getUnReadMessageCount();
       for (IMDatabaseListener listener in _listeners) {
@@ -304,8 +305,9 @@ class IMDatabase implements IMClientListener {
   }
 
   void configMessageReaded(SendJsonModel model) {
-    int timestamp = int.parse(model.content);
-    Tuple2<Message, int>? tuple = _dbMessage.getMessageByTimestamp(timestamp);
+    int msgId = model.msgId;
+    Tuple2<Message, int>? tuple = _dbMessage.getMessageByMsgId(msgId);
+    // Tuple2<Message, int>? tuple = _dbMessage.getMessageByTimestamp(timestamp);
     if (tuple != null) {
       setMessageReaded(tuple.item1);
       for (var i = 0; i < _listeners.length; i++) {

@@ -39,7 +39,7 @@ class Group extends HiveObject with ChatEntity {
   @override
   String getIconUrl() {
     //TODO: wmy 图片
-    return "";
+    return "https://preview.qiantucdn.com/58pic/44/52/69/40W58PICrMm72YYIZV4SH_PIC2018.png!w580_772";
   }
 
   @override

@@ -45,8 +45,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "message_item_title": MessageLookupByLibrary.simpleMessage("Menu"),
         "password_tip":
             MessageLookupByLibrary.simpleMessage("please input password"),
+        "press_to_speak":
+            MessageLookupByLibrary.simpleMessage("press to speak"),
         "preview": MessageLookupByLibrary.simpleMessage("preview"),
         "processing": MessageLookupByLibrary.simpleMessage("processing"),
+        "release_to_send":
+            MessageLookupByLibrary.simpleMessage("release to send"),
         "retry_connecting":
             MessageLookupByLibrary.simpleMessage("retry connecting..."),
         "select_address_user":

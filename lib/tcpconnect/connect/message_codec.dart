@@ -31,6 +31,8 @@ class MessageCodec {
     // out.writeInt(innercontent.couldReadableSize);
     out.writeString(message.content);
 
+    out.writeInt(0);
+
     ByteBuf result = ByteBuf(16);
     result.writeInt(out.couldReadableSize);
     result.writeByteBuf(out);
@@ -83,6 +85,14 @@ class MessageCodec {
     Uint8List data = byteBuf.readUint8List(length);
     String content = Uint8ListUtils.convertUint8ListToString(data);
     message.content = content;
+
+    int readLength = byteBuf.readInt();
+    if (readLength != 0) {
+      Uint8List readData = byteBuf.readUint8List(readLength);
+      String readContent = Uint8ListUtils.convertUint8ListToString(readData);
+      message.mReadUserIds = readContent;
+    }
+
     return message;
   }
 }

@@ -1,5 +1,7 @@
 import 'package:desktop_im/components/common/common_theme.dart';
 import 'package:desktop_im/components/uikits/emoji/emoji_special_text_span_builder.dart';
+import 'package:desktop_im/generated/l10n.dart';
+import 'package:desktop_im/log/log.dart';
 import 'package:extended_text_field/extended_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -9,6 +11,7 @@ typedef OnTextChangeback = void Function(String text);
 typedef ClickCallback = void Function();
 
 typedef AddTextCallback = void Function(String text);
+typedef AudioCallback = void Function(bool isAudioPress);
 typedef EmojiReadyCallback = void Function(List<String> emojiNames);
 
 class MesssageInputViewController {
@@ -22,6 +25,7 @@ class MessageInputView extends StatefulWidget {
   SendCallback? sendCallback;
   ClickCallback? addClickCallback;
   ClickCallback? emjClickCallback;
+  AudioCallback? audioCallback;
   MesssageInputViewController? controller;
 
   MessageInputView(
@@ -29,6 +33,7 @@ class MessageInputView extends StatefulWidget {
       this.sendCallback,
       this.addClickCallback,
       this.emjClickCallback,
+      this.audioCallback,
       this.controller});
 
   @override
@@ -132,6 +137,8 @@ class _MessageInputViewState extends State<MessageInputView> {
     textController.value = value;
   }
 
+  bool isAudioType = false;
+  bool isAudioTap = false;
   @override
   Widget build(BuildContext context) {
     const border = OutlineInputBorder(
@@ -153,49 +160,72 @@ class _MessageInputViewState extends State<MessageInputView> {
           Row(
             children: [
               itemSpaceWidthSizeBox,
+              Container(
+                width: 35,
+                height: 35,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 2,
+                  ),
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    isAudioType = !isAudioType;
+
+                    setState(() {});
+                  },
+                  child: Icon(isAudioType
+                      ? Icons.spatial_audio_off_outlined
+                      : Icons.keyboard_alt_outlined),
+                ),
+              ),
+              itemSpaceWidthSizeBox,
               Expanded(
                 child: ConstrainedBox(
                   constraints:
                       const BoxConstraints(minHeight: 15, maxHeight: 100),
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                    child: ExtendedTextField(
-                      key: _key,
-                      minLines: 1,
-                      maxLines: 2,
-                      specialTextSpanBuilder: builder,
-                      controller: textController,
-                      onTapOutside: (_) {
-                        _focusNode.unfocus();
-                      },
-                      strutStyle: const StrutStyle(),
-                      onChanged: (string) {
-                        if (widget.controller != null &&
-                            widget.controller!.textChangeback != null) {
-                          widget.controller!.textChangeback!(string);
-                        }
-                      },
-                      focusNode: _focusNode,
-                      keyboardType: TextInputType.multiline,
-                      onSubmitted: (value) {
-                        if (widget.sendCallback != null) {
-                          widget.sendCallback!(value);
-                        }
-                        textController.text = "";
-                        _focusNode.requestFocus();
-                      },
-                      textInputAction: TextInputAction.send,
-                      decoration: const InputDecoration(
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                        filled: true,
-                        fillColor: kWhiteBackColor,
-                        enabledBorder: border,
-                        focusedBorder: border,
-                      ),
-                      style: const TextStyle(
-                          color: kTitleColor, fontSize: 16, letterSpacing: 1),
-                    ),
+                    child: isAudioType
+                        ? Listener(
+                            onPointerDown: (event) {
+                              Log.debug("onPointerDown $event");
+                              //  按下开始录音
+                              isAudioTap = true;
+                              if (widget.audioCallback != null) {
+                                widget.audioCallback!(isAudioTap);
+                              }
+                              setState(() {});
+                            },
+                            onPointerUp: (event) {
+                              Log.debug("onPointerUp $event");
+                              // 抬起结束录音
+                              isAudioTap = false;
+                              if (widget.audioCallback != null) {
+                                widget.audioCallback!(isAudioTap);
+                              }
+                              setState(() {});
+                            },
+                            child: GestureDetector(
+                              // onPanUpdate: (details) {
+                              //   Log.debug("onPanUpdate $details");
+                              // },
+                              child: radiusBorder(Container(
+                                color: kWarningColor,
+                                height: 48,
+                                child: Center(
+                                  child: subTitleFontText(
+                                      kWhiteBackColor,
+                                      isAudioTap
+                                          ? S.current.release_to_send
+                                          : S.current.press_to_speak),
+                                ),
+                              )),
+                            ),
+                          )
+                        : extendedTextField(border),
                   ),
                 ),
               ),
@@ -223,6 +253,45 @@ class _MessageInputViewState extends State<MessageInputView> {
           )
         ],
       ),
+    );
+  }
+
+  ExtendedTextField extendedTextField(OutlineInputBorder border) {
+    return ExtendedTextField(
+      key: _key,
+      minLines: 1,
+      maxLines: 2,
+      specialTextSpanBuilder: builder,
+      controller: textController,
+      onTapOutside: (_) {
+        _focusNode.unfocus();
+      },
+      strutStyle: const StrutStyle(),
+      onChanged: (string) {
+        if (widget.controller != null &&
+            widget.controller!.textChangeback != null) {
+          widget.controller!.textChangeback!(string);
+        }
+      },
+      focusNode: _focusNode,
+      keyboardType: TextInputType.multiline,
+      onSubmitted: (value) {
+        if (widget.sendCallback != null) {
+          widget.sendCallback!(value);
+        }
+        textController.text = "";
+        _focusNode.requestFocus();
+      },
+      textInputAction: TextInputAction.send,
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        filled: true,
+        fillColor: kWhiteBackColor,
+        enabledBorder: border,
+        focusedBorder: border,
+      ),
+      style:
+          const TextStyle(color: kTitleColor, fontSize: 16, letterSpacing: 1),
     );
   }
 }

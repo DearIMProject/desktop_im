@@ -45,6 +45,8 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
         return MessageType.GROUP_UPDATE;
       case 15:
         return MessageType.GROUP_DELETE;
+      case 16:
+        return MessageType.AUDIO;
       case 100:
         return MessageType.LOCAL_TEXT;
       default:
@@ -103,6 +105,9 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
       case MessageType.GROUP_DELETE:
         writer.writeByte(15);
         break;
+      case MessageType.AUDIO:
+        writer.writeByte(16);
+        break;
       case MessageType.LOCAL_TEXT:
         writer.writeByte(100);
         break;
@@ -128,37 +133,37 @@ class MessageStatusAdapter extends TypeAdapter<MessageStatus> {
   MessageStatus read(BinaryReader reader) {
     switch (reader.readByte()) {
       case 0:
-        return MessageStatus.STATUS_SUCCESS_UNREADED;
+        return MessageStatus.STATUS_SUCCESS;
       case 1:
-        return MessageStatus.STATUS_SUCCESS_READED;
-      case 2:
-        return MessageStatus.STATUS_NOT_SEND_UNREAD;
-      case 3:
         return MessageStatus.STATUS_DELETE;
-      case 4:
+      case 2:
         return MessageStatus.STATUS_RECALL;
+      case 100:
+        return MessageStatus.STATUS_SEND_ING;
+      case 101:
+        return MessageStatus.STATUS_SEND_FAILURE;
       default:
-        return MessageStatus.STATUS_SUCCESS_UNREADED;
+        return MessageStatus.STATUS_SUCCESS;
     }
   }
 
   @override
   void write(BinaryWriter writer, MessageStatus obj) {
     switch (obj) {
-      case MessageStatus.STATUS_SUCCESS_UNREADED:
+      case MessageStatus.STATUS_SUCCESS:
         writer.writeByte(0);
         break;
-      case MessageStatus.STATUS_SUCCESS_READED:
+      case MessageStatus.STATUS_DELETE:
         writer.writeByte(1);
         break;
-      case MessageStatus.STATUS_NOT_SEND_UNREAD:
+      case MessageStatus.STATUS_RECALL:
         writer.writeByte(2);
         break;
-      case MessageStatus.STATUS_DELETE:
-        writer.writeByte(3);
+      case MessageStatus.STATUS_SEND_ING:
+        writer.writeByte(100);
         break;
-      case MessageStatus.STATUS_RECALL:
-        writer.writeByte(4);
+      case MessageStatus.STATUS_SEND_FAILURE:
+        writer.writeByte(101);
         break;
     }
   }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:desktop_im/log/log.dart';
 import 'package:desktop_im/models/message/message.dart';
@@ -42,8 +43,9 @@ class MessageDB implements DbProtocol<Message> {
     // 消息为已读消息，则需要把该消息的时间戳获取到，找到对应的消息，标为已读
     if (message.messageType == MessageType.READED_MESSAGE) {
       Log.debug("消息为已读消息");
-      var timestamp = message.timestamp;
-      Tuple2<Message, int>? tuple2 = getMessageByTimestamp(timestamp);
+      Map<String, dynamic> decode = json.decode(message.content);
+      SendJsonModel model = SendJsonModel.fromJson(decode);
+      Tuple2<Message, int>? tuple2 = getMessageByMsgId(model.msgId);
       if (tuple2 != null) {
         setMessageReaded(tuple2.item1);
       }
@@ -132,6 +134,9 @@ class MessageDB implements DbProtocol<Message> {
         }
         resultMessages.insert(0, message);
       }
+      if (tuple != null) {
+        break;
+      }
     }
     if (tuple != null) {
       box.put(_getKey(tuple.item2, tuple.item1), resultMessages);
@@ -155,9 +160,29 @@ class MessageDB implements DbProtocol<Message> {
       for (var i = messages.length - 1; i >= 0; i--) {
         Message message = messages[i];
         if (message.timestamp == timestamp) {
-          tuple = Tuple2(message, int.parse(uidStr));
+          tuple = Tuple2(message, int.parse(uidStr.split("_").first));
         }
         resultMessages.insert(0, message);
+      }
+    }
+    return tuple;
+  }
+
+  Tuple2<Message, int>? getMessageByMsgId(int msgId) {
+    List keys = box.keys.toList();
+    Tuple2<Message, int /*userId*/ >? tuple;
+    for (var i = 0; i < keys.length; i++) {
+      String uidStr = keys[i];
+      List? messages = box.get(uidStr);
+      if (messages == null || messages.isEmpty) {
+        return null;
+      }
+      for (var i = messages.length - 1; i >= 0; i--) {
+        Message message = messages[i];
+        if (message.msgId == msgId) {
+          tuple = Tuple2(message, int.parse(uidStr.split("_").first));
+          break;
+        }
       }
     }
     return tuple;
@@ -288,12 +313,13 @@ class MessageDB implements DbProtocol<Message> {
 
   /// 判断是否为未读消息
   bool isUnreadMessage(Message message) {
-    return (message.status == MessageStatus.STATUS_SUCCESS_UNREADED &&
-        message.toId == UserManager().uid());
+    if (message.isNeedSendReadedMessage) {
+      return true;
+    }
+    return false;
   }
 
   int getUserUnReadMessageCount(String key) {
-    //TODO: wmy write here
     if (key == "${UserManager().uid()}_0") {
       return 0;
     }
@@ -311,12 +337,24 @@ class MessageDB implements DbProtocol<Message> {
   }
 
   void setMessageReaded(Message aMessage) {
-    int userId = aMessage.fromId;
-    List list = box.get(_getKey(userId, aMessage))!;
+    int userId = aMessage.entityId;
+    int myUserId = UserManager().uid();
+    List? list = box.get(_getKey(userId, aMessage));
+    if (list == null) {
+      return;
+    }
     List<Message> messages = [];
     for (Message message in list.reversed) {
       if (message.timestamp == aMessage.timestamp) {
-        message.status = MessageStatus.STATUS_SUCCESS_READED;
+        String mReadUserIds = message.mReadUserIds;
+        if (mReadUserIds.isEmpty) {
+          mReadUserIds = "$myUserId";
+        } else {
+          if (!message.readUserIds.contains(myUserId)) {
+            mReadUserIds += ",$myUserId";
+          }
+        }
+        message.mReadUserIds = mReadUserIds;
       }
       messages.insert(0, message);
     }
@@ -328,7 +366,7 @@ class MessageDB implements DbProtocol<Message> {
     if (aMessage.fromEntity == MessageEntityType.GROUP ||
         aMessage.toEntity == MessageEntityType.GROUP ||
         aMessage.entityType == MessageEntityType.GROUP) {
-      //TODO: wmy 这里需要判断entityType
+      // 这里需要判断entityType
       type = 1;
     }
     return "${userId}_$type";

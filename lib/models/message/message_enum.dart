@@ -54,7 +54,9 @@ enum MessageType {
   @HiveField(15)
   @JsonValue(15)
   GROUP_DELETE, // (15, "群组删除")
-
+  @HiveField(16)
+  @JsonValue(16)
+  AUDIO, // (16, "语音")
   // 本地消息
   @HiveField(100)
   @JsonValue(100)
@@ -69,19 +71,20 @@ MessageType intToMessageType(int index) {
 enum MessageStatus {
   @HiveField(0)
   @JsonValue(0)
-  STATUS_SUCCESS_UNREADED, //(0, "发送成功且未读"),
+  STATUS_SUCCESS, //(0, "发送成功"),
   @HiveField(1)
   @JsonValue(1)
-  STATUS_SUCCESS_READED, //(1, "发送成功且已读"),
+  STATUS_DELETE, //(3, "删除");
   @HiveField(2)
   @JsonValue(2)
-  STATUS_NOT_SEND_UNREAD, //(2, "未发送");
-  @HiveField(3)
-  @JsonValue(3)
-  STATUS_DELETE, //(3, "删除");
-  @HiveField(4)
-  @JsonValue(4)
   STATUS_RECALL, //(4, "撤回");
+
+  @HiveField(100)
+  @JsonValue(100)
+  STATUS_SEND_ING, //(1, "发送中"),
+  @HiveField(101)
+  @JsonValue(101)
+  STATUS_SEND_FAILURE, //(2, "发送失败"),
 }
 
 MessageStatus intToMessageStatus(int index) {

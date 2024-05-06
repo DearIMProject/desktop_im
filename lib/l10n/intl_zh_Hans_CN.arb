@@ -27,6 +27,8 @@
     "writting":"正在输入中...",
     "retry_connecting":"正在连接中...",
     "group_init":"你邀请 {name} 加入群聊",
-    "chat_user_image":"[图片]"
+    "chat_user_image":"[图片]",
+    "press_to_speak":"按住说话",
+    "release_to_send":"松开发送"
 
 }

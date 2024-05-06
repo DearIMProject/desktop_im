@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     username = "iphonexs@apple.com"; // 真机
     // username = "simulator@apple.com"; // 模拟器
-    // username = "iphonepromax@apple.com";
+    username = "iphonepromax@apple.com";
     password = "apple";
   }
 

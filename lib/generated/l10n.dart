@@ -339,6 +339,26 @@ class S {
       args: [],
     );
   }
+
+  /// `press to speak`
+  String get press_to_speak {
+    return Intl.message(
+      'press to speak',
+      name: 'press_to_speak',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `release to send`
+  String get release_to_send {
+    return Intl.message(
+      'release to send',
+      name: 'release_to_send',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -29,13 +29,14 @@ class MessageAdapter extends TypeAdapter<Message> {
       fields[9] as MessageSendStatus,
       fields[11] as int,
       fields[10] as MessageEntityType,
+      fields[12] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Message obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.msgId)
       ..writeByte(1)
@@ -59,7 +60,9 @@ class MessageAdapter extends TypeAdapter<Message> {
       ..writeByte(10)
       ..write(obj.entityType)
       ..writeByte(11)
-      ..write(obj.entityId);
+      ..write(obj.entityId)
+      ..writeByte(12)
+      ..write(obj.mReadUserIds);
   }
 
   @override
@@ -90,12 +93,13 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
           MessageType.TEXT,
       json['timestamp'] as int? ?? 0,
       $enumDecodeNullable(_$MessageStatusEnumMap, json['status']) ??
-          MessageStatus.STATUS_NOT_SEND_UNREAD,
+          MessageStatus.STATUS_SUCCESS,
       $enumDecodeNullable(_$MessageSendStatusEnumMap, json['sendStatue']) ??
           MessageSendStatus.STATUS_SEND_ING,
       json['entityId'] as int? ?? 0,
       $enumDecodeNullable(_$MessageEntityTypeEnumMap, json['entityType']) ??
           MessageEntityType.USER,
+      json['mReadUserIds'] as String? ?? "",
     );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
@@ -111,6 +115,7 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'sendStatue': _$MessageSendStatusEnumMap[instance.sendStatue]!,
       'entityType': _$MessageEntityTypeEnumMap[instance.entityType]!,
       'entityId': instance.entityId,
+      'mReadUserIds': instance.mReadUserIds,
     };
 
 const _$MessageEntityTypeEnumMap = {
@@ -136,15 +141,16 @@ const _$MessageTypeEnumMap = {
   MessageType.GROUP_ADD: 13,
   MessageType.GROUP_UPDATE: 14,
   MessageType.GROUP_DELETE: 15,
+  MessageType.AUDIO: 16,
   MessageType.LOCAL_TEXT: 100,
 };
 
 const _$MessageStatusEnumMap = {
-  MessageStatus.STATUS_SUCCESS_UNREADED: 0,
-  MessageStatus.STATUS_SUCCESS_READED: 1,
-  MessageStatus.STATUS_NOT_SEND_UNREAD: 2,
-  MessageStatus.STATUS_DELETE: 3,
-  MessageStatus.STATUS_RECALL: 4,
+  MessageStatus.STATUS_SUCCESS: 0,
+  MessageStatus.STATUS_DELETE: 1,
+  MessageStatus.STATUS_RECALL: 2,
+  MessageStatus.STATUS_SEND_ING: 100,
+  MessageStatus.STATUS_SEND_FAILURE: 101,
 };
 
 const _$MessageSendStatusEnumMap = {

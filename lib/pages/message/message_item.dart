@@ -54,7 +54,7 @@ class _MesssageItemViewState extends State<MesssageItemView> {
     hasSend = true;
     if (!widget.message.isOwner) {
       // Log.debug("${widget.message.status}");
-      if (widget.message.status != MessageStatus.STATUS_SUCCESS_READED) {
+      if (widget.message.isNeedSendReadedMessage) {
         // Log.debug("消息 ${widget.message}");
         client.sendReadedMessage(widget.message);
       }
@@ -211,7 +211,7 @@ class _MesssageItemViewState extends State<MesssageItemView> {
         visible: !widget.message.isOwner,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 7, 0, 0),
-          child: widget.message.status == MessageStatus.STATUS_SUCCESS_READED
+          child: !widget.message.isNeedSendReadedMessage
               ? readView()
               : unReadView(),
         ),

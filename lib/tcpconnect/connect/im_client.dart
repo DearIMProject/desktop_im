@@ -179,7 +179,7 @@ class IMClient implements SocketListener {
   }
 
   void sendHeartBeatMessage() {
-    Log.debug("发送一个心跳包");
+    // Log.debug("发送一个心跳包");
     _currentSendHeartBeatCount++;
     if (_currentSendHeartBeatCount >= _MAX_LOST_HEART_BEAT_COUNT) {
       //TODO: wmy 重连；
@@ -219,11 +219,14 @@ class IMClient implements SocketListener {
         _configReceiveSendSuccessMessage(message);
         break;
       case MessageType.HEART_BEAT:
-        Log.debug("收到心跳包");
+        // Log.debug("收到心跳包");
         _currentSendHeartBeatCount--;
         break;
       case MessageType.TRANSPARENT_MESSAGE:
         _configTransparentMessage(message);
+        break;
+      case MessageType.READED_MESSAGE:
+        _configReceiveReadedMessage(message);
         break;
       default:
     }
@@ -324,7 +327,13 @@ class IMClient implements SocketListener {
   void sendReadedMessage(Message message) {
     Message readMessage =
         MessageFactory.messageFromType(MessageType.READED_MESSAGE);
-    readMessage.content = "${message.timestamp}";
+    SendJsonModel model = SendJsonModel(
+        msgId: message.msgId,
+        timestamp: message.timestamp,
+        messageType: MessageType.READED_MESSAGE,
+        content: "${UserManager().uid()}");
+    String jsonStr = json.encode(model.toJson());
+    readMessage.content = jsonStr;
     readMessage.fromId = UserManager().uid();
     readMessage.fromEntity = MessageEntityType.USER;
     sendMessage(readMessage);
@@ -352,6 +361,16 @@ class IMClient implements SocketListener {
     for (IMClientListener listener in listeners) {
       if (listener.transparentCallback != null) {
         listener.transparentCallback!(message);
+      }
+    }
+  }
+
+  /// 处理已读消息
+  void _configReceiveReadedMessage(Message message) {
+    Log.debug("收到一个已读消息");
+    for (IMClientListener listener in listeners) {
+      if (listener.messageCallback != null) {
+        listener.messageCallback!(message);
       }
     }
   }

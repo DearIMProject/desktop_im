@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "/Users/apple/Developer/DearIM/IM/desktop_im/linux"
+    "cmake.sourceDirectory": "/Users/apple/Developer/DearIM/IM/desktop_im/linux",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
